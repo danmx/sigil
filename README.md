@@ -1,4 +1,4 @@
-# sigil
+# sigil [![Build Status](https://cloud.drone.io/api/badges/danmx/sigil/status.svg)](https://cloud.drone.io/danmx/sigil)
 
 ## Description
 
