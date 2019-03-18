@@ -1,11 +1,11 @@
 
 # Change this and commit to create new release
-VERSION=0.0.1
+override VERSION ?= 0.0.1
 
 SRC = $(wildcard pkg/*) $(wildcard cmd/*)
-#MODULE = github.com/danmx/sigil
+REPO = danmx/sigil
 NAME = sigil
-REVISION := $(shell git rev-parse --short HEAD;)
+override REVISION ?= $(shell git rev-parse HEAD;)
 
 export GO111MODULE = on
 
@@ -14,33 +14,33 @@ bootstrap:
 	@go mod download && go mod vendor
 
 .PHONY: build
-build: bootstrap build-linux build-mac build-windows build-docker
+build: bootstrap build-linux build-mac build-windows
 
 .PHONY: build-dev
-build: bootstrap build-linux-dev build-mac-dev build-windows-dev build-docker-dev
+build: bootstrap build-linux-dev build-mac-dev build-windows-dev
 
 build-windows: export GOARCH=amd64
 build-windows:
 	@GOOS=windows go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/windows/amd64/$(NAME) cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o dist/windows/amd64/$(NAME) cmd/$(NAME)/main.go
 
 build-linux: export GOARCH=amd64
 build-linux: export CGO_ENABLED=0
 build-linux:
 	@GOOS=linux go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/linux/amd64/$(NAME) cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o dist/linux/amd64/$(NAME) cmd/$(NAME)/main.go
 
 build-mac: export GOARCH=amd64
 build-mac: export CGO_ENABLED=0
 build-mac:
 	@GOOS=darwin go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o dist/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
 
 build-docker:
-	@docker build -t $(NAME):$(VERSION) .
+	@docker build --build-arg VER=$(VERSION) -t $(NAME):$(VERSION) .
 
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
@@ -65,9 +65,6 @@ build-mac-dev:
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
 		-o bin/darwin/amd64/dev/$(NAME) cmd/$(NAME)/main.go
 
-build-docker-dev:
-	@docker build -t $(NAME):$(VERSION)-dev -f Dockerfile-dev .
-
 .PHONY: get-version
 get-version:
 	@echo $(VERSION)
@@ -82,3 +79,7 @@ test:
 
 .PHONY: tidy
 	@go mod tidy
+
+.PHONY: drone-sign
+drone-sign:
+	@drone sign $(REPO) --save
