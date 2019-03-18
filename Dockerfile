@@ -9,11 +9,11 @@ COPY . .
 RUN make build-linux build-linux-dev
 
 FROM gcr.io/distroless/base:debug as debug
-COPY --from=build /go/src/app/bin/linux/amd64/dev/sigil /
+COPY --from=build /go/src/app/bin/sigil-linux /sigil
 ENTRYPOINT [ "/sigil" ]
 CMD [ "--help" ]
 
 FROM gcr.io/distroless/base as prod
-COPY --from=build /go/src/app/dist/linux/amd64/sigil /
+COPY --from=build /go/src/app/dist/sigil-linux /sigil
 ENTRYPOINT [ "/sigil" ]
 CMD [ "--help" ]

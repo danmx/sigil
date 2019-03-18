@@ -1,19 +1,20 @@
+---
 kind: pipeline
 name: default
 # Build
 steps:
-- name: build-dev
+- name: build
   image: golang:1.12
   environment:
     VERSION: DEV
     REVISION: ${DRONE_COMMIT}
   commands:
     - make bootstrap
-    - make build-dev
+    - make build build-dev
   when:
     event:
       - push
-- name: build-prod
+- name: build-release
   image: golang:1.12
   environment:
     VERSION: ${DRONE_TAG}
@@ -24,11 +25,8 @@ steps:
   when:
     event:
       - tag
-    branch:
-      include:
-      - master
 # Docker Hub
-- name: docker-dev
+- name: docker-release
   image: plugins/docker
   settings:
     repo: danmx/sigil
@@ -40,13 +38,8 @@ steps:
       from_secret: docker_password
   when:
     event: tag
-    branch:
-      include:
-      - master
-    status:
-      - success
 # GitHub Release
-- name: publish
+- name: github-release
   image: plugins/github-release
   settings:
     api_key:
@@ -54,16 +47,13 @@ steps:
     files:
       - dist/*
     checksum:
-      - md5
       - sha1
       - sha256
       - sha512
-      - adler32
-      - crc32
   when:
     event: tag
-    branch:
-      include:
-      - master
-    status:
-      - success
+---
+kind: signature
+hmac: 37f96f5abde3a97fe6fafd29ae486cf5a1c1587089a7f9640d1119fc83ba782b
+
+...
