@@ -22,9 +22,9 @@ make build-[linux|mac|windows|docker]
 
 Binaries are located in:
 
-- Linux: `bin/linux/amd64/sigil`
-- Mac: `bin/darwin/amd64/sigil`
-- Windows: `bin/windows/amd64/sigil`
+- Linux: `dist/sigil-linux`
+- Mac: `dist/sigil-darwin`
+- Windows: `dist/sigil-windows`
 
 ### Docker
 
@@ -41,17 +41,17 @@ It'll create a docker image tagged `sigil:{version}` where `{version}` correspon
 Docker:
 
 ```console
-docker run --rm -it -v ${HOME}/.sigil:/home/.sigil sigil:{version} -v ${HOME}/.aws:/home/.aws list --output-format wide
+docker run --rm -it -v ${HOME}/.sigil:/home/.sigil -v ${HOME}/.aws:/home/.aws danmx/sigil:0.0 list --output-format wide
 ```
 
 Binary:
 
 ```console
-sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+sigil-darwin -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
 
 While using [aws-vault](https://github.com/99designs/aws-vault):
 
 ```console
-aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+aws-vault exec AWS_PROFILE -- sigil-darwin -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
