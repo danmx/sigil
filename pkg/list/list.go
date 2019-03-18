@@ -80,15 +80,10 @@ func Start(input *StartInput) (*StartOutput, error) {
 					log.WithField("no. copied elements", n).Debug("Expand Instances slice")
 					*output.Instances = newSlice
 				}
-				var instanceName string
-				if instance.Name != nil {
-					instanceName = *instance.Name
-				}
 				log.WithFields(log.Fields{
 					"InstanceId":      *instance.InstanceId,
 					"ComputerName":    *instance.ComputerName,
 					"IPAddress":       *instance.IPAddress,
-					"Name":            &instanceName,
 					"PlatformName":    *instance.PlatformName,
 					"PlatformType":    *instance.PlatformType,
 					"PlatformVersion": *instance.PlatformVersion,
@@ -99,7 +94,6 @@ func Start(input *StartInput) (*StartOutput, error) {
 						Hostname:   instance.ComputerName,
 						IPAddress:  instance.IPAddress,
 						InstanceID: instance.InstanceId,
-						Name:       &instanceName,
 						OSName:     instance.PlatformName,
 						OSType:     instance.PlatformType,
 						OSVersion:  instance.PlatformVersion,
@@ -122,13 +116,22 @@ func Start(input *StartInput) (*StartOutput, error) {
 	for _, instance := range *output.Instances {
 		describeInstancesInput.InstanceIds = append(describeInstancesInput.InstanceIds, instance.InstanceID)
 	}
-	instanceIDToPrivDNS := make(map[string]*string)
+	// 0 for PrivateDNSName, 1 for Name Tag
+	describeInstance := make(map[string][2]*string)
 	ec2Client := ec2.New(sess)
 	err = ec2Client.DescribeInstancesPages(describeInstancesInput,
 		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
 			for _, reservation := range page.Reservations {
 				for _, instance := range reservation.Instances {
-					instanceIDToPrivDNS[*instance.InstanceId] = instance.PrivateDnsName
+					nameTag := ""
+					for _, tag := range instance.Tags {
+						if *tag.Key == "Name" {
+							nameTag = *tag.Value
+							break
+						}
+					}
+					describeInstance[*instance.InstanceId] = [2]*string{
+						instance.PrivateDnsName, &nameTag}
 				}
 			}
 			return !lastPage
@@ -137,7 +140,17 @@ func Start(input *StartInput) (*StartOutput, error) {
 		return nil, err
 	}
 	for _, instance := range *output.Instances {
-		instance.PrivateDNSName = instanceIDToPrivDNS[*instance.InstanceID]
+		instance.PrivateDNSName = describeInstance[*instance.InstanceID][0]
+		instance.Name = describeInstance[*instance.InstanceID][1]
+		log.WithFields(log.Fields{
+			"IPAddress":      *instance.IPAddress,
+			"Hostname":       *instance.Hostname,
+			"OSName":         *instance.OSName,
+			"OSType":         *instance.OSType,
+			"OSVersion":      *instance.OSVersion,
+			"PrivateDNSName": *instance.PrivateDNSName,
+			"Name":           *instance.Name,
+		}).Debug("Instance")
 	}
 	return output, nil
 }
