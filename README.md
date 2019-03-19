@@ -8,9 +8,15 @@
 
 ## Features
 
-- all-in-one - a single tool to list and connect to the given instance
-- configuration file (YAML) support
+- configuration files (YAML) support
 - lightweight [container image](https://hub.docker.com/r/danmx/sigil) (~16MB)
+
+## External dependencies
+
+- AWS [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+- target EC2 instance must have AWS SSM Agent installed ([full guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html))
+- target EC2's instance profile must have **AmazonEC2RoleforSSM** managed IAM policy attached
+  or other with similar permissions ([IAM guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#managed-policies))
 
 ## Examples
 
