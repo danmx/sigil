@@ -68,6 +68,7 @@ var (
 	targetType    string
 	outputFormat  string
 	configProfile string
+	startSession  bool
 	cfgFile       = "config.yaml"
 	workDirName   = "." + AppName
 	pluginName    = "session-manager-plugin"
@@ -157,6 +158,11 @@ func main() {
 			Usage: "specify tags to filter out results, e.g.: `key1=value1,key2=value2`",
 			Value: &stringMapStringType{},
 		},
+		cli.BoolFlag{
+			Name:        "interactive, i",
+			Usage:       "allows to pick an instance and start the session",
+			Destination: &startSession,
+		},
 	}
 
 	sessionFlags := []cli.Flag{
@@ -191,16 +197,12 @@ func main() {
 					OutputFormat: &outputFormat,
 					AWSRegion:    &awsRegion,
 					TagFilter:    &tagFilter.Map,
+					StartSession: &startSession,
 				}
-				output, err := list.Start(input)
+				err := list.Start(input)
 				if err != nil {
 					return err
 				}
-				stringOuput, err := output.String()
-				if err != nil {
-					return err
-				}
-				fmt.Print(stringOuput)
 				return nil
 			},
 			Before: func(c *cli.Context) error {
