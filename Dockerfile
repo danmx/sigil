@@ -21,12 +21,12 @@ RUN dpkg -i session-manager-plugin.deb
 
 FROM gcr.io/distroless/base:debug as debug
 COPY --from=build /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
-COPY --from=build /go/src/app/bin/dev/sigil-linux /sigil
+COPY --from=build /go/src/app/bin/dev/linux/amd64/sigil /sigil
 ENTRYPOINT [ "/sigil" ]
 CMD [ "--help" ]
 
 FROM gcr.io/distroless/base as prod
 COPY --from=build /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
-COPY --from=build /go/src/app/bin/release/sigil-linux /sigil
+COPY --from=build /go/src/app/bin/release/linux/amd64/sigil /sigil
 ENTRYPOINT [ "/sigil" ]
 CMD [ "--help" ]

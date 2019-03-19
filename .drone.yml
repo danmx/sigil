@@ -36,7 +36,7 @@ steps:
 - name: build-release
   image: golang:1.12
   commands:
-  - make build
+  - make release
   environment:
     REVISION: "${DRONE_COMMIT}"
     VERSION: "${DRONE_TAG}"
@@ -71,13 +71,13 @@ steps:
     - sha256
     - sha512
     files:
-    - "bin/release/*"
+    - "dist/*"
   when:
     event:
     - tag
 
 ---
 kind: signature
-hmac: 901f0710cced99e0a6773ba2ad29e6bfaa825c20cb418a4b01262004c2212daf
+hmac: 2820ac74026f750371398745d9e947db025b3a32dc5e0294bd99c339e281df1c
 
 ...
