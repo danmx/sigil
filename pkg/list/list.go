@@ -1,10 +1,16 @@
 package list
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 	"text/tabwriter"
+
+	remoteSession "github.com/danmx/sigil/pkg/session"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -20,11 +26,12 @@ type StartInput struct {
 	OutputFormat *string
 	AWSRegion    *string
 	TagFilter    *map[string]string
+	StartSession *bool
 }
 
 // StartOutput struct will contain all output data
 type StartOutput struct {
-	Instances *[]*Instance
+	Instances []*Instance
 	// Define output format
 	format *string
 }
@@ -47,11 +54,11 @@ const (
 )
 
 // Start will output a ist of all available EC2 instances
-func Start(input *StartInput) (*StartOutput, error) {
+func Start(input *StartInput) error {
 	instanceList := make([]*Instance, 0, instanceCapacity)
 	output := &StartOutput{
 		format:    input.OutputFormat,
-		Instances: &instanceList,
+		Instances: instanceList,
 	}
 	awsConfig := aws.NewConfig()
 	if *input.AWSRegion != "" {
@@ -74,11 +81,11 @@ func Start(input *StartInput) (*StartOutput, error) {
 	err := ssmClient.DescribeInstanceInformationPages(ssmDescribeInstancesInput,
 		func(page *ssm.DescribeInstanceInformationOutput, lastPage bool) bool {
 			for _, instance := range page.InstanceInformationList {
-				if len(*output.Instances)+1 > cap(*output.Instances) {
-					newSlice := make([]*Instance, len(*output.Instances), (cap(*output.Instances))*instanceCapMultiplier)
-					n := copy(newSlice, *output.Instances)
+				if len(output.Instances)+1 > cap(output.Instances) {
+					newSlice := make([]*Instance, len(output.Instances), (cap(output.Instances))*instanceCapMultiplier)
+					n := copy(newSlice, output.Instances)
 					log.WithField("no. copied elements", n).Debug("Expand Instances slice")
-					*output.Instances = newSlice
+					output.Instances = newSlice
 				}
 				log.WithFields(log.Fields{
 					"InstanceId":      *instance.InstanceId,
@@ -88,8 +95,8 @@ func Start(input *StartInput) (*StartOutput, error) {
 					"PlatformType":    *instance.PlatformType,
 					"PlatformVersion": *instance.PlatformVersion,
 				}).Debug("Describe Instance")
-				*output.Instances = append(
-					*output.Instances,
+				output.Instances = append(
+					output.Instances,
 					&Instance{
 						Hostname:   instance.ComputerName,
 						IPAddress:  instance.IPAddress,
@@ -103,17 +110,22 @@ func Start(input *StartInput) (*StartOutput, error) {
 			return !lastPage
 		})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if len(*output.Instances) < 1 {
+	if len(output.Instances) < 1 {
 		log.Debug("No instances found")
-		return output, nil
+		outString, err := output.String()
+		if err != nil {
+			return err
+		}
+		fmt.Print(outString)
+		return nil
 	}
 	describeInstancesInput := &ec2.DescribeInstancesInput{
-		InstanceIds: make([]*string, 0, cap(*output.Instances)),
+		InstanceIds: make([]*string, 0, cap(output.Instances)),
 	}
 	// Adding instances private DNS name
-	for _, instance := range *output.Instances {
+	for _, instance := range output.Instances {
 		describeInstancesInput.InstanceIds = append(describeInstancesInput.InstanceIds, instance.InstanceID)
 	}
 	// 0 for PrivateDNSName, 1 for Name Tag
@@ -137,9 +149,9 @@ func Start(input *StartInput) (*StartOutput, error) {
 			return !lastPage
 		})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	for _, instance := range *output.Instances {
+	for _, instance := range output.Instances {
 		instance.PrivateDNSName = describeInstance[*instance.InstanceID][0]
 		instance.Name = describeInstance[*instance.InstanceID][1]
 		log.WithFields(log.Fields{
@@ -152,7 +164,40 @@ func Start(input *StartInput) (*StartOutput, error) {
 			"Name":           *instance.Name,
 		}).Debug("Instance")
 	}
-	return output, nil
+	outString, err := output.String()
+	if err != nil {
+		return err
+	}
+	fmt.Print(outString)
+	if *input.StartSession {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("Choose an instance to connect to [1 - %d]: ", len(output.Instances))
+		textInput, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		i, err := strconv.Atoi(strings.ReplaceAll(textInput, "\n", ""))
+		if err != nil {
+			return err
+		}
+		log.WithField("index", i).Debug("Picked EC2 Instance")
+		if i < 1 || i > len(output.Instances) {
+			return fmt.Errorf("instance index out of range: %d", i)
+		}
+		instance := output.Instances[i-1]
+		targetType := "instance-id"
+		remoteInput := &remoteSession.StartInput{
+			Target:     instance.InstanceID,
+			TargetType: &targetType,
+			AWSRegion:  input.AWSRegion,
+		}
+		err = remoteSession.Start(remoteInput)
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
 }
 
 // String will stringify StartOutput
@@ -163,10 +208,10 @@ func (o *StartOutput) String() (string, error) {
 		buf := bytes.NewBufferString(output)
 		w := new(tabwriter.Writer)
 		w.Init(buf, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "Name\tInstance ID\tIP Address\tPrivate DNS Name")
-		for _, instance := range *o.Instances {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
-				*instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName)
+		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name")
+		for i, instance := range o.Instances {
+			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n",
+				(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName)
 		}
 		err := w.Flush()
 		if err != nil {
@@ -174,14 +219,14 @@ func (o *StartOutput) String() (string, error) {
 		}
 		return buf.String(), nil
 	case "json":
-		data, err := json.Marshal(*o.Instances)
+		data, err := json.Marshal(o.Instances)
 		if err != nil {
 			return "", err
 		}
 		// JSON output was missing new line
 		return string(data) + "\n", nil
 	case "yaml":
-		data, err := yaml.Marshal(*o.Instances)
+		data, err := yaml.Marshal(o.Instances)
 		if err != nil {
 			return "", err
 		}
@@ -190,10 +235,10 @@ func (o *StartOutput) String() (string, error) {
 		buf := new(bytes.Buffer)
 		w := new(tabwriter.Writer)
 		w.Init(buf, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "Name\tInstance ID\tIP Address\tPrivate DNS Name\tHostname\tOS Name\tOS Version\tOS Type")
-		for _, instance := range *o.Instances {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-				*instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName,
+		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name\tHostname\tOS Name\tOS Version\tOS Type")
+		for i, instance := range o.Instances {
+			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+				(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName,
 				*instance.Hostname, *instance.OSName, *instance.OSVersion, *instance.OSType)
 		}
 		err := w.Flush()

@@ -23,31 +23,31 @@ build-windows: export GOARCH=amd64
 build-windows:
 	@GOOS=windows go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o dist/$(NAME)-windows cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o bin/release/$(NAME)-windows cmd/$(NAME)/main.go
 
 build-linux: export GOARCH=amd64
 build-linux: export CGO_ENABLED=0
 build-linux:
 	@GOOS=linux go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o dist/$(NAME)-linux cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o bin/release/$(NAME)-linux cmd/$(NAME)/main.go
 
 build-mac: export GOARCH=amd64
 build-mac: export CGO_ENABLED=0
 build-mac:
 	@GOOS=darwin go build -mod=vendor -v \
 		--ldflags="-w -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o dist/$(NAME)-darwin cmd/$(NAME)/main.go
+		-X main.Revision=$(REVISION)" -o bin/release/$(NAME)-darwin cmd/$(NAME)/main.go
 
 build-docker:
-	@docker build --build-arg VER=$(VERSION) -t $(NAME):$(VERSION) .
+	@docker build --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
 
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
 	@GOOS=windows go build -mod=vendor -v \
 		--ldflags="-w -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/$(NAME)-windows cmd/$(NAME)/main.go
+		-o bin/dev/$(NAME)-windows cmd/$(NAME)/main.go
 
 build-linux-dev: export GOARCH=amd64
 build-linux-dev: export CGO_ENABLED=0
@@ -55,7 +55,7 @@ build-linux-dev:
 	@GOOS=linux go build -mod=vendor -v \
 		--ldflags="-w -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/$(NAME)-linux cmd/$(NAME)/main.go
+		-o bin/dev/$(NAME)-linux cmd/$(NAME)/main.go
 
 build-mac-dev: export GOARCH=amd64
 build-mac-dev: export CGO_ENABLED=0
@@ -63,7 +63,7 @@ build-mac-dev:
 	@GOOS=darwin go build -mod=vendor -v \
 		--ldflags="-w -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/$(NAME)-darwin cmd/$(NAME)/main.go
+		-o bin/dev/$(NAME)-darwin cmd/$(NAME)/main.go
 
 .PHONY: get-version
 get-version:
@@ -82,4 +82,4 @@ test:
 
 .PHONY: drone-sign
 drone-sign:
-	@drone sign $(REPO) --save
+	@drone fmt --save .drone.yml && drone sign $(REPO) --save

@@ -1,59 +1,83 @@
 ---
 kind: pipeline
 name: default
-# Build
+
+platform:
+  os: linux
+  arch: amd64
+
 steps:
-- name: build
+- name: build-binaries
   image: golang:1.12
-  environment:
-    VERSION: DEV
-    REVISION: ${DRONE_COMMIT}
   commands:
-    - make bootstrap
-    - make build build-dev
+  - make build build-dev
+  environment:
+    REVISION: "${DRONE_COMMIT}"
+    VERSION: DEV
   when:
     event:
-      - push
+    - push
+
+- name: build-docker
+  image: plugins/docker
+  settings:
+    build_args:
+    - VER=DEBUG
+    - "REV=\"${DRONE_COMMIT}\""
+    dry_run: true
+    repo: danmx/sigil
+    tags:
+    - debug
+    target: debug
+  when:
+    event:
+    - push
+
 - name: build-release
   image: golang:1.12
-  environment:
-    VERSION: ${DRONE_TAG}
-    REVISION: ${DRONE_COMMIT}
   commands:
-    - make bootstrap
-    - make build
+  - make build
+  environment:
+    REVISION: "${DRONE_COMMIT}"
+    VERSION: "${DRONE_TAG}"
   when:
     event:
-      - tag
-# Docker Hub
+    - tag
+
 - name: docker-release
   image: plugins/docker
   settings:
-    repo: danmx/sigil
-    target: prod
     auto_tag: true
-    username:
-      from_secret: docker_username
+    build_args:
+    - "VER=\"${DRONE_TAG}\""
+    - "REV=\"${DRONE_COMMIT}\""
     password:
       from_secret: docker_password
+    repo: danmx/sigil
+    target: prod
+    username:
+      from_secret: docker_username
   when:
-    event: tag
-# GitHub Release
+    event:
+    - tag
+
 - name: github-release
   image: plugins/github-release
   settings:
     api_key:
       from_secret: github_token
-    files:
-      - dist/*
     checksum:
-      - sha1
-      - sha256
-      - sha512
+    - sha1
+    - sha256
+    - sha512
+    files:
+    - "bin/release/*"
   when:
-    event: tag
+    event:
+    - tag
+
 ---
 kind: signature
-hmac: 37f96f5abde3a97fe6fafd29ae486cf5a1c1587089a7f9640d1119fc83ba782b
+hmac: 901f0710cced99e0a6773ba2ad29e6bfaa825c20cb418a4b01262004c2212daf
 
 ...
