@@ -23,6 +23,7 @@ steps:
   settings:
     build_args:
     - VER=DEBUG
+    - "REV=\"${DRONE_COMMIT}\""
     dry_run: true
     repo: danmx/sigil
     tags:
@@ -49,6 +50,7 @@ steps:
     auto_tag: true
     build_args:
     - "VER=\"${DRONE_TAG}\""
+    - "REV=\"${DRONE_COMMIT}\""
     password:
       from_secret: docker_password
     repo: danmx/sigil
@@ -76,6 +78,6 @@ steps:
 
 ---
 kind: signature
-hmac: c5d1fc4ed9927d6d609372c169a0865745eb335137991718bd07ff3f20763d66
+hmac: 901f0710cced99e0a6773ba2ad29e6bfaa825c20cb418a4b01262004c2212daf
 
 ...

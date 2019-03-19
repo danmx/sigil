@@ -40,7 +40,7 @@ build-mac:
 		-X main.Revision=$(REVISION)" -o bin/release/$(NAME)-darwin cmd/$(NAME)/main.go
 
 build-docker:
-	@docker build --build-arg VER=$(VERSION) -t $(NAME):$(VERSION) .
+	@docker build --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
 
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
