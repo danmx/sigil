@@ -2,7 +2,6 @@
 # Change this and commit to create new release
 override VERSION ?= 0.0.1
 
-SRC = $(wildcard pkg/*) $(wildcard cmd/*)
 REPO = danmx/sigil
 NAME = sigil
 override REVISION ?= $(shell git rev-parse HEAD;)
@@ -86,8 +85,10 @@ clean:
 	@git status --ignored --short | grep '^!! ' | sed 's/!! //' | xargs rm -rf
 
 .PHONY: test
+test: bootstrap
 test:
-	@go test -v -coverpkg=$(SRC) -failfast -timeout=2m
+	@go test -v -mod=vendor -race -covermode=atomic -coverprofile=coverage.txt \
+	-failfast -timeout=2m ./...
 
 .PHONY: tidy
 	@go mod tidy

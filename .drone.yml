@@ -7,6 +7,18 @@ platform:
   arch: amd64
 
 steps:
+- name: test
+  image: golang:1.12
+  commands:
+  - make test
+  - "bash <(curl -s https://codecov.io/bash) -t \"${codecov_token}\""
+  environment:
+    codecov_token:
+      from_secret: codecov_token
+  when:
+    event:
+    - push
+
 - name: build-binaries
   image: golang:1.12
   commands:
@@ -78,6 +90,6 @@ steps:
 
 ---
 kind: signature
-hmac: 2820ac74026f750371398745d9e947db025b3a32dc5e0294bd99c339e281df1c
+hmac: 3a4551797751fad2641163f27344f38eb58dc51ece83419b1d1f4ff109cc4c18
 
 ...
