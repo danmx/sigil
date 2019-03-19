@@ -8,9 +8,15 @@
 
 ## Features
 
-- all-in-one - a single tool to list and connect to the given instance
-- configuration file (YAML) support
+- configuration files (YAML) support
 - lightweight [container image](https://hub.docker.com/r/danmx/sigil) (~16MB)
+
+## External dependencies
+
+- AWS [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
+- target EC2 instance must have AWS SSM Agent installed ([full guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html))
+- target EC2's instance profile must have **AmazonEC2RoleforSSM** managed IAM policy attached
+  or other with similar permissions ([IAM guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#managed-policies))
 
 ## Examples
 
@@ -19,19 +25,19 @@
 Docker:
 
 ```console
-$ docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.0 list --output-format wide
+docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.0 list --output-format wide
 ```
 
 Binary:
 
 ```console
-$ sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
 
 Using with [aws-vault](https://github.com/99designs/aws-vault):
 
 ```console
-$ aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
 
 ### Config file
@@ -52,13 +58,13 @@ output-format: wide             # text/json/yaml/wide
 To build binaries for all platforms (Linux, Mac, Windows) and Docker image run:
 
 ```console
-$ make build
+make build
 ```
 
 To run specific build use:
 
 ```console
-$ make build-[linux|mac|windows]
+make build-[linux|mac|windows]
 ```
 
 Binaries are located in:
@@ -72,7 +78,7 @@ Binaries are located in:
 To only build docker image run:
 
 ```console
-$ make build-docker
+make build-docker
 ```
 
 It'll create a docker image tagged `sigil:{version}` where `{version}` corresponds to sigil's current version.
