@@ -70,11 +70,18 @@ func Start(input *StartInput) error {
 	if len(*input.TagFilter) > 0 {
 		filterList := []*ssm.InstanceInformationStringFilter{}
 		for key, value := range *input.TagFilter {
+			log.WithFields(log.Fields{
+				"key":   key,
+				"value": value,
+			}).Debug("Input TagFilter")
 			filterList = append(filterList, &ssm.InstanceInformationStringFilter{
 				Key:    aws.String("tag:" + key),
-				Values: []*string{&value},
+				Values: []*string{aws.String(value)},
 			})
 		}
+		log.WithFields(log.Fields{
+			"filterList": filterList,
+		}).Debug("Describe Instance Filters")
 		ssmDescribeInstancesInput.Filters = filterList
 	}
 	ssmClient := ssm.New(sess)

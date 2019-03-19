@@ -42,12 +42,20 @@ func stringTagsToMap(value string) (map[string]string, error) {
 	tagsMap := make(map[string]string)
 	keyValuePairs := strings.Split(value, ",")
 	for _, pair := range keyValuePairs {
-		splittedPair := strings.Split(value, "=")
+		splittedPair := strings.Split(pair, "=")
 		if len(splittedPair) != 2 {
+			log.WithFields(log.Fields{
+				"keyValuePairs": keyValuePairs,
+				"pair":          pair,
+				"splittedPair":  splittedPair,
+			}).Error("wrong format of a key-value pair")
 			return nil, fmt.Errorf("wrong format of a key-value pair: %s", pair)
 		}
 		tagsMap[splittedPair[0]] = splittedPair[1]
 	}
+	log.WithFields(log.Fields{
+		"Tags": tagsMap,
+	}).Debug("Tags Map")
 	return tagsMap, nil
 }
 
