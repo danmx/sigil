@@ -11,10 +11,6 @@ steps:
   image: golang:1.12
   commands:
   - make test
-  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_SECRET
-  environment:
-    CODECOV_SECRET:
-      from_secret: codecov_token
   when:
     event:
     - push
@@ -88,8 +84,20 @@ steps:
     event:
     - tag
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    files:
+    - coverage.txt
+    required: true
+    token:
+      from_secret: codecov_token
+  when:
+    event:
+    - push
+
 ---
 kind: signature
-hmac: 2738b27e5646aa1327f95476fdf33d689f6f0ba2805f59fc4126b4451ace5a4c
+hmac: 00ea046cdadf9f30af5725c7406c7ee08345ca2aefd929c1930077bad19122e3
 
 ...
