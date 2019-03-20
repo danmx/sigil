@@ -11,9 +11,9 @@ steps:
   image: golang:1.12
   commands:
   - make test
-  - "bash <(curl -s https://codecov.io/bash) -t \"${codecov_token}\""
+  - bash <(curl -s https://codecov.io/bash) -t $CODECOV_SECRET
   environment:
-    codecov_token:
+    CODECOV_SECRET:
       from_secret: codecov_token
   when:
     event:
@@ -90,6 +90,6 @@ steps:
 
 ---
 kind: signature
-hmac: 3a4551797751fad2641163f27344f38eb58dc51ece83419b1d1f4ff109cc4c18
+hmac: 2738b27e5646aa1327f95476fdf33d689f6f0ba2805f59fc4126b4451ace5a4c
 
 ...
