@@ -11,9 +11,6 @@ steps:
   image: golang:1.12
   commands:
   - make test
-  when:
-    event:
-    - push
 
 - name: build-binaries
   image: golang:1.12
@@ -92,12 +89,9 @@ steps:
     required: true
     token:
       from_secret: codecov_token
-  when:
-    event:
-    - push
 
 ---
 kind: signature
-hmac: 00ea046cdadf9f30af5725c7406c7ee08345ca2aefd929c1930077bad19122e3
+hmac: 1ac943933c88626b82ce68104c94fdeade49129515d2bb3c7cebac8e83f13127
 
 ...
