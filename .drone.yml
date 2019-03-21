@@ -7,6 +7,11 @@ platform:
   arch: amd64
 
 steps:
+- name: test
+  image: golang:1.12
+  commands:
+  - make test
+
 - name: build-binaries
   image: golang:1.12
   commands:
@@ -76,8 +81,17 @@ steps:
     event:
     - tag
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    files:
+    - coverage.txt
+    required: true
+    token:
+      from_secret: codecov_token
+
 ---
 kind: signature
-hmac: 2820ac74026f750371398745d9e947db025b3a32dc5e0294bd99c339e281df1c
+hmac: 1ac943933c88626b82ce68104c94fdeade49129515d2bb3c7cebac8e83f13127
 
 ...

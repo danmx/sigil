@@ -6,58 +6,16 @@ import (
 	"os/exec"
 	"path"
 	"sort"
-	"strings"
 
 	"github.com/danmx/sigil/pkg/list"
 	"github.com/danmx/sigil/pkg/session"
+	"github.com/danmx/sigil/pkg/utils"
 
 	homedir "github.com/mitchellh/go-homedir"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/urfave/cli.v1"
 	"gopkg.in/urfave/cli.v1/altsrc"
 )
-
-type stringMapStringType struct {
-	Map map[string]string
-}
-
-func (m *stringMapStringType) Set(value string) error {
-	tagsMap, err := stringTagsToMap(value)
-	if err != nil {
-		return err
-	}
-	m.Map = tagsMap
-	return nil
-}
-
-func (m *stringMapStringType) String() string {
-	list := make([]string, 0, len(m.Map))
-	for key, value := range m.Map {
-		list = append(list, key+"="+value)
-	}
-	return strings.Join(list, ",")
-}
-
-func stringTagsToMap(value string) (map[string]string, error) {
-	tagsMap := make(map[string]string)
-	keyValuePairs := strings.Split(value, ",")
-	for _, pair := range keyValuePairs {
-		splittedPair := strings.Split(pair, "=")
-		if len(splittedPair) != 2 {
-			log.WithFields(log.Fields{
-				"keyValuePairs": keyValuePairs,
-				"pair":          pair,
-				"splittedPair":  splittedPair,
-			}).Error("wrong format of a key-value pair")
-			return nil, fmt.Errorf("wrong format of a key-value pair: %s", pair)
-		}
-		tagsMap[splittedPair[0]] = splittedPair[1]
-	}
-	log.WithFields(log.Fields{
-		"Tags": tagsMap,
-	}).Debug("Tags Map")
-	return tagsMap, nil
-}
 
 var (
 	// AppName is a name of this tool (added at compile time)
@@ -164,7 +122,7 @@ func main() {
 		cli.GenericFlag{
 			Name:  "tags, t",
 			Usage: "specify tags to filter out results, e.g.: `key1=value1,key2=value2`",
-			Value: &stringMapStringType{},
+			Value: &utils.StringMapStringType{},
 		},
 		cli.BoolFlag{
 			Name:        "interactive, i",
@@ -195,7 +153,7 @@ func main() {
 			Description: `Show list of all EC2 instances with AWS SSM Agent running.`,
 			Flags:       listFlags,
 			Action: func(c *cli.Context) error {
-				tagFilter := c.Generic("tags").(*stringMapStringType)
+				tagFilter := c.Generic("tags").(*utils.StringMapStringType)
 				log.WithFields(log.Fields{
 					"tags":          tagFilter.String(),
 					"output-format": outputFormat,
