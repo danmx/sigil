@@ -87,7 +87,6 @@ make build-docker
 
 It'll create a docker image tagged `sigil:{version}` where `{version}` corresponds to sigil's current version.
 
-
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdanmx%2Fsigil.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdanmx%2Fsigil?ref=badge_large)
