@@ -19,8 +19,8 @@
 
 - AWS [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 - target EC2 instance must have AWS SSM Agent installed ([full guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html))
-- target EC2's instance profile must have **AmazonEC2RoleforSSM** managed IAM policy attached
-  or other with similar permissions ([IAM guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#managed-policies))
+- target EC2's instance profile should have **AmazonEC2RoleforSSM** managed IAM policy attached
+  or other with similar permissions ([Adding Session Manager Permissions to an Existing Instance Profile](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-add-permissions-to-existing-profile.html))
 
 ## Examples
 
