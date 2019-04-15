@@ -64,6 +64,7 @@ func init() {
 	// Find home directory.
 	home, err := homedir.Dir()
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		log.Fatal(err)
 	}
 	workDir = path.Join(home, workDirName)
@@ -71,6 +72,7 @@ func init() {
 	stat, err := os.Stat(workDir)
 	if !(err == nil && stat.IsDir()) {
 		if err = os.MkdirAll(workDir, 0750); err != nil {
+			fmt.Fprintln(os.Stderr, err)
 			log.Fatal(err)
 		}
 	}
@@ -167,6 +169,7 @@ func main() {
 				}
 				err := list.Start(input)
 				if err != nil {
+					log.Error(err)
 					return err
 				}
 				return nil
@@ -180,7 +183,7 @@ func main() {
 				}
 				inputSource, err := altsrc.NewYamlSourceFromFile(path.Join(workDir, cfgFile))
 				if err != nil {
-					log.Error(err)
+					log.Warn(err)
 					return nil
 				}
 
@@ -219,7 +222,7 @@ func main() {
 				}
 				inputSource, err := altsrc.NewYamlSourceFromFile(path.Join(workDir, cfgFile))
 				if err != nil {
-					log.Error(err)
+					log.Warn(err)
 					return nil
 				}
 
@@ -236,6 +239,7 @@ func main() {
 			Action: func(c *cli.Context) error {
 				o, err := exec.LookPath(pluginName)
 				if err != nil {
+					log.Error(err)
 					return err
 				}
 				fmt.Printf("%s is installed successfully in %s\n", pluginName, o)
@@ -252,7 +256,7 @@ func main() {
 		}
 		inputSource, err := altsrc.NewYamlSourceFromFile(path.Join(workDir, cfgFile))
 		if err != nil {
-			log.Error(err)
+			log.Warn(err)
 			return nil
 		}
 
@@ -265,6 +269,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 		log.Fatal(err)
 	}
 }
