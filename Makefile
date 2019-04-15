@@ -16,7 +16,7 @@ bootstrap:
 build: bootstrap build-linux build-mac build-windows
 
 .PHONY: build-dev
-build: bootstrap build-linux-dev build-mac-dev build-windows-dev
+build-dev: bootstrap build-linux-dev build-mac-dev build-windows-dev
 
 .PHONY: release
 release: build release-windows release-linux release-darwin
@@ -33,21 +33,21 @@ release-darwin:
 build-windows: export GOARCH=amd64
 build-windows:
 	@GOOS=windows go build -mod=vendor -v \
-		--ldflags="-w -s -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
+		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
 		-X main.Revision=$(REVISION)" -o bin/release/windows/amd64/$(NAME).exe cmd/$(NAME)/main.go
 
 build-linux: export GOARCH=amd64
 build-linux: export CGO_ENABLED=0
 build-linux:
 	@GOOS=linux go build -mod=vendor -v \
-		--ldflags="-w -s -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
+		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
 		-X main.Revision=$(REVISION)" -o bin/release/linux/amd64/$(NAME) cmd/$(NAME)/main.go
 
 build-mac: export GOARCH=amd64
 build-mac: export CGO_ENABLED=0
 build-mac:
 	@GOOS=darwin go build -mod=vendor -v \
-		--ldflags="-w -s -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
+		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
 		-X main.Revision=$(REVISION)" -o bin/release/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
 
 build-docker:
@@ -56,7 +56,7 @@ build-docker:
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
 	@GOOS=windows go build -mod=vendor -v \
-		--ldflags="-X main.LogLevel=debug -X main.AppName=$(NAME) \
+		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
 		-o bin/dev/windows/amd64/$(NAME).exe cmd/$(NAME)/main.go
 
@@ -64,7 +64,7 @@ build-linux-dev: export GOARCH=amd64
 build-linux-dev: export CGO_ENABLED=0
 build-linux-dev:
 	@GOOS=linux go build -mod=vendor -v \
-		--ldflags="-X main.LogLevel=debug -X main.AppName=$(NAME) \
+		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
 		-o bin/dev/linux/amd64/$(NAME) cmd/$(NAME)/main.go
 
@@ -72,7 +72,7 @@ build-mac-dev: export GOARCH=amd64
 build-mac-dev: export CGO_ENABLED=0
 build-mac-dev:
 	@GOOS=darwin go build -mod=vendor -v \
-		--ldflags="-X main.LogLevel=debug -X main.AppName=$(NAME) \
+		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
 		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
 		-o bin/dev/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
 

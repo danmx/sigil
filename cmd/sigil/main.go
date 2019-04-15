@@ -26,6 +26,8 @@ var (
 	Revision string
 	// LogLevel level is setting loging level (added at compile time)
 	LogLevel string
+	// Debug is turning a debug mode (added at compile time)
+	Debug string
 
 	workDir       string
 	cfgFilePath   string
@@ -41,25 +43,9 @@ var (
 )
 
 func init() {
-	// Set logging
-	log.SetReportCaller(true)
-	switch LogLevel {
-	case "panic":
-		log.SetLevel(log.PanicLevel)
-	case "fatal":
-		log.SetLevel(log.FatalLevel)
-	case "error":
-		log.SetLevel(log.ErrorLevel)
-	case "debug":
-		log.SetLevel(log.DebugLevel)
-	case "info":
-		log.SetLevel(log.InfoLevel)
-	case "warn":
-		log.SetLevel(log.WarnLevel)
-	case "trace":
-		log.SetLevel(log.TraceLevel)
-	default:
-		log.SetLevel(log.PanicLevel)
+	// Set debug
+	if Debug == "true" {
+		log.SetReportCaller(true)
 	}
 	// Find home directory.
 	home, err := homedir.Dir()
@@ -112,6 +98,12 @@ func main() {
 			Usage:       "specify AWS `region`",
 			Destination: &awsRegion,
 		}),
+		cli.StringFlag{
+			Name:        "log-level",
+			Value:       LogLevel,
+			Usage:       "specify log `level`: trace/debug/info/warn/error/fatal/panic",
+			Destination: &LogLevel,
+		},
 	}
 
 	listFlags := []cli.Flag{
@@ -254,6 +246,26 @@ func main() {
 				"IsSet":    c.IsSet(flag.GetName()),
 			}).Debug("Root: Flags")
 		}
+		// Set log level
+		switch LogLevel {
+		case "panic":
+			log.SetLevel(log.PanicLevel)
+		case "fatal":
+			log.SetLevel(log.FatalLevel)
+		case "error":
+			log.SetLevel(log.ErrorLevel)
+		case "debug":
+			log.SetLevel(log.DebugLevel)
+		case "info":
+			log.SetLevel(log.InfoLevel)
+		case "warn":
+			log.SetLevel(log.WarnLevel)
+		case "trace":
+			log.SetLevel(log.TraceLevel)
+		default:
+			log.SetLevel(log.PanicLevel)
+		}
+		// Read config
 		inputSource, err := altsrc.NewYamlSourceFromFile(path.Join(workDir, cfgFile))
 		if err != nil {
 			log.Warn(err)
