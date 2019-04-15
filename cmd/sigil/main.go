@@ -32,6 +32,7 @@ var (
 	workDir       string
 	cfgFilePath   string
 	awsRegion     string
+	awsProfile    string
 	target        string
 	targetType    string
 	outputFormat  string
@@ -98,6 +99,11 @@ func main() {
 			Usage:       "specify AWS `region`",
 			Destination: &awsRegion,
 		}),
+		altsrc.NewStringFlag(cli.StringFlag{
+			Name:        "profile",
+			Usage:       "specify AWS `profile`",
+			Destination: &awsProfile,
+		}),
 		cli.StringFlag{
 			Name:        "log-level",
 			Value:       LogLevel,
@@ -152,10 +158,13 @@ func main() {
 					"tags":          tagFilter.String(),
 					"output-format": outputFormat,
 					"region":        awsRegion,
+					"profile":       awsProfile,
+					"interactive":   startSession,
 				}).Debug("List inputs")
 				input := &list.StartInput{
 					OutputFormat: &outputFormat,
 					AWSRegion:    &awsRegion,
+					AWSProfile:   &awsProfile,
 					TagFilter:    &tagFilter.Map,
 					StartSession: &startSession,
 				}
@@ -190,14 +199,16 @@ func main() {
 			Flags:       sessionFlags,
 			Action: func(c *cli.Context) error {
 				log.WithFields(log.Fields{
-					"target": target,
-					"type":   targetType,
-					"region": awsRegion,
+					"target":  target,
+					"type":    targetType,
+					"region":  awsRegion,
+					"profile": awsProfile,
 				}).Debug("Session inputs")
 				input := &session.StartInput{
 					Target:     &target,
 					TargetType: &targetType,
 					AWSRegion:  &awsRegion,
+					AWSProfile: &awsProfile,
 				}
 				err := session.Start(input)
 				if err != nil {

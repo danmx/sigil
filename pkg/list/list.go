@@ -13,6 +13,7 @@ import (
 	remoteSession "github.com/danmx/sigil/pkg/session"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -25,6 +26,7 @@ type StartInput struct {
 	// Define output format
 	OutputFormat *string
 	AWSRegion    *string
+	AWSProfile   *string
 	TagFilter    *map[string]string
 	StartSession *bool
 }
@@ -63,6 +65,11 @@ func Start(input *StartInput) error {
 	awsConfig := aws.NewConfig()
 	if *input.AWSRegion != "" {
 		awsConfig.Region = input.AWSRegion
+	}
+	if *input.AWSProfile != "" {
+		// Leaving empty filename because of
+		// https://github.com/aws/aws-sdk-go/blob/704cb4634ea23d666b1046363639d44234fb4ed2/aws/credentials/shared_credentials_provider.go#L31
+		awsConfig.Credentials = credentials.NewSharedCredentials("", *input.AWSProfile)
 	}
 	sess := session.Must(session.NewSession(awsConfig))
 	// Get the list of instances
