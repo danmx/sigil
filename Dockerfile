@@ -22,7 +22,7 @@ COPY --from=build /go/src/app/bin/dev/linux/amd64/sigil /sigil
 ENTRYPOINT [ "/sigil" ]
 CMD [ "--help" ]
 
-FROM gcr.io/distroless/base:latest as prod
+FROM gcr.io/distroless/base:debug as prod
 COPY --from=build /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
 COPY --from=build /go/src/app/bin/release/linux/amd64/sigil /sigil
 ENTRYPOINT [ "/sigil" ]
