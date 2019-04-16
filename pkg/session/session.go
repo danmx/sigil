@@ -7,7 +7,6 @@ import (
 	"os/exec"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -24,14 +23,18 @@ type StartInput struct {
 
 // Start will start a session in chosen EC2 instance
 func Start(input *StartInput) error {
+	if *input.AWSProfile != "" {
+		// https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html
+		os.Setenv("AWS_PROFILE", *input.AWSProfile)
+		os.Setenv("AWS_SDK_LOAD_CONFIG", "true")
+		log.WithFields(log.Fields{
+			"AWS_PROFILE":         os.Getenv("AWS_PROFILE"),
+			"AWS_SDK_LOAD_CONFIG": os.Getenv("AWS_SDK_LOAD_CONFIG"),
+		}).Debug("Set Profile env")
+	}
 	awsConfig := aws.NewConfig()
 	if *input.AWSRegion != "" {
 		awsConfig.Region = input.AWSRegion
-	}
-	if *input.AWSProfile != "" {
-		// Leaving empty filename because of
-		// https://github.com/aws/aws-sdk-go/blob/704cb4634ea23d666b1046363639d44234fb4ed2/aws/credentials/shared_credentials_provider.go#L31
-		awsConfig.Credentials = credentials.NewSharedCredentials("", *input.AWSProfile)
 	}
 	sess := session.Must(session.NewSession(awsConfig))
 	var instanceID *string
