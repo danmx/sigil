@@ -204,6 +204,7 @@ func Start(input *StartInput) error {
 			Target:     instance.InstanceID,
 			TargetType: &targetType,
 			AWSRegion:  input.AWSRegion,
+			AWSProfile: input.AWSProfile,
 		}
 		err = remoteSession.Start(remoteInput)
 		if err != nil {
