@@ -17,32 +17,17 @@ import (
 type StartInput struct {
 	Target     *string
 	TargetType *string
-	AWSRegion  *string
-	AWSProfile *string
+	AWSSession *session.Session
 }
 
 // Start will start a session in chosen EC2 instance
 func Start(input *StartInput) error {
-	if *input.AWSProfile != "" {
-		// https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html
-		os.Setenv("AWS_PROFILE", *input.AWSProfile)
-		os.Setenv("AWS_SDK_LOAD_CONFIG", "true")
-		log.WithFields(log.Fields{
-			"AWS_PROFILE":         os.Getenv("AWS_PROFILE"),
-			"AWS_SDK_LOAD_CONFIG": os.Getenv("AWS_SDK_LOAD_CONFIG"),
-		}).Debug("Set Profile env")
-	}
-	awsConfig := aws.NewConfig()
-	if *input.AWSRegion != "" {
-		awsConfig.Region = input.AWSRegion
-	}
-	sess := session.Must(session.NewSession(awsConfig))
 	var instanceID *string
 	switch *input.TargetType {
 	case "instance-id":
 		instanceID = input.Target
 	case "priv-dns":
-		id, err := getIDFromPrivDNS(sess, input.Target)
+		id, err := getIDFromPrivDNS(input.AWSSession, input.Target)
 		if err != nil {
 			return err
 		}
@@ -51,7 +36,7 @@ func Start(input *StartInput) error {
 		}
 		instanceID = &id
 	case "name-tag":
-		id, err := getIDFromName(sess, input.Target)
+		id, err := getIDFromName(input.AWSSession, input.Target)
 		if err != nil {
 			return err
 		}
@@ -63,7 +48,7 @@ func Start(input *StartInput) error {
 		return fmt.Errorf("Unsupported target type: %s", *input.Target)
 	}
 
-	ssmClient := ssm.New(sess)
+	ssmClient := ssm.New(input.AWSSession)
 	startSessionInput := &ssm.StartSessionInput{
 		Target: instanceID,
 	}
@@ -81,7 +66,7 @@ func Start(input *StartInput) error {
 	if err != nil {
 		return err
 	}
-	shell := exec.Command("session-manager-plugin", string(payload), *sess.Config.Region, "StartSession")
+	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession")
 	shell.Stdout = os.Stdout
 	shell.Stdin = os.Stdin
 	shell.Stderr = os.Stderr
