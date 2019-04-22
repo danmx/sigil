@@ -12,6 +12,15 @@ steps:
   commands:
   - make test
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    files:
+    - coverage.txt
+    required: true
+    token:
+      from_secret: codecov_token
+
 - name: build-binaries
   image: golang:1.12
   commands:
@@ -81,17 +90,8 @@ steps:
     event:
     - tag
 
-- name: coverage
-  image: plugins/codecov
-  settings:
-    files:
-    - coverage.txt
-    required: true
-    token:
-      from_secret: codecov_token
-
 ---
 kind: signature
-hmac: 1ac943933c88626b82ce68104c94fdeade49129515d2bb3c7cebac8e83f13127
+hmac: 2e93cae5910c82be657b05fdce30473369235df34102a81f721bf798d743ab68
 
 ...
