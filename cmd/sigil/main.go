@@ -33,6 +33,7 @@ var (
 	cfgFilePath   string
 	awsRegion     string
 	awsProfile    string
+	awsMFAToken   string
 	target        string
 	targetType    string
 	outputFormat  string
@@ -93,6 +94,12 @@ func main() {
 			Value:       workDir,
 			Usage:       "`path` to work directory with config files",
 			Destination: &workDir,
+		},
+		cli.StringFlag{
+			Name:        "mfa, m",
+			Value:       awsMFAToken,
+			Usage:       "specify MFA `token`",
+			Destination: &awsMFAToken,
 		},
 		altsrc.NewStringFlag(cli.StringFlag{
 			Name:        "region",
@@ -163,8 +170,7 @@ func main() {
 				}).Debug("List inputs")
 				input := &list.StartInput{
 					OutputFormat: &outputFormat,
-					AWSRegion:    &awsRegion,
-					AWSProfile:   &awsProfile,
+					AWSSession:   utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
 					TagFilter:    &tagFilter.Map,
 					StartSession: &startSession,
 				}
@@ -207,8 +213,7 @@ func main() {
 				input := &session.StartInput{
 					Target:     &target,
 					TargetType: &targetType,
-					AWSRegion:  &awsRegion,
-					AWSProfile: &awsProfile,
+					AWSSession: utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
 				}
 				err := session.Start(input)
 				if err != nil {

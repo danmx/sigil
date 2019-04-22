@@ -24,8 +24,7 @@ import (
 type StartInput struct {
 	// Define output format
 	OutputFormat *string
-	AWSRegion    *string
-	AWSProfile   *string
+	AWSSession   *session.Session
 	TagFilter    *map[string]string
 	StartSession *bool
 }
@@ -61,20 +60,6 @@ func Start(input *StartInput) error {
 		format:    input.OutputFormat,
 		Instances: instanceList,
 	}
-	if *input.AWSProfile != "" {
-		// https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html
-		os.Setenv("AWS_PROFILE", *input.AWSProfile)
-		os.Setenv("AWS_SDK_LOAD_CONFIG", "true")
-		log.WithFields(log.Fields{
-			"AWS_PROFILE":         os.Getenv("AWS_PROFILE"),
-			"AWS_SDK_LOAD_CONFIG": os.Getenv("AWS_SDK_LOAD_CONFIG"),
-		}).Debug("Set Profile env")
-	}
-	awsConfig := aws.NewConfig()
-	if *input.AWSRegion != "" {
-		awsConfig.Region = input.AWSRegion
-	}
-	sess := session.Must(session.NewSession(awsConfig))
 	// Get the list of instances
 	ssmDescribeInstancesInput := &ssm.DescribeInstanceInformationInput{}
 	if len(*input.TagFilter) > 0 {
@@ -94,7 +79,7 @@ func Start(input *StartInput) error {
 		}).Debug("Describe Instance Filters")
 		ssmDescribeInstancesInput.Filters = filterList
 	}
-	ssmClient := ssm.New(sess)
+	ssmClient := ssm.New(input.AWSSession)
 	err := ssmClient.DescribeInstanceInformationPages(ssmDescribeInstancesInput,
 		func(page *ssm.DescribeInstanceInformationOutput, lastPage bool) bool {
 			for _, instance := range page.InstanceInformationList {
@@ -147,7 +132,7 @@ func Start(input *StartInput) error {
 	}
 	// 0 for PrivateDNSName, 1 for Name Tag
 	describeInstance := make(map[string][2]*string)
-	ec2Client := ec2.New(sess)
+	ec2Client := ec2.New(input.AWSSession)
 	err = ec2Client.DescribeInstancesPages(describeInstancesInput,
 		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
 			for _, reservation := range page.Reservations {
@@ -206,8 +191,7 @@ func Start(input *StartInput) error {
 		remoteInput := &remoteSession.StartInput{
 			Target:     instance.InstanceID,
 			TargetType: &targetType,
-			AWSRegion:  input.AWSRegion,
-			AWSProfile: input.AWSProfile,
+			AWSSession: input.AWSSession,
 		}
 		err = remoteSession.Start(remoteInput)
 		if err != nil {
