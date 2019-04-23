@@ -38,11 +38,14 @@ steps:
     build_args:
     - VER=DEBUG
     - "REV=\"${DRONE_COMMIT}\""
-    dry_run: true
+    password:
+      from_secret: docker_password
     repo: danmx/sigil
     tags:
     - debug
     target: debug
+    username:
+      from_secret: docker_username
   when:
     event:
     - push
@@ -92,6 +95,6 @@ steps:
 
 ---
 kind: signature
-hmac: 2e93cae5910c82be657b05fdce30473369235df34102a81f721bf798d743ab68
+hmac: 0bbac9e46648bb1ef5758c7e4427ad2607c4e9e7e91620ae1e35f43455d474bd
 
 ...
