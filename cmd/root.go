@@ -75,6 +75,7 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	var err error
+	cfg = viper.GetViper()
 	// Log level
 	switch LogLevel {
 	case "error":
@@ -101,7 +102,7 @@ func initConfig() {
 
 	if cfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		cfg.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
@@ -118,23 +119,23 @@ func initConfig() {
 			}
 		}
 		// Search config in home directory with name from cfgFileName (without extension).
-		viper.AddConfigPath(workDir)
-		viper.SetConfigName(cfgFileName)
-		viper.SetConfigType(cfgType)
+		cfg.AddConfigPath(workDir)
+		cfg.SetConfigName(cfgFileName)
+		cfg.SetConfigType(cfgType)
 	}
 
 	// If a config file is found, read it in.
-	if err = viper.ReadInConfig(); err == nil {
+	if err = cfg.ReadInConfig(); err == nil {
 		log.WithFields(log.Fields{
-			"config": viper.ConfigFileUsed(),
+			"config": cfg.ConfigFileUsed(),
 		}).Debug("Using config file")
-	}
-	cfg, err = safeSub(cfgProfile)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		log.WithFields(log.Fields{
-			"config-profile": cfgProfile,
-		}).Fatal(err)
+		cfg, err = safeSub(cfg, cfgProfile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			log.WithFields(log.Fields{
+				"config-profile": cfgProfile,
+			}).Fatal(err)
+		}
 	}
 
 	// Config bindings
@@ -147,10 +148,10 @@ func initConfig() {
 }
 
 // because of https://github.com/spf13/viper/issues/616
-func safeSub(profile string) (*viper.Viper, error) {
-	cfg := viper.Sub(profile)
-	if cfg == nil {
+func safeSub(v *viper.Viper, profile string) (*viper.Viper, error) {
+	subConfig := v.Sub(profile)
+	if subConfig == nil {
 		return nil, fmt.Errorf("Config profile doesn't exist. Profile: %s", profile)
 	}
-	return cfg, nil
+	return subConfig, nil
 }
