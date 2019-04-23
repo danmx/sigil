@@ -60,6 +60,7 @@ steps:
   when:
     event:
     - push
+    - tag
 
 - name: docker-release
   image: plugins/docker
@@ -95,6 +96,6 @@ steps:
 
 ---
 kind: signature
-hmac: 78786e3e7b6e37b35598afa6c7ca7d7844454b601c902f6a74f9f19fe4b98b6d
+hmac: e77859c9035f532a67320f0b17dace5fc3766e785dd750fedfe31f64b0f8a4a3
 
 ...
