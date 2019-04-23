@@ -59,7 +59,7 @@ steps:
     VERSION: "${DRONE_TAG}"
   when:
     event:
-    - tag
+    - push
 
 - name: docker-release
   image: plugins/docker
@@ -95,6 +95,6 @@ steps:
 
 ---
 kind: signature
-hmac: 0bbac9e46648bb1ef5758c7e4427ad2607c4e9e7e91620ae1e35f43455d474bd
+hmac: 78786e3e7b6e37b35598afa6c7ca7d7844454b601c902f6a74f9f19fe4b98b6d
 
 ...
