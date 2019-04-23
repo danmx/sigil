@@ -1,7 +1,8 @@
 # sigil
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdanmx%2Fsigil.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdanmx%2Fsigil?ref=badge_shield)
 [![Build Status](https://cloud.drone.io/api/badges/danmx/sigil/status.svg)](https://cloud.drone.io/danmx/sigil)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b4725f567cbf46a493a5436ee698b571)](https://www.codacy.com/app/danmx/sigil?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=danmx/sigil&amp;utm_campaign=Badge_Grade) 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b4725f567cbf46a493a5436ee698b571)](https://www.codacy.com/app/danmx/sigil?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=danmx/sigil&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/danmx/sigil/branch/master/graph/badge.svg)](https://codecov.io/gh/danmx/sigil)
 
 ## Description
@@ -12,8 +13,9 @@
 
 ## Features
 
-- configuration files (YAML) support
-- lightweight [container image](https://hub.docker.com/r/danmx/sigil) (~16MB)
+- configuration files support (TOML, YAML, JSON, etc.)
+- support for different configuration profiles
+- lightweight [container image](https://hub.docker.com/r/danmx/sigil) (~22MB)
 
 ## External dependencies
 
@@ -22,6 +24,10 @@
 - target EC2's instance profile should have **AmazonEC2RoleforSSM** managed IAM policy attached
   or other with similar permissions ([Adding Session Manager Permissions to an Existing Instance Profile](https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-add-permissions-to-existing-profile.html))
 
+## Documentation
+
+Documentation can be found [here](doc/sigil.md).
+
 ## Examples
 
 ### Usage
@@ -29,7 +35,7 @@
 Docker:
 
 ```console
-docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.0 list --output-format wide
+docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.1 list --output-format wide
 ```
 
 Binary:
@@ -46,13 +52,15 @@ aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --ta
 
 ### Config file
 
-By default configuration files are stored in `$HOME/.sigil/` and the default config file is `config.yaml`.
+By default configuration file is located in `$HOME/.sigil/config.toml`.
 
-```yaml
-region: eu-west-1
-target: worker-Node
-type: name-tag                  # instance-id/priv-dns/name-tag
-output-format: wide             # text/json/yaml/wide
+```toml
+[default]
+  type = "instance-id"      # instance-id/priv-dns/name-tag
+  output-format = "wide"    # text/json/yaml/wide
+  region = "eu-west-1"
+  profile = "dev"
+  interactive = true
 ```
 
 ## Build

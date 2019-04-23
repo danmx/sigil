@@ -47,6 +47,13 @@ func Start(input *StartInput) error {
 	default:
 		return fmt.Errorf("Unsupported target type: %s", *input.Target)
 	}
+	if *input.Target == "" {
+		err := fmt.Errorf("Specify the target")
+		log.WithFields(log.Fields{
+			"target": *input.Target,
+		}).Error(err)
+		return err
+	}
 
 	ssmClient := ssm.New(input.AWSSession)
 	startSessionInput := &ssm.StartSessionInput{

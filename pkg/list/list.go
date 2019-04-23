@@ -173,7 +173,7 @@ func Start(input *StartInput) error {
 	fmt.Print(outString)
 	if *input.StartSession {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("Choose an instance to connect to [1 - %d]: ", len(output.Instances))
+		fmt.Fprintf(os.Stderr, "Choose an instance to connect to [1 - %d]: ", len(output.Instances))
 		textInput, err := reader.ReadString('\n')
 		if err != nil {
 			return err

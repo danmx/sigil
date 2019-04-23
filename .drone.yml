@@ -12,6 +12,15 @@ steps:
   commands:
   - make test
 
+- name: coverage
+  image: plugins/codecov
+  settings:
+    files:
+    - coverage.txt
+    required: true
+    token:
+      from_secret: codecov_token
+
 - name: build-binaries
   image: golang:1.12
   commands:
@@ -29,11 +38,14 @@ steps:
     build_args:
     - VER=DEBUG
     - "REV=\"${DRONE_COMMIT}\""
-    dry_run: true
+    password:
+      from_secret: docker_password
     repo: danmx/sigil
     tags:
     - debug
     target: debug
+    username:
+      from_secret: docker_username
   when:
     event:
     - push
@@ -81,17 +93,8 @@ steps:
     event:
     - tag
 
-- name: coverage
-  image: plugins/codecov
-  settings:
-    files:
-    - coverage.txt
-    required: true
-    token:
-      from_secret: codecov_token
-
 ---
 kind: signature
-hmac: 1ac943933c88626b82ce68104c94fdeade49129515d2bb3c7cebac8e83f13127
+hmac: 0bbac9e46648bb1ef5758c7e4427ad2607c4e9e7e91620ae1e35f43455d474bd
 
 ...
