@@ -22,7 +22,7 @@ build-dev: bootstrap build-linux-dev build-mac-dev build-windows-dev
 release: build release-windows release-linux release-darwin
 
 release-windows:
-	@mkdir -p dist && zip -j dist/$(NAME)_windows-amd64.zip bin/release/windows/amd64/$(NAME).exe
+	@mkdir -p dist && tar -czvf dist/$(NAME)_windows-amd64.tar.gz -C bin/release/windows/amd64/ $(NAME).exe
 
 release-linux:
 	@mkdir -p dist && tar -czvf dist/$(NAME)_linux-amd64.tar.gz -C bin/release/linux/amd64/ $(NAME)
