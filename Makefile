@@ -1,9 +1,9 @@
 
 # Change this and commit to create new release
-override VERSION ?= 0.0.1
-
-REPO = danmx/sigil
+override VERSION ?= 0.1.0
 NAME = sigil
+REPO = danmx/$(NAME)
+MODULE = github.com/$(REPO)
 override REVISION ?= $(shell git rev-parse HEAD;)
 
 export GO111MODULE = on
@@ -22,7 +22,7 @@ build-dev: bootstrap build-linux-dev build-mac-dev build-windows-dev
 release: build release-windows release-linux release-darwin
 
 release-windows:
-	@mkdir -p dist && tar -czvf dist/$(NAME)_windows-amd64.tar.gz -C bin/release/windows/amd64/ $(NAME).exe
+	@mkdir -p dist && zip -j dist/$(NAME)_windows-amd64.zip bin/release/windows/amd64/$(NAME).exe
 
 release-linux:
 	@mkdir -p dist && tar -czvf dist/$(NAME)_linux-amd64.tar.gz -C bin/release/linux/amd64/ $(NAME)
@@ -33,22 +33,34 @@ release-darwin:
 build-windows: export GOARCH=amd64
 build-windows:
 	@GOOS=windows go build -mod=vendor -v \
-		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/release/windows/amd64/$(NAME).exe cmd/$(NAME)/main.go
+		--ldflags="-w -s \
+			-X $(MODULE)/cmd.LogLevel=panic \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/release/windows/amd64/$(NAME).exe main.go
 
 build-linux: export GOARCH=amd64
 build-linux: export CGO_ENABLED=0
 build-linux:
 	@GOOS=linux go build -mod=vendor -v \
-		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/release/linux/amd64/$(NAME) cmd/$(NAME)/main.go
+		--ldflags="-w -s \
+			-X $(MODULE)/cmd.LogLevel=panic \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/release/linux/amd64/$(NAME) main.go
 
 build-mac: export GOARCH=amd64
 build-mac: export CGO_ENABLED=0
 build-mac:
 	@GOOS=darwin go build -mod=vendor -v \
-		--ldflags="-w -s -X main.LogLevel=panic -X main.AppName=$(NAME) -X main.Version=$(VERSION) \
-		-X main.Revision=$(REVISION)" -o bin/release/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
+		--ldflags="-w -s \
+			-X $(MODULE)/cmd.LogLevel=panic \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/release/darwin/amd64/$(NAME) main.go
 
 build-docker:
 	@docker build --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
@@ -56,25 +68,34 @@ build-docker:
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
 	@GOOS=windows go build -mod=vendor -v \
-		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
-		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/dev/windows/amd64/$(NAME).exe cmd/$(NAME)/main.go
+		--ldflags="-X $(MODULE)/cmd.Debug=true \
+			-X $(MODULE)/cmd.LogLevel=debug \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/dev/windows/amd64/$(NAME).exe main.go
 
 build-linux-dev: export GOARCH=amd64
 build-linux-dev: export CGO_ENABLED=0
 build-linux-dev:
 	@GOOS=linux go build -mod=vendor -v \
-		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
-		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/dev/linux/amd64/$(NAME) cmd/$(NAME)/main.go
+		--ldflags="-X $(MODULE)/cmd.Debug=true \
+			-X $(MODULE)/cmd.LogLevel=debug \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/dev/linux/amd64/$(NAME) main.go
 
 build-mac-dev: export GOARCH=amd64
 build-mac-dev: export CGO_ENABLED=0
 build-mac-dev:
 	@GOOS=darwin go build -mod=vendor -v \
-		--ldflags="-X main.Debug=true -X main.LogLevel=debug -X main.AppName=$(NAME) \
-		-X main.Version=$(VERSION) -X main.Revision=$(REVISION)" \
-		-o bin/dev/darwin/amd64/$(NAME) cmd/$(NAME)/main.go
+		--ldflags="-X $(MODULE)/cmd.Debug=true \
+			-X $(MODULE)/cmd.LogLevel=debug \
+			-X $(MODULE)/cmd.AppName=$(NAME) \
+			-X $(MODULE)/cmd.Version=$(VERSION) \
+			-X $(MODULE)/cmd.Revision=$(REVISION)" \
+		-o bin/dev/darwin/amd64/$(NAME) main.go
 
 .PHONY: get-version
 get-version:
