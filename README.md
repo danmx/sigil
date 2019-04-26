@@ -28,25 +28,46 @@
 
 Documentation can be found [here](doc/sigil.md).
 
+## Installation
+
+### MacOS
+
+```shell
+brew tap danmx/sigil
+brew install sigil
+```
+
+or
+
+```shell
+brew install danmx/sigil/sigil
+```
+
+### Docker
+
+```shell
+docker pull danmx/sigil:0.1
+```
+
 ## Examples
 
 ### Usage
 
 Docker:
 
-```console
+```shell
 docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.1 list --output-format wide
 ```
 
 Binary:
 
-```console
+```shell
 sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
 
 Using with [aws-vault](https://github.com/99designs/aws-vault):
 
-```console
+```shell
 aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
 
@@ -69,13 +90,13 @@ By default configuration file is located in `$HOME/.sigil/config.toml`.
 
 To build binaries for all platforms (Linux, Mac, Windows) and Docker image run:
 
-```console
+```shell
 make build
 ```
 
 To run specific build use:
 
-```console
+```shell
 make build-[linux|mac|windows]
 ```
 
@@ -85,11 +106,11 @@ Binaries are located in:
 - Mac: `bin/release/darwin/amd64/sigil`
 - Windows: `bin/release/darwin/amd64/sigil.exe`
 
-### Docker
+### Container image
 
 To only build docker image run:
 
-```console
+```shell
 make build-docker
 ```
 
