@@ -25,8 +25,20 @@ type StartInput struct {
 	// Define output format
 	OutputFormat *string
 	AWSSession   *session.Session
-	TagFilter    *map[string]string
+	Filters      *string
 	StartSession *bool
+}
+
+// Filters contain all types of filters used to limit results
+type Filters struct {
+	InstanceIDs []*string    `json:"instance_ids"`
+	Tags        []*TagValues `json:"tags"`
+}
+
+// TagValues contain list of values for specific key
+type TagValues struct {
+	Key    string    `json:"key"`
+	Values []*string `json:"values"`
 }
 
 // StartOutput struct will contain all output data
@@ -62,16 +74,32 @@ func Start(input *StartInput) error {
 	}
 	// Get the list of instances
 	ssmDescribeInstancesInput := &ssm.DescribeInstanceInformationInput{}
-	if len(*input.TagFilter) > 0 {
+	if *input.Filters != "" {
+		filters := Filters{}
+		log.WithField("filetrs", *input.Filters).Debug("Filters")
+		err := json.Unmarshal([]byte(*input.Filters), &filters)
+		if err != nil {
+			return err
+		}
 		filterList := []*ssm.InstanceInformationStringFilter{}
-		for key, value := range *input.TagFilter {
+		for _, tag := range filters.Tags {
 			log.WithFields(log.Fields{
-				"key":   key,
-				"value": value,
-			}).Debug("Input TagFilter")
+				"key":    tag.Key,
+				"values": tag.Values,
+			}).Debug("Tags Filter")
 			filterList = append(filterList, &ssm.InstanceInformationStringFilter{
-				Key:    aws.String("tag:" + key),
-				Values: []*string{aws.String(value)},
+				Key:    aws.String("tag:" + tag.Key),
+				Values: tag.Values,
+			})
+		}
+		if len(filters.InstanceIDs) > 0 {
+			log.WithFields(log.Fields{
+				"IDs": filters.InstanceIDs,
+			}).Debug("Instance IDs Filter")
+			key := "InstanceIds"
+			filterList = append(filterList, &ssm.InstanceInformationStringFilter{
+				Key:    &key,
+				Values: filters.InstanceIDs,
 			})
 		}
 		log.WithFields(log.Fields{
