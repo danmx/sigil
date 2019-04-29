@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
+
+	"github.com/danmx/sigil/pkg/utils"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -77,6 +80,8 @@ func Start(input *StartInput) error {
 	shell.Stdout = os.Stdout
 	shell.Stdin = os.Stdin
 	shell.Stderr = os.Stderr
+	utils.IgnoreUserEnteredSignals()
+	defer signal.Reset()
 	err = shell.Run()
 	if err != nil {
 		return err
