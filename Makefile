@@ -32,7 +32,7 @@ release-darwin:
 
 build-windows: export GOARCH=amd64
 build-windows:
-	@GOOS=windows go build -mod=vendor -v -tags \
+	@GOOS=windows go build -mod=vendor -v \
 		--ldflags="-w -s \
 			-X $(MODULE)/cmd.LogLevel=panic \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
@@ -43,7 +43,7 @@ build-windows:
 build-linux: export GOARCH=amd64
 build-linux: export CGO_ENABLED=0
 build-linux:
-	@GOOS=linux go build -mod=vendor -v -tags \
+	@GOOS=linux go build -mod=vendor -v \
 		--ldflags="-w -s \
 			-X $(MODULE)/cmd.LogLevel=panic \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
@@ -54,7 +54,7 @@ build-linux:
 build-mac: export GOARCH=amd64
 build-mac: export CGO_ENABLED=0
 build-mac:
-	@GOOS=darwin go build -mod=vendor -v -tags \
+	@GOOS=darwin go build -mod=vendor -v \
 		--ldflags="-w -s \
 			-X $(MODULE)/cmd.LogLevel=panic \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
@@ -67,7 +67,7 @@ build-docker:
 
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
-	@GOOS=windows go build -mod=vendor -v -tags \
+	@GOOS=windows go build -mod=vendor -v \
 		--ldflags="-X $(MODULE)/cmd.Debug=true \
 			-X $(MODULE)/cmd.LogLevel=debug \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
@@ -78,7 +78,7 @@ build-windows-dev:
 build-linux-dev: export GOARCH=amd64
 build-linux-dev: export CGO_ENABLED=0
 build-linux-dev:
-	@GOOS=linux go build -mod=vendor -v -tags \
+	@GOOS=linux go build -mod=vendor -v \
 		--ldflags="-X $(MODULE)/cmd.Debug=true \
 			-X $(MODULE)/cmd.LogLevel=debug \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
@@ -89,7 +89,7 @@ build-linux-dev:
 build-mac-dev: export GOARCH=amd64
 build-mac-dev: export CGO_ENABLED=0
 build-mac-dev:
-	@GOOS=darwin go build -mod=vendor -v -tags \
+	@GOOS=darwin go build -mod=vendor -v \
 		--ldflags="-X $(MODULE)/cmd.Debug=true \
 			-X $(MODULE)/cmd.LogLevel=debug \
 			-X $(MODULE)/cmd.AppName=$(NAME) \
