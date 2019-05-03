@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestString(t *testing.T) {
+func TestInstancesString(t *testing.T) {
 	resultText := `Index  Name       Instance ID          IP Address  Private DNS Name
 1      testNode1  i-xxxxxxxxxxxxxxxx1  10.10.10.1  test1.local
 2      testNode2  i-xxxxxxxxxxxxxxxx2  10.10.10.2  test2.local
@@ -35,6 +35,8 @@ func TestString(t *testing.T) {
   os_version: "18.04"
 `
 
+	outputType := "instances"
+
 	output := &StartOutput{
 		Instances: []*Instance{
 			&Instance{
@@ -58,6 +60,7 @@ func TestString(t *testing.T) {
 				OSVersion:      stringPointer("18.04"),
 			},
 		},
+		outputType: &outputType,
 	}
 
 	assert := assert.New(t)
@@ -82,6 +85,62 @@ func TestString(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(resultYAML, outString)
 }
+
+func TestSessionsString(t *testing.T) {
+	resultText := `Index  Session ID       Target               Start Date
+1      test-1234567890  i-xxxxxxxxxxxxxxxx1  2019-05-03T10:08:44Z
+`
+	resultWide := `Index  Session ID       Target               Start Date            Owner                                           Status
+1      test-1234567890  i-xxxxxxxxxxxxxxxx1  2019-05-03T10:08:44Z  arn:aws:sts::0123456789:assumed-role/test/test  Connected
+`
+	resultJSON := `[{"session_id":"test-1234567890","target_instance":"i-xxxxxxxxxxxxxxxx1","status":"Connected","start_date":"2019-05-03T10:08:44Z","owner":"arn:aws:sts::0123456789:assumed-role/test/test"}]
+`
+	resultYAML := `- session_id: test-1234567890
+  target_instance: i-xxxxxxxxxxxxxxxx1
+  status: Connected
+  start_date: "2019-05-03T10:08:44Z"
+  owner: arn:aws:sts::0123456789:assumed-role/test/test
+`
+
+	outputType := "sessions"
+
+	output := &StartOutput{
+		Sessions: []*Session{
+			&Session{
+				SessionID: stringPointer("test-1234567890"),
+				Target:    stringPointer("i-xxxxxxxxxxxxxxxx1"),
+				Status:    stringPointer("Connected"),
+				StartDate: stringPointer("2019-05-03T10:08:44Z"),
+				Owner:     stringPointer("arn:aws:sts::0123456789:assumed-role/test/test"),
+			},
+		},
+		outputType: &outputType,
+	}
+
+	assert := assert.New(t)
+
+	output.format = stringPointer("wrong")
+	_, err := output.String()
+	assert.NotNil(err)
+	output.format = stringPointer("text")
+	outString, err := output.String()
+	assert.Nil(err)
+	assert.Equal(resultText, outString)
+	output.format = stringPointer("wide")
+	outString, err = output.String()
+	assert.Nil(err)
+	assert.Equal(resultWide, outString)
+	output.format = stringPointer("json")
+	outString, err = output.String()
+	assert.Nil(err)
+	assert.Equal(resultJSON, outString)
+	output.format = stringPointer("yaml")
+	outString, err = output.String()
+	assert.Nil(err)
+	assert.Equal(resultYAML, outString)
+}
+
+// Helper functions
 
 func stringPointer(v string) *string {
 	return &v

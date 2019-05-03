@@ -13,8 +13,8 @@ import (
 // sessionCmd represents the session command
 var sessionCmd = &cobra.Command{
 	Use:     "session",
-	Short:   "Start a session",
-	Long:    `Start a session in chosen EC2 instance.`,
+	Short:   "Start or resume a session",
+	Long:    `Start a new session in chosen EC2 instance.`,
 	Aliases: []string{"sess", "s"},
 	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
 	PreRun: func(cmd *cobra.Command, args []string) {
@@ -56,5 +56,5 @@ func init() {
 	rootCmd.AddCommand(sessionCmd)
 
 	sessionCmd.Flags().String("target", "", "specify the target depedning on the type")
-	sessionCmd.Flags().String("type", "instance-id", "specify target type: instance-id/priv-dns/name-tag")
+	sessionCmd.Flags().String("type", "instance-id", "specify target type: instance-id/private-dns/name-tag")
 }

@@ -25,15 +25,34 @@ type StartInput struct {
 	// Define output format
 	OutputFormat *string
 	AWSSession   *session.Session
-	TagFilter    *map[string]string
-	StartSession *bool
+	Filters      *string
+	Interactive  *bool
+	Type         *string
+}
+
+// Filters contain all types of filters used to limit results
+type Filters struct {
+	InstanceIDs []*string    `json:"instance_ids"`
+	Tags        []*TagValues `json:"tags"`
+	After       *string      `json:"after"`
+	Before      *string      `json:"before"`
+	Target      *string      `json:"target"`
+	Owner       *string      `json:"owner"`
+}
+
+// TagValues contain list of values for specific key
+type TagValues struct {
+	Key    string    `json:"key"`
+	Values []*string `json:"values"`
 }
 
 // StartOutput struct will contain all output data
 type StartOutput struct {
 	Instances []*Instance
+	Sessions  []*Session
 	// Define output format
-	format *string
+	format     *string
+	outputType *string
 }
 
 // Instance contain information about the EC2 instance
@@ -48,30 +67,190 @@ type Instance struct {
 	OSVersion      *string `json:"os_version" yaml:"os_version"`
 }
 
+// Session contains information about the SSM sessions
+type Session struct {
+	SessionID *string `json:"session_id" yaml:"session_id"`
+	Target    *string `json:"target_instance" yaml:"target_instance"`
+	Status    *string `json:"status" yaml:"status"`
+	StartDate *string `json:"start_date" yaml:"start_date"`
+	Owner     *string `json:"owner" yaml:"owner"`
+}
+
 const (
-	instanceCapacity      = 10
-	instanceCapMultiplier = 2
+	capacity      = 10
+	capMultiplier = 2
 )
 
 // Start will output a ist of all available EC2 instances
 func Start(input *StartInput) error {
-	instanceList := make([]*Instance, 0, instanceCapacity)
+	switch *input.Type {
+	case "instances":
+		err := input.listInstances()
+		if err != nil {
+			return err
+		}
+	case "sessions":
+		err := input.listSessions()
+		if err != nil {
+			return err
+		}
+	default:
+		err := fmt.Errorf("Unsupported list type: %s", *input.Type)
+		log.WithField("type", *input.Type).Error(err)
+		return err
+	}
+	return nil
+}
+
+// String will stringify StartOutput
+func (o *StartOutput) String() (string, error) {
+	switch *o.format {
+	case "text":
+		output := ""
+		buf := bytes.NewBufferString(output)
+		w := new(tabwriter.Writer)
+		w.Init(buf, 0, 0, 2, ' ', 0)
+		switch *o.outputType {
+		case "instances":
+			fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name")
+			for i, instance := range o.Instances {
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n",
+					(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName)
+			}
+			err := w.Flush()
+			if err != nil {
+				return "", err
+			}
+		case "sessions":
+			fmt.Fprintln(w, "Index\tSession ID\tTarget\tStart Date")
+			for i, session := range o.Sessions {
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\n",
+					(i + 1), *session.SessionID, *session.Target, *session.StartDate)
+			}
+			err := w.Flush()
+			if err != nil {
+				return "", err
+			}
+		default:
+			err := fmt.Errorf("Unsupported type: %s", *o.outputType)
+			log.WithField("outputType", *o.outputType).Error(err)
+			return "", err
+		}
+		return buf.String(), nil
+	case "json":
+		var data []byte
+		var err error
+		switch *o.outputType {
+		case "instances":
+			data, err = json.Marshal(o.Instances)
+			if err != nil {
+				return "", err
+			}
+		case "sessions":
+			data, err = json.Marshal(o.Sessions)
+			if err != nil {
+				return "", err
+			}
+		default:
+			err = fmt.Errorf("Unsupported type: %s", *o.outputType)
+			log.WithField("outputType", *o.outputType).Error(err)
+			return "", err
+		}
+		// JSON output was missing new line
+		return string(data) + "\n", nil
+	case "yaml":
+		var data []byte
+		var err error
+		switch *o.outputType {
+		case "instances":
+			data, err = yaml.Marshal(o.Instances)
+			if err != nil {
+				return "", err
+			}
+		case "sessions":
+			data, err = yaml.Marshal(o.Sessions)
+			if err != nil {
+				return "", err
+			}
+		default:
+			err = fmt.Errorf("Unsupported type: %s", *o.outputType)
+			log.WithField("outputType", *o.outputType).Error(err)
+			return "", err
+		}
+		return string(data), nil
+	case "wide":
+		buf := new(bytes.Buffer)
+		w := new(tabwriter.Writer)
+		w.Init(buf, 0, 0, 2, ' ', 0)
+		switch *o.outputType {
+		case "instances":
+			fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name\tHostname\tOS Name\tOS Version\tOS Type")
+			for i, instance := range o.Instances {
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+					(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName,
+					*instance.Hostname, *instance.OSName, *instance.OSVersion, *instance.OSType)
+			}
+			err := w.Flush()
+			if err != nil {
+				return "", err
+			}
+		case "sessions":
+			fmt.Fprintln(w, "Index\tSession ID\tTarget\tStart Date\tOwner\tStatus")
+			for i, session := range o.Sessions {
+				fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\n",
+					(i + 1), *session.SessionID, *session.Target, *session.StartDate,
+					*session.Owner, *session.Status)
+			}
+			err := w.Flush()
+			if err != nil {
+				return "", err
+			}
+		default:
+			err := fmt.Errorf("Unsupported type: %s", *o.outputType)
+			log.WithField("outputType", *o.outputType).Error(err)
+			return "", err
+		}
+		return buf.String(), nil
+	default:
+		return "", fmt.Errorf("Unsupported output format: %s", *o.format)
+	}
+}
+
+func (input *StartInput) listInstances() error {
+	instanceList := make([]*Instance, 0, capacity)
 	output := &StartOutput{
-		format:    input.OutputFormat,
-		Instances: instanceList,
+		format:     input.OutputFormat,
+		outputType: input.Type,
+		Instances:  instanceList,
 	}
 	// Get the list of instances
 	ssmDescribeInstancesInput := &ssm.DescribeInstanceInformationInput{}
-	if len(*input.TagFilter) > 0 {
+	if *input.Filters != "" {
+		filters := Filters{}
+		log.WithField("filetrs", *input.Filters).Debug("Filters")
+		err := json.Unmarshal([]byte(*input.Filters), &filters)
+		if err != nil {
+			return err
+		}
 		filterList := []*ssm.InstanceInformationStringFilter{}
-		for key, value := range *input.TagFilter {
+		for _, tag := range filters.Tags {
 			log.WithFields(log.Fields{
-				"key":   key,
-				"value": value,
-			}).Debug("Input TagFilter")
+				"key":    tag.Key,
+				"values": tag.Values,
+			}).Debug("Tags Filter")
 			filterList = append(filterList, &ssm.InstanceInformationStringFilter{
-				Key:    aws.String("tag:" + key),
-				Values: []*string{aws.String(value)},
+				Key:    aws.String("tag:" + tag.Key),
+				Values: tag.Values,
+			})
+		}
+		if len(filters.InstanceIDs) > 0 {
+			log.WithFields(log.Fields{
+				"IDs": filters.InstanceIDs,
+			}).Debug("Instance IDs Filter")
+			key := "InstanceIds"
+			filterList = append(filterList, &ssm.InstanceInformationStringFilter{
+				Key:    &key,
+				Values: filters.InstanceIDs,
 			})
 		}
 		log.WithFields(log.Fields{
@@ -84,7 +263,7 @@ func Start(input *StartInput) error {
 		func(page *ssm.DescribeInstanceInformationOutput, lastPage bool) bool {
 			for _, instance := range page.InstanceInformationList {
 				if len(output.Instances)+1 > cap(output.Instances) {
-					newSlice := make([]*Instance, len(output.Instances), (cap(output.Instances))*instanceCapMultiplier)
+					newSlice := make([]*Instance, len(output.Instances), (cap(output.Instances))*capMultiplier)
 					n := copy(newSlice, output.Instances)
 					log.WithField("no. copied elements", n).Debug("Expand Instances slice")
 					output.Instances = newSlice
@@ -171,7 +350,7 @@ func Start(input *StartInput) error {
 		return err
 	}
 	fmt.Print(outString)
-	if *input.StartSession {
+	if *input.Interactive && len(output.Instances) > 0 {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Fprintf(os.Stderr, "Choose an instance to connect to [1 - %d]: ", len(output.Instances))
 		textInput, err := reader.ReadString('\n')
@@ -197,58 +376,106 @@ func Start(input *StartInput) error {
 		if err != nil {
 			return err
 		}
-
 	}
 	return nil
 }
 
-// String will stringify StartOutput
-func (o *StartOutput) String() (string, error) {
-	switch *o.format {
-	case "text":
-		output := ""
-		buf := bytes.NewBufferString(output)
-		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name")
-		for i, instance := range o.Instances {
-			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n",
-				(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName)
-		}
-		err := w.Flush()
-		if err != nil {
-			return "", err
-		}
-		return buf.String(), nil
-	case "json":
-		data, err := json.Marshal(o.Instances)
-		if err != nil {
-			return "", err
-		}
-		// JSON output was missing new line
-		return string(data) + "\n", nil
-	case "yaml":
-		data, err := yaml.Marshal(o.Instances)
-		if err != nil {
-			return "", err
-		}
-		return string(data), nil
-	case "wide":
-		buf := new(bytes.Buffer)
-		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name\tHostname\tOS Name\tOS Version\tOS Type")
-		for i, instance := range o.Instances {
-			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-				(i + 1), *instance.Name, *instance.InstanceID, *instance.IPAddress, *instance.PrivateDNSName,
-				*instance.Hostname, *instance.OSName, *instance.OSVersion, *instance.OSType)
-		}
-		err := w.Flush()
-		if err != nil {
-			return "", err
-		}
-		return buf.String(), nil
-	default:
-		return "", fmt.Errorf("Unsupported output format: %s", *o.format)
+func (input *StartInput) listSessions() error {
+	sessionList := make([]*Session, 0, capacity)
+	output := &StartOutput{
+		format:     input.OutputFormat,
+		outputType: input.Type,
+		Sessions:   sessionList,
 	}
+	// By default show only connected sessions
+	ssmDescribeSessionsInput := &ssm.DescribeSessionsInput{
+		State: aws.String("Active"),
+	}
+	// Parse filters
+	if *input.Filters != "" {
+		data := Filters{}
+		filters := []*ssm.SessionFilter{}
+		err := json.Unmarshal([]byte(*input.Filters), &data)
+		if err != nil {
+			return err
+		}
+		if data.After != nil {
+			filters = append(filters, &ssm.SessionFilter{
+				Key:   aws.String("InvokedAfter"),
+				Value: data.After,
+			})
+		}
+		if data.Before != nil {
+			filters = append(filters, &ssm.SessionFilter{
+				Key:   aws.String("InvokedBefore"),
+				Value: data.Before,
+			})
+		}
+		if data.Target != nil {
+			filters = append(filters, &ssm.SessionFilter{
+				Key:   aws.String("Target"),
+				Value: data.Target,
+			})
+		}
+		if data.Owner != nil {
+			filters = append(filters, &ssm.SessionFilter{
+				Key:   aws.String("Owner"),
+				Value: data.Owner,
+			})
+		}
+		ssmDescribeSessionsInput.Filters = filters
+	}
+	ssmClient := ssm.New(input.AWSSession)
+	for out, err := ssmClient.DescribeSessions(ssmDescribeSessionsInput); ; {
+		if err != nil {
+			return err
+		}
+		log.WithField("sessions array len", len(out.Sessions)).Debug("Sessions Output")
+		for i, sess := range out.Sessions {
+			log.WithField("session", sess).Debugf("Single session #%d", i)
+			startDate, err := sess.StartDate.MarshalText()
+			if err != nil {
+				return err
+			}
+			startDateString := string(startDate[:])
+			output.Sessions = append(output.Sessions, &Session{
+				SessionID: sess.SessionId,
+				Target:    sess.Target,
+				Status:    sess.Status,
+				StartDate: &startDateString,
+				Owner:     sess.Owner,
+			})
+		}
+		if out.NextToken == nil {
+			break
+		}
+		ssmDescribeSessionsInput.NextToken = out.NextToken
+	}
+	outString, err := output.String()
+	if err != nil {
+		return err
+	}
+	fmt.Print(outString)
+	if *input.Interactive && len(output.Sessions) > 0 {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Fprintf(os.Stderr, "Terminate session [1 - %d]: ", len(output.Sessions))
+		textInput, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		i, err := strconv.Atoi(strings.ReplaceAll(textInput, "\n", ""))
+		if err != nil {
+			return err
+		}
+		log.WithField("index", i).Debug("Picked session")
+		if i < 1 || i > len(output.Sessions) {
+			return fmt.Errorf("session index out of range: %d", i)
+		}
+		chosenSession := output.Sessions[i-1]
+		err = remoteSession.TerminateSession(ssmClient, chosenSession.SessionID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

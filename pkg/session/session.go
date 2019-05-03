@@ -25,28 +25,42 @@ type StartInput struct {
 
 // Start will start a session in chosen EC2 instance
 func Start(input *StartInput) error {
-	var instanceID *string
+	var target string
 	switch *input.TargetType {
 	case "instance-id":
-		instanceID = input.Target
-	case "priv-dns":
-		id, err := getIDFromPrivDNS(input.AWSSession, input.Target)
+		target = *input.Target
+	case "private-dns":
+		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
+			Filters: []*ec2.Filter{
+				{
+					Name:   aws.String("private-dns-name"),
+					Values: []*string{input.Target},
+				},
+			},
+		})
 		if err != nil {
 			return err
 		}
 		if id == "" {
 			return fmt.Errorf("no instance with private dns name: %s", *input.Target)
 		}
-		instanceID = &id
+		target = id
 	case "name-tag":
-		id, err := getIDFromName(input.AWSSession, input.Target)
+		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
+			Filters: []*ec2.Filter{
+				{
+					Name:   aws.String("tag:Name"),
+					Values: []*string{input.Target},
+				},
+			},
+		})
 		if err != nil {
 			return err
 		}
 		if id == "" {
 			return fmt.Errorf("no instance with name tag: %s", *input.Target)
 		}
-		instanceID = &id
+		target = id
 	default:
 		return fmt.Errorf("Unsupported target type: %s", *input.Target)
 	}
@@ -57,16 +71,16 @@ func Start(input *StartInput) error {
 		}).Error(err)
 		return err
 	}
-
 	ssmClient := ssm.New(input.AWSSession)
+
 	startSessionInput := &ssm.StartSessionInput{
-		Target: instanceID,
+		Target: &target,
 	}
 	output, err := ssmClient.StartSession(startSessionInput)
 	if err != nil {
 		return err
 	}
-	defer terminateSession(ssmClient, output.SessionId)
+	defer TerminateSession(ssmClient, output.SessionId)
 	log.WithFields(log.Fields{
 		"sessionID": *output.SessionId,
 		"streamURL": *output.StreamUrl,
@@ -76,6 +90,7 @@ func Start(input *StartInput) error {
 	if err != nil {
 		return err
 	}
+
 	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession")
 	shell.Stdout = os.Stdout
 	shell.Stdin = os.Stdin
@@ -90,47 +105,26 @@ func Start(input *StartInput) error {
 	return nil
 }
 
-func terminateSession(client *ssm.SSM, sessionID *string) {
+// TerminateSession will close chosed active session
+func TerminateSession(client *ssm.SSM, sessionID *string) error {
 	_, err := client.TerminateSession(&ssm.TerminateSessionInput{
 		SessionId: sessionID,
 	})
 	if err != nil {
 		log.WithFields(log.Fields{"sessionID": *sessionID}).Error(err)
+		return err
 	}
-}
-
-func getIDFromPrivDNS(sess *session.Session, dnsName *string) (string, error) {
-	input := &ec2.DescribeInstancesInput{
-		Filters: []*ec2.Filter{
-			{
-				Name:   aws.String("private-dns-name"),
-				Values: []*string{dnsName},
-			},
-		},
-	}
-	return getFirstInstanceID(sess, input)
-}
-
-func getIDFromName(sess *session.Session, name *string) (string, error) {
-	input := &ec2.DescribeInstancesInput{
-		Filters: []*ec2.Filter{
-			{
-				Name:   aws.String("tag:Name"),
-				Values: []*string{name},
-			},
-		},
-	}
-	return getFirstInstanceID(sess, input)
+	return nil
 }
 
 func getFirstInstanceID(sess *session.Session, input *ec2.DescribeInstancesInput) (string, error) {
-	var instanceID string
+	var target string
 	ec2Client := ec2.New(sess)
 	err := ec2Client.DescribeInstancesPages(input,
 		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
 			for _, reservation := range page.Reservations {
 				for _, instance := range reservation.Instances {
-					instanceID = *instance.InstanceId
+					target = *instance.InstanceId
 					// Escape the function
 					return false
 				}
@@ -140,5 +134,5 @@ func getFirstInstanceID(sess *session.Session, input *ec2.DescribeInstancesInput
 	if err != nil {
 		return "", err
 	}
-	return instanceID, nil
+	return target, nil
 }
