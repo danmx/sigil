@@ -77,8 +77,8 @@ By default configuration file is located in `$HOME/.sigil/config.toml`.
 
 ```toml
 [default]
-  type = "instance-id"      # instance-id/priv-dns/name-tag
-  output-format = "wide"    # text/json/yaml/wide
+  type = "instance-id"
+  output-format = "wide"
   region = "eu-west-1"
   profile = "dev"
   interactive = true

@@ -1,10 +1,10 @@
 ## sigil session
 
-Start a session
+Start or resume a session
 
 ### Synopsis
 
-Start a session in chosen EC2 instance.
+Start a new session in chosen EC2 instance.
 
 ```
 sigil session [flags]
@@ -21,7 +21,7 @@ sigil session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
   -h, --help            help for session
       --target string   specify the target depedning on the type
-      --type string     specify target type: instance-id/priv-dns/name-tag (default "instance-id")
+      --type string     specify target type: instance-id/private-dns/name-tag (default "instance-id")
 ```
 
 ### Options inherited from parent commands
@@ -30,7 +30,7 @@ sigil session --type instance-id --target i-xxxxxxxxxxxxxxxxx
   -c, --config string           full config file path
   -p, --config-profile string   pick the config profile (default "default")
       --config-type string      specify the type of a config file: json, yaml, toml, hcl, props (default "toml")
-      --log-level string        specify the log level: trace/debug/info/warn/error/fatal/panic (default "debug")
+      --log-level string        specify the log level: trace/debug/info/warn/error/fatal/panic (default "panic")
   -m, --mfa string              specify MFA token
       --profile string          specify AWS profile
   -r, --region string           specify AWS region
