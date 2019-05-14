@@ -57,6 +57,13 @@ func init() {
 	if Debug == "true" {
 		log.SetReportCaller(true)
 	}
+	// Set startup Log level
+	if err := setLogLevel(LogLevel); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		log.WithFields(log.Fields{
+			"LogLevel": LogLevel,
+		}).Fatal(err)
+	}
 
 	cobra.OnInitialize(initConfig)
 
@@ -75,31 +82,14 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	var err error
-	cfg = viper.GetViper()
-	// Log level
-	switch LogLevel {
-	case "error":
-		log.SetLevel(log.ErrorLevel)
-	case "debug":
-		log.SetLevel(log.DebugLevel)
-	case "info":
-		log.SetLevel(log.InfoLevel)
-	case "warn":
-		log.SetLevel(log.WarnLevel)
-	case "fatal":
-		log.SetLevel(log.FatalLevel)
-	case "panic":
-		log.SetLevel(log.PanicLevel)
-	case "trace":
-		log.SetLevel(log.TraceLevel)
-	default:
-		err = fmt.Errorf("Unsupported log level: %s", LogLevel)
+	// Set Log level
+	if err = setLogLevel(LogLevel); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		log.WithFields(log.Fields{
 			"LogLevel": LogLevel,
 		}).Fatal(err)
 	}
-
+	cfg = viper.GetViper()
 	if cfgFile != "" {
 		// Use config file from the flag.
 		cfg.SetConfigFile(cfgFile)
@@ -154,4 +144,27 @@ func safeSub(v *viper.Viper, profile string) (*viper.Viper, error) {
 		return nil, fmt.Errorf("Config profile doesn't exist. Profile: %s", profile)
 	}
 	return subConfig, nil
+}
+
+func setLogLevel(level string) error {
+	// Log level
+	switch LogLevel {
+	case "error":
+		log.SetLevel(log.ErrorLevel)
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+	case "info":
+		log.SetLevel(log.InfoLevel)
+	case "warn":
+		log.SetLevel(log.WarnLevel)
+	case "fatal":
+		log.SetLevel(log.FatalLevel)
+	case "panic":
+		log.SetLevel(log.PanicLevel)
+	case "trace":
+		log.SetLevel(log.TraceLevel)
+	default:
+		return fmt.Errorf("Unsupported log level: %s", LogLevel)
+	}
+	return nil
 }
