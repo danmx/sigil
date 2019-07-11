@@ -62,6 +62,7 @@ Filter format examples:
 			outputFormat := cfg.GetString("output-format")
 			awsProfile := cfg.GetString("profile")
 			awsRegion := cfg.GetString("region")
+			awsMFAToken := cfg.GetString("mfa")
 			interactive := cfg.GetBool("interactive")
 			filters := cfg.GetString("filters")
 			log.WithFields(log.Fields{

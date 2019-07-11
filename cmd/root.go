@@ -23,10 +23,9 @@ var (
 	// Debug is turning a debug mode (added at compile time)
 	Debug string
 
-	workDir     string
-	cfgFile     string
-	awsMFAToken string
-	cfg         *viper.Viper
+	workDir string
+	cfgFile string
+	cfg     *viper.Viper
 
 	cfgFileName = "config"
 	cfgProfile  = "default"
@@ -74,7 +73,7 @@ func init() {
 	// AWS
 	rootCmd.PersistentFlags().StringP("region", "r", "", "specify AWS region")
 	rootCmd.PersistentFlags().String("profile", "", "specify AWS profile")
-	rootCmd.PersistentFlags().StringVarP(&awsMFAToken, "mfa", "m", awsMFAToken, "specify MFA token")
+	rootCmd.PersistentFlags().StringP("mfa", "m", "", "specify MFA token")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -98,7 +97,7 @@ func initConfig() {
 			fmt.Fprintln(os.Stderr, err)
 			log.Fatal(err)
 		}
-		workDir := path.Join(home, workDirName)
+		workDir = path.Join(home, workDirName)
 		stat, err := os.Stat(workDir)
 		if !(err == nil && stat.IsDir()) {
 			if err = os.MkdirAll(workDir, 0750); err != nil {

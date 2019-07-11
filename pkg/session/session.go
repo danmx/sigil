@@ -2,16 +2,13 @@ package session
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"os/signal"
 
 	"github.com/danmx/sigil/pkg/utils"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	log "github.com/sirupsen/logrus"
 )
@@ -25,52 +22,12 @@ type StartInput struct {
 
 // Start will start a session in chosen EC2 instance
 func Start(input *StartInput) error {
-	var target string
-	switch *input.TargetType {
-	case "instance-id":
-		target = *input.Target
-	case "private-dns":
-		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
-			Filters: []*ec2.Filter{
-				{
-					Name:   aws.String("private-dns-name"),
-					Values: []*string{input.Target},
-				},
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if id == "" {
-			return fmt.Errorf("no instance with private dns name: %s", *input.Target)
-		}
-		target = id
-	case "name-tag":
-		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
-			Filters: []*ec2.Filter{
-				{
-					Name:   aws.String("tag:Name"),
-					Values: []*string{input.Target},
-				},
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if id == "" {
-			return fmt.Errorf("no instance with name tag: %s", *input.Target)
-		}
-		target = id
-	default:
-		return fmt.Errorf("Unsupported target type: %s", *input.Target)
-	}
-	if *input.Target == "" {
-		err := fmt.Errorf("Specify the target")
-		log.WithFields(log.Fields{
-			"target": *input.Target,
-		}).Error(err)
+	instance, err := utils.GetInstance(input.AWSSession, *input.TargetType, *input.Target)
+	if err != nil {
 		return err
 	}
+	target := *instance.InstanceId
+	log.WithField("target instance id", target).Debug("Checking the target instance ID")
 	ssmClient := ssm.New(input.AWSSession)
 
 	startSessionInput := &ssm.StartSessionInput{
@@ -115,24 +72,4 @@ func TerminateSession(client *ssm.SSM, sessionID *string) error {
 		return err
 	}
 	return nil
-}
-
-func getFirstInstanceID(sess *session.Session, input *ec2.DescribeInstancesInput) (string, error) {
-	var target string
-	ec2Client := ec2.New(sess)
-	err := ec2Client.DescribeInstancesPages(input,
-		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
-			for _, reservation := range page.Reservations {
-				for _, instance := range reservation.Instances {
-					target = *instance.InstanceId
-					// Escape the function
-					return false
-				}
-			}
-			return !lastPage
-		})
-	if err != nil {
-		return "", err
-	}
-	return target, nil
 }
