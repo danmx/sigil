@@ -5,9 +5,12 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strconv"
+	"syscall"
 
 	"github.com/danmx/sigil/pkg/utils"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	log "github.com/sirupsen/logrus"
@@ -18,6 +21,15 @@ type StartInput struct {
 	Target     *string
 	TargetType *string
 	AWSSession *session.Session
+	AWSProfile *string
+}
+
+// StartSSHInput struct contains all input data
+type StartSSHInput struct {
+	InstanceID *string
+	PortNumber *int
+	AWSSession *session.Session
+	AWSProfile *string
 }
 
 // Start will start a session in chosen EC2 instance
@@ -48,11 +60,66 @@ func Start(input *StartInput) error {
 		return err
 	}
 
-	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession")
+	log.WithFields(log.Fields{
+		"payload": string(payload),
+		"region":  *input.AWSSession.Config.Region,
+		"profile": *input.AWSProfile,
+	}).Debug("Inspect session-manager-plugin args")
+
+	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession", *input.AWSProfile)
 	shell.Stdout = os.Stdout
 	shell.Stdin = os.Stdin
 	shell.Stderr = os.Stderr
 	utils.IgnoreUserEnteredSignals()
+	defer signal.Reset()
+	err = shell.Run()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// StartSSH will start a ssh proxy session in chosen EC2 instance
+func StartSSH(input *StartSSHInput) error {
+	ssmClient := ssm.New(input.AWSSession)
+	parameters := map[string][]*string{
+		"portNumber": []*string{aws.String(strconv.Itoa(*input.PortNumber))},
+	}
+	startSessionInput := &ssm.StartSessionInput{
+		Parameters:   parameters,
+		Target:       input.InstanceID,
+		DocumentName: aws.String("AWS-StartSSHSession"),
+	}
+	output, err := ssmClient.StartSession(startSessionInput)
+	if err != nil {
+		return err
+	}
+	defer TerminateSession(ssmClient, output.SessionId)
+	log.WithFields(log.Fields{
+		"sessionID": *output.SessionId,
+		"streamURL": *output.StreamUrl,
+		"token":     *output.TokenValue,
+	}).Debug("SSM Start Session Output")
+	payload, err := json.Marshal(output)
+	if err != nil {
+		return err
+	}
+
+	log.WithFields(log.Fields{
+		"payload": string(payload),
+		"region":  *input.AWSSession.Config.Region,
+		"profile": *input.AWSProfile,
+	}).Debug("Inspect session-manager-plugin args")
+
+	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
+	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession", *input.AWSProfile)
+	shell.Stdout = os.Stdout
+	shell.Stdin = os.Stdin
+	shell.Stderr = os.Stderr
+	utils.IgnoreUserEnteredSignals()
+	// This allows to gracefully close the process and execute all defers
+	signal.Ignore(syscall.SIGHUP)
 	defer signal.Reset()
 	err = shell.Run()
 	if err != nil {

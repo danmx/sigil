@@ -13,7 +13,7 @@ import (
 // sessionCmd represents the session command
 var sessionCmd = &cobra.Command{
 	Use:     "session",
-	Short:   "Start or resume a session",
+	Short:   "Start a session",
 	Long:    `Start a new session in chosen EC2 instance.`,
 	Aliases: []string{"sess", "s"},
 	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
@@ -43,6 +43,7 @@ var sessionCmd = &cobra.Command{
 			Target:     &target,
 			TargetType: &targetType,
 			AWSSession: utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
+			AWSProfile: &awsProfile,
 		}
 		err := session.Start(input)
 		if err != nil {
