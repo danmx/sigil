@@ -86,7 +86,7 @@ func init() {
 
 	sshCmd.Flags().String("target", "", "specify the target depedning on the type")
 	sshCmd.Flags().String("type", "instance-id", "specify target type: instance-id/private-dns/name-tag")
-	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. Use %s as an identity file", path.Join(workDir, tempKeyName)))
+	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. Use %s as an identity file", path.Join("${HOME}", ".sigil", tempKeyName)))
 	sshCmd.Flags().String("os-user", "ec2-user", "specify an instance OS user which will be using sent public key")
 	sshCmd.Flags().String("pub-key", "", "local public key that will be send to the instance, ignored when gen-key-pair is true")
 	sshCmd.Flags().IntVar(&portNum, "port", 22, "specify ssh port")

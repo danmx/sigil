@@ -13,7 +13,7 @@ sigil ssh [flags]
 ### Options
 
 ```
-      --gen-key-pair     generate a temporary key pair that will be send and used. Use temp_key as an identity file
+      --gen-key-pair     generate a temporary key pair that will be send and used. Use ${HOME}/.sigil/temp_key as an identity file
   -h, --help             help for ssh
       --os-user string   specify an instance OS user which will be using sent public key (default "ec2-user")
       --port int         specify ssh port (default 22)
