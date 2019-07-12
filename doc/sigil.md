@@ -23,6 +23,7 @@ A tool for establishing a session in EC2 instances with AWS SSM Agent installed
 
 * [sigil gendoc](sigil_gendoc.md)	 - Generate the documentation in Markdown
 * [sigil list](sigil_list.md)	 - List available EC2 instances or SSM sessions
-* [sigil session](sigil_session.md)	 - Start or resume a session
+* [sigil session](sigil_session.md)	 - Start a session
+* [sigil ssh](sigil_ssh.md)	 - Start ssh session
 * [sigil verify](sigil_verify.md)	 - Verify if all external dependencies are available
 
