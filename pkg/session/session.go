@@ -66,14 +66,7 @@ func Start(input *StartInput) error {
 		"profile": *input.AWSProfile,
 	}).Debug("Inspect session-manager-plugin args")
 
-	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession", *input.AWSProfile)
-	shell.Stdout = os.Stdout
-	shell.Stdin = os.Stdin
-	shell.Stderr = os.Stderr
-	utils.IgnoreUserEnteredSignals()
-	defer signal.Reset()
-	err = shell.Run()
-	if err != nil {
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
 		return err
 	}
 
@@ -112,17 +105,7 @@ func StartSSH(input *StartSSHInput) error {
 		"profile": *input.AWSProfile,
 	}).Debug("Inspect session-manager-plugin args")
 
-	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
-	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession", *input.AWSProfile)
-	shell.Stdout = os.Stdout
-	shell.Stdin = os.Stdin
-	shell.Stderr = os.Stderr
-	utils.IgnoreUserEnteredSignals()
-	// This allows to gracefully close the process and execute all defers
-	signal.Ignore(syscall.SIGHUP)
-	defer signal.Reset()
-	err = shell.Run()
-	if err != nil {
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
 		return err
 	}
 
@@ -136,6 +119,23 @@ func TerminateSession(client *ssm.SSM, sessionID *string) error {
 	})
 	if err != nil {
 		log.WithFields(log.Fields{"sessionID": *sessionID}).Error(err)
+		return err
+	}
+	return nil
+}
+
+func runSessionPluginManager(payload, region, profile string) error {
+	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
+	shell := exec.Command("session-manager-plugin", payload, region, "StartSession", profile)
+	shell.Stdout = os.Stdout
+	shell.Stdin = os.Stdin
+	shell.Stderr = os.Stderr
+	utils.IgnoreUserEnteredSignals()
+	// This allows to gracefully close the process and execute all defers
+	signal.Ignore(syscall.SIGHUP)
+	defer signal.Reset()
+	err := shell.Run()
+	if err != nil {
 		return err
 	}
 	return nil
