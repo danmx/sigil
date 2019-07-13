@@ -1,6 +1,6 @@
 
 # Change this and commit to create new release
-override VERSION ?= 0.2.1
+override VERSION ?= 0.3.0
 NAME = sigil
 REPO = danmx/$(NAME)
 MODULE = github.com/$(REPO)
