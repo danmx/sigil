@@ -76,6 +76,7 @@ Filter format examples:
 			input := &list.StartInput{
 				OutputFormat: &outputFormat,
 				AWSSession:   utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
+				AWSProfile:   &awsProfile,
 				Filters:      &filters,
 				Interactive:  &interactive,
 				Type:         &listType,

@@ -47,7 +47,6 @@ var (
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		log.Fatal(err)
 	}
 }
@@ -59,7 +58,6 @@ func init() {
 	}
 	// Set startup Log level
 	if err := setLogLevel(LogLevel); err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		log.WithFields(log.Fields{
 			"LogLevel": LogLevel,
 		}).Fatal(err)
@@ -100,7 +98,7 @@ func initConfig() {
 			fmt.Fprintln(os.Stderr, err)
 			log.Fatal(err)
 		}
-		workDir := path.Join(home, workDirName)
+		workDir = path.Join(home, workDirName)
 		stat, err := os.Stat(workDir)
 		if !(err == nil && stat.IsDir()) {
 			if err = os.MkdirAll(workDir, 0750); err != nil {

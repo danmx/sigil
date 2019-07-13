@@ -28,6 +28,7 @@ type StartInput struct {
 	Filters      *string
 	Interactive  *bool
 	Type         *string
+	AWSProfile   *string
 }
 
 // Filters contain all types of filters used to limit results
@@ -371,6 +372,7 @@ func (input *StartInput) listInstances() error {
 			Target:     instance.InstanceID,
 			TargetType: &targetType,
 			AWSSession: input.AWSSession,
+			AWSProfile: input.AWSProfile,
 		}
 		err = remoteSession.Start(remoteInput)
 		if err != nil {

@@ -1,6 +1,6 @@
 
 # Change this and commit to create new release
-override VERSION ?= 0.2.1
+override VERSION ?= 0.3.0
 NAME = sigil
 REPO = danmx/$(NAME)
 MODULE = github.com/$(REPO)
@@ -63,7 +63,7 @@ build-mac:
 		-o bin/release/darwin/amd64/$(NAME) main.go
 
 build-docker:
-	@docker build --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
+	@docker build --target prod --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
 
 build-windows-dev: export GOARCH=amd64
 build-windows-dev:
@@ -96,6 +96,9 @@ build-mac-dev:
 			-X $(MODULE)/cmd.Version=$(VERSION) \
 			-X $(MODULE)/cmd.Revision=$(REVISION)" \
 		-o bin/dev/darwin/amd64/$(NAME) main.go
+
+build-docker-dev:
+	@docker build --target debug --build-arg VER=$(VERSION) --build-arg REV=$(REVISION) -t $(NAME):$(VERSION) .
 
 .PHONY: get-version
 get-version:

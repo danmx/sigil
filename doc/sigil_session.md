@@ -1,6 +1,6 @@
 ## sigil session
 
-Start or resume a session
+Start a session
 
 ### Synopsis
 

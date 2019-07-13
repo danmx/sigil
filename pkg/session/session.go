@@ -2,16 +2,16 @@ package session
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"os/exec"
 	"os/signal"
+	"strconv"
+	"syscall"
 
 	"github.com/danmx/sigil/pkg/utils"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,56 +21,25 @@ type StartInput struct {
 	Target     *string
 	TargetType *string
 	AWSSession *session.Session
+	AWSProfile *string
+}
+
+// StartSSHInput struct contains all input data
+type StartSSHInput struct {
+	InstanceID *string
+	PortNumber *int
+	AWSSession *session.Session
+	AWSProfile *string
 }
 
 // Start will start a session in chosen EC2 instance
 func Start(input *StartInput) error {
-	var target string
-	switch *input.TargetType {
-	case "instance-id":
-		target = *input.Target
-	case "private-dns":
-		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
-			Filters: []*ec2.Filter{
-				{
-					Name:   aws.String("private-dns-name"),
-					Values: []*string{input.Target},
-				},
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if id == "" {
-			return fmt.Errorf("no instance with private dns name: %s", *input.Target)
-		}
-		target = id
-	case "name-tag":
-		id, err := getFirstInstanceID(input.AWSSession, &ec2.DescribeInstancesInput{
-			Filters: []*ec2.Filter{
-				{
-					Name:   aws.String("tag:Name"),
-					Values: []*string{input.Target},
-				},
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if id == "" {
-			return fmt.Errorf("no instance with name tag: %s", *input.Target)
-		}
-		target = id
-	default:
-		return fmt.Errorf("Unsupported target type: %s", *input.Target)
-	}
-	if *input.Target == "" {
-		err := fmt.Errorf("Specify the target")
-		log.WithFields(log.Fields{
-			"target": *input.Target,
-		}).Error(err)
+	instance, err := utils.GetInstance(input.AWSSession, *input.TargetType, *input.Target)
+	if err != nil {
 		return err
 	}
+	target := *instance.InstanceId
+	log.WithField("target instance id", target).Debug("Checking the target instance ID")
 	ssmClient := ssm.New(input.AWSSession)
 
 	startSessionInput := &ssm.StartSessionInput{
@@ -91,14 +60,52 @@ func Start(input *StartInput) error {
 		return err
 	}
 
-	shell := exec.Command("session-manager-plugin", string(payload), *input.AWSSession.Config.Region, "StartSession")
-	shell.Stdout = os.Stdout
-	shell.Stdin = os.Stdin
-	shell.Stderr = os.Stderr
-	utils.IgnoreUserEnteredSignals()
-	defer signal.Reset()
-	err = shell.Run()
+	log.WithFields(log.Fields{
+		"payload": string(payload),
+		"region":  *input.AWSSession.Config.Region,
+		"profile": *input.AWSProfile,
+	}).Debug("Inspect session-manager-plugin args")
+
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// StartSSH will start a ssh proxy session in chosen EC2 instance
+func StartSSH(input *StartSSHInput) error {
+	ssmClient := ssm.New(input.AWSSession)
+	parameters := map[string][]*string{
+		"portNumber": []*string{aws.String(strconv.Itoa(*input.PortNumber))},
+	}
+	startSessionInput := &ssm.StartSessionInput{
+		Parameters:   parameters,
+		Target:       input.InstanceID,
+		DocumentName: aws.String("AWS-StartSSHSession"),
+	}
+	output, err := ssmClient.StartSession(startSessionInput)
 	if err != nil {
+		return err
+	}
+	defer TerminateSession(ssmClient, output.SessionId)
+	log.WithFields(log.Fields{
+		"sessionID": *output.SessionId,
+		"streamURL": *output.StreamUrl,
+		"token":     *output.TokenValue,
+	}).Debug("SSM Start Session Output")
+	payload, err := json.Marshal(output)
+	if err != nil {
+		return err
+	}
+
+	log.WithFields(log.Fields{
+		"payload": string(payload),
+		"region":  *input.AWSSession.Config.Region,
+		"profile": *input.AWSProfile,
+	}).Debug("Inspect session-manager-plugin args")
+
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
 		return err
 	}
 
@@ -117,22 +124,19 @@ func TerminateSession(client *ssm.SSM, sessionID *string) error {
 	return nil
 }
 
-func getFirstInstanceID(sess *session.Session, input *ec2.DescribeInstancesInput) (string, error) {
-	var target string
-	ec2Client := ec2.New(sess)
-	err := ec2Client.DescribeInstancesPages(input,
-		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
-			for _, reservation := range page.Reservations {
-				for _, instance := range reservation.Instances {
-					target = *instance.InstanceId
-					// Escape the function
-					return false
-				}
-			}
-			return !lastPage
-		})
+func runSessionPluginManager(payload, region, profile string) error {
+	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
+	shell := exec.Command("session-manager-plugin", payload, region, "StartSession", profile)
+	shell.Stdout = os.Stdout
+	shell.Stdin = os.Stdin
+	shell.Stderr = os.Stderr
+	utils.IgnoreUserEnteredSignals()
+	// This allows to gracefully close the process and execute all defers
+	signal.Ignore(syscall.SIGHUP)
+	defer signal.Reset()
+	err := shell.Run()
 	if err != nil {
-		return "", err
+		return err
 	}
-	return target, nil
+	return nil
 }
