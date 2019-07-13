@@ -28,7 +28,7 @@ type StartInput struct {
 	Filters      *string
 	Interactive  *bool
 	Type         *string
-	AWSProfile *string
+	AWSProfile   *string
 }
 
 // Filters contain all types of filters used to limit results
