@@ -62,7 +62,6 @@ Filter format examples:
 			outputFormat := cfg.GetString("output-format")
 			awsProfile := cfg.GetString("profile")
 			awsRegion := cfg.GetString("region")
-			awsMFAToken := cfg.GetString("mfa")
 			interactive := cfg.GetBool("interactive")
 			filters := cfg.GetString("filters")
 			log.WithFields(log.Fields{
@@ -77,7 +76,7 @@ Filter format examples:
 			input := &list.StartInput{
 				OutputFormat: &outputFormat,
 				AWSSession:   utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
-				AWSProfile: &awsProfile,
+				AWSProfile:   &awsProfile,
 				Filters:      &filters,
 				Interactive:  &interactive,
 				Type:         &listType,

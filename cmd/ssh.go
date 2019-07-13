@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"path"
 	"fmt"
+	"path"
 
 	"github.com/danmx/sigil/pkg/ssh"
 	"github.com/danmx/sigil/pkg/utils"
@@ -43,12 +43,11 @@ var (
 			targetType := cfg.GetString("type")
 			awsProfile := cfg.GetString("profile")
 			awsRegion := cfg.GetString("region")
-			awsMFAToken := cfg.GetString("mfa")
 			pubKey := cfg.GetString("pub-key")
 			OSUser := cfg.GetString("os-user")
 			genKeyPair := cfg.GetBool("gen-key-pair")
 			if genKeyPair {
-				pubKey = path.Join(workDir, tempKeyName + ".pub")
+				pubKey = path.Join(workDir, tempKeyName+".pub")
 			}
 			log.WithFields(log.Fields{
 				"target":       target,

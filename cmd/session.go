@@ -31,7 +31,6 @@ var sessionCmd = &cobra.Command{
 		targetType := cfg.GetString("type")
 		awsProfile := cfg.GetString("profile")
 		awsRegion := cfg.GetString("region")
-		awsMFAToken := cfg.GetString("mfa")
 		log.WithFields(log.Fields{
 			"target":  target,
 			"type":    targetType,
