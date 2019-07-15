@@ -23,8 +23,7 @@
 - AWS [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) (version 1.1.17.0+ for SSH support)
 - target EC2 instance must have AWS SSM Agent installed ([full guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html)) (version 2.3.672.0+ for SSH support)
 - AWS [ec2-instance-connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html) to use SSH with your own and/or temporary keys
-- to support AWS SSM target EC2 instance profile should have **AmazonSSMManagedInstanceCore** managed IAM policy attached
-  or a specific policy with similar permissions (check [About Policies for a Systems Manager Instance Profile](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html) and [About Minimum S3 Bucket Permissions for SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-minimum-s3-permissions.html))
+- to support AWS SSM target EC2 instance profile should have **AmazonSSMManagedInstanceCore** managed IAM policy attached or a specific policy with similar permissions (check [About Policies for a Systems Manager Instance Profile](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html) and [About Minimum S3 Bucket Permissions for SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-minimum-s3-permissions.html))
 - to support EC2 Instance Connect target EC2 instance profile should have **EC2InstanceConnect** managed IAM policy attached or a specific policy that allows specific EC2 instances and `ec2:osuser` ([Configure IAM permissions for EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html#ec2-instance-connect-configure-IAM-role))
 
 ## Manual
