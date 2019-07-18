@@ -60,13 +60,14 @@ func Start(input *StartInput) error {
 		return err
 	}
 
-	log.WithFields(log.Fields{
-		"payload": string(payload),
-		"region":  *input.AWSSession.Config.Region,
-		"profile": *input.AWSProfile,
-	}).Debug("Inspect session-manager-plugin args")
+	startSessionInputJSON, err := json.Marshal(startSessionInput)
+	if err != nil {
+		return err
+	}
 
-	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
+	endpoint := ssmClient.Client.Endpoint
+
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile, string(startSessionInputJSON), endpoint); err != nil {
 		return err
 	}
 
@@ -99,13 +100,14 @@ func StartSSH(input *StartSSHInput) error {
 		return err
 	}
 
-	log.WithFields(log.Fields{
-		"payload": string(payload),
-		"region":  *input.AWSSession.Config.Region,
-		"profile": *input.AWSProfile,
-	}).Debug("Inspect session-manager-plugin args")
+	startSessionInputJSON, err := json.Marshal(startSessionInput)
+	if err != nil {
+		return err
+	}
 
-	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile); err != nil {
+	endpoint := ssmClient.Client.Endpoint
+
+	if err = runSessionPluginManager(string(payload), *input.AWSSession.Config.Region, *input.AWSProfile, string(startSessionInputJSON), endpoint); err != nil {
 		return err
 	}
 
@@ -124,9 +126,16 @@ func TerminateSession(client *ssm.SSM, sessionID *string) error {
 	return nil
 }
 
-func runSessionPluginManager(payload, region, profile string) error {
+func runSessionPluginManager(payload, region, profile, input, endpoint string) error {
+	log.WithFields(log.Fields{
+		"payload":  payload,
+		"region":   region,
+		"profile":  profile,
+		"input":    input,
+		"endpoint": endpoint,
+	}).Debug("Inspect session-manager-plugin args")
 	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
-	shell := exec.Command("session-manager-plugin", payload, region, "StartSession", profile)
+	shell := exec.Command("session-manager-plugin", payload, region, "StartSession", profile, input, endpoint)
 	shell.Stdout = os.Stdout
 	shell.Stdin = os.Stdin
 	shell.Stderr = os.Stderr
