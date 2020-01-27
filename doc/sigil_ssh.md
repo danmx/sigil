@@ -18,7 +18,7 @@ sigil ssh [flags]
       --os-user string   specify an instance OS user which will be using sent public key (default "ec2-user")
       --port int         specify ssh port (default 22)
       --pub-key string   local public key that will be send to the instance, ignored when gen-key-pair is true
-      --target string    specify the target depedning on the type
+      --target string    specify the target depending on the type
       --type string      specify target type: instance-id/private-dns/name-tag (default "instance-id")
 ```
 
