@@ -83,7 +83,7 @@ var (
 func init() {
 	rootCmd.AddCommand(sshCmd)
 
-	sshCmd.Flags().String("target", "", "specify the target depedning on the type")
+	sshCmd.Flags().String("target", "", "specify the target depending on the type")
 	sshCmd.Flags().String("type", "instance-id", "specify target type: instance-id/private-dns/name-tag")
 	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. Use %s as an identity file", path.Join("${HOME}", ".sigil", tempKeyName)))
 	sshCmd.Flags().String("os-user", "ec2-user", "specify an instance OS user which will be using sent public key")
