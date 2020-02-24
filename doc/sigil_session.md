@@ -20,7 +20,7 @@ sigil session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 
 ```
   -h, --help            help for session
-      --target string   specify the target depedning on the type
+      --target string   specify the target depending on the type
       --type string     specify target type: instance-id/private-dns/name-tag (default "instance-id")
 ```
 
