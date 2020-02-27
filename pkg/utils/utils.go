@@ -61,6 +61,10 @@ func GetInstance(sess *session.Session, targetType string, target string) (*ec2.
 					Name:   aws.String("private-dns-name"),
 					Values: []*string{&target},
 				},
+				{
+					Name:   aws.String("instance-state-name"),
+					Values: []*string{aws.String("running")},
+				},
 			},
 		})
 		if err != nil {
@@ -76,6 +80,10 @@ func GetInstance(sess *session.Session, targetType string, target string) (*ec2.
 				{
 					Name:   aws.String("tag:Name"),
 					Values: []*string{&target},
+				},
+				{
+					Name:   aws.String("instance-state-name"),
+					Values: []*string{aws.String("running")},
 				},
 			},
 		})
