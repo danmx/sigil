@@ -5,7 +5,7 @@ ARG REV
 ENV VERSION=${VER}
 ENV REVISION=${REV}
 
-ENV URL="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb"
+ENV URL="https://s3.amazonaws.com/session-manager-downloads/plugin/1.1.54.0/ubuntu_64bit/session-manager-plugin.deb"
 
 WORKDIR /go/src/app
 COPY . .
