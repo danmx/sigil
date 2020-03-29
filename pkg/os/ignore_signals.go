@@ -1,6 +1,6 @@
 // +build !windows
 
-package utils
+package os
 
 import (
 	"os"
@@ -10,8 +10,7 @@ import (
 
 // IgnoreUserEnteredSignals ignores user signals
 func IgnoreUserEnteredSignals() {
-	var signals []os.Signal
-	signals = []os.Signal{syscall.SIGINT, syscall.SIGSTOP, syscall.SIGTSTP, syscall.SIGQUIT}
+	signals := []os.Signal{syscall.SIGINT, syscall.SIGSTOP, syscall.SIGTSTP, syscall.SIGQUIT}
 	for _, s := range signals {
 		signal.Ignore(s)
 	}

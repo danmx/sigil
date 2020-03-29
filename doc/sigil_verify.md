@@ -4,7 +4,7 @@ Verify if all external dependencies are available
 
 ### Synopsis
 
-This command will check if session-manager-plugin is installed.
+This command will check if all dependecies are installed.
 Plugin documentation: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
 
 ```
