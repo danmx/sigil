@@ -1,18 +1,14 @@
 module github.com/danmx/sigil
 
-go 1.12
+go 1.14
 
 require (
-	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/aws/aws-sdk-go v1.20.18
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/aws/aws-sdk-go v1.29.32
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/sirupsen/logrus v1.4.0
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.2
-	github.com/stretchr/testify v1.2.2
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	golang.org/x/net v0.0.0-20190313220215-9f648a60d977 // indirect
-	gopkg.in/yaml.v2 v2.2.2
+	github.com/sirupsen/logrus v1.5.0
+	github.com/spf13/cobra v0.0.6
+	github.com/spf13/viper v1.6.2
+	github.com/stretchr/testify v1.5.1
+	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
+	gopkg.in/yaml.v2 v2.2.8
 )
