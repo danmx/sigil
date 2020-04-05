@@ -1,10 +1,12 @@
-//nolint:goimports
 package list
 
 import (
 	"testing"
 
 	"github.com/danmx/sigil/pkg/aws"
+	"github.com/danmx/sigil/pkg/aws/mocks"
+
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -120,4 +122,71 @@ func TestSessionsString(t *testing.T) {
 	outString, err = sessionsToString(FormatYAML, sessions)
 	a.Nil(err)
 	a.Equal(resultYAML, outString)
+}
+
+func TestListInstances(t *testing.T) {
+	instances := []*aws.Instance{
+		{
+			Hostname:       "testHostname1",
+			IPAddress:      "10.10.10.1",
+			ID:             "i-xxxxxxxxxxxxxxxx1",
+			PrivateDNSName: "test1.local",
+			Name:           "testNode1",
+			OSName:         "Amazon Linux",
+			OSType:         "Linux",
+			OSVersion:      "2",
+		},
+		{
+			Hostname:       "testHostname2",
+			IPAddress:      "10.10.10.2",
+			ID:             "i-xxxxxxxxxxxxxxxx2",
+			PrivateDNSName: "test2.local",
+			Name:           "testNode2",
+			OSName:         "Ubuntu",
+			OSType:         "Linux",
+			OSVersion:      "18.04",
+		},
+	}
+	interactive := false
+	format := FormatText
+	input := StartInput{
+		OutputFormat: &format,
+		Interactive:  &interactive,
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mocks.NewMockCloudInstances(ctrl)
+
+	m.EXPECT().ListInstances().Return(instances, nil)
+
+	assert.NoError(t, input.listInstances(m))
+	// TODO test integractive part
+}
+
+func TestListSessions(t *testing.T) {
+	sessions := []*aws.Session{
+		{
+			SessionID: "test-1234567890",
+			Target:    "i-xxxxxxxxxxxxxxxx1",
+			Status:    "Connected",
+			StartDate: "2019-05-03T10:08:44Z",
+			Owner:     "arn:aws:sts::0123456789:assumed-role/test/test",
+		},
+	}
+	interactive := false
+	format := FormatText
+	input := StartInput{
+		OutputFormat: &format,
+		Interactive:  &interactive,
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	m := mocks.NewMockCloudSessions(ctrl)
+
+	m.EXPECT().ListSessions().Return(sessions, nil)
+
+	assert.NoError(t, input.listSessions(m))
+	// TODO test integractive part
 }

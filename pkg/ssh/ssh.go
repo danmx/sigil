@@ -15,6 +15,11 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// SSH wraps methods used from the pkg/ssh package
+type SSH interface {
+	Start(input *StartInput) error
+}
+
 // StartInput struct contains all input data
 type StartInput struct {
 	Target     *string
@@ -30,7 +35,11 @@ type StartInput struct {
 
 // Start will start ssh session
 func Start(input *StartInput) error {
-	provider, err := aws.NewWithConfig(&aws.Config{
+	return input.start(new(aws.Provider))
+}
+
+func (input *StartInput) start(provider aws.CloudSSH) (err error) {
+	err = provider.NewWithConfig(&aws.Config{
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,

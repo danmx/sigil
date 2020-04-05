@@ -6,6 +6,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Session wraps methods used from the pkg/session package
+type Session interface {
+	Start(input *StartInput) error
+}
+
 // StartInput struct contains all input data
 type StartInput struct {
 	Target     *string
@@ -17,7 +22,11 @@ type StartInput struct {
 
 // Start will start a session in chosen instance
 func Start(input *StartInput) error {
-	provider, err := aws.NewWithConfig(&aws.Config{
+	return input.start(new(aws.Provider))
+}
+
+func (input *StartInput) start(provider aws.CloudInstances) error {
+	err := provider.NewWithConfig(&aws.Config{
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,

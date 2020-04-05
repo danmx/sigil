@@ -90,13 +90,8 @@ const (
 	TargetTypeName = "name"
 )
 
-// New will generate an AWS Provider
-func New() (*Provider, error) {
-	return NewWithConfig(&Config{})
-}
-
 // NewWithConfig will generate an AWS Provider with given configuration
-func NewWithConfig(c *Config) (*Provider, error) {
+func (p *Provider) NewWithConfig(c *Config) error {
 	options := session.Options{
 		SharedConfigState:       session.SharedConfigEnable,
 		AssumeRoleTokenProvider: mfaTokenProvider(c.MFAToken),
@@ -111,14 +106,12 @@ func NewWithConfig(c *Config) (*Provider, error) {
 			"err":     err,
 			"options": options,
 		}).Error("Failed starting a session")
-		return nil, err
+		return err
 	}
-	provider := &Provider{
-		session:    sess,
-		awsProfile: c.Profile,
-		filters:    c.Filters,
-	}
-	return provider, nil
+	p.session = sess
+	p.awsProfile = c.Profile
+	p.filters = c.Filters
+	return nil
 }
 
 // VerifyDependencies will check all necessary dependencies
@@ -252,6 +245,8 @@ func runSessionPluginManager(payloadJSON, region, profile, inputJSON, endpoint s
 		"input":    inputJSON,
 		"endpoint": endpoint,
 	}).Debug("Inspect session-manager-plugin args")
+	// TODO allowing logging
+	// https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html#configure-logs-linux
 	// https://github.com/aws/aws-cli/blob/5f16b26/awscli/customizations/sessionmanager.py#L83-L89
 	shell := exec.Command(pluginName, payloadJSON, region, "StartSession", profile, inputJSON, endpoint)
 	shell.Stdout = os.Stdout

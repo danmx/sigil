@@ -16,6 +16,11 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// List wraps methods used from the pkg/list package
+type List interface {
+	Start(input *StartInput) error
+}
+
 const (
 	// FormatText points to the text format type
 	FormatText = "text"
@@ -45,7 +50,8 @@ type StartInput struct {
 
 // Start will output a ist of all available EC2 instances
 func Start(input *StartInput) error {
-	provider, err := aws.NewWithConfig(&aws.Config{
+	provider := aws.Provider{}
+	err := provider.NewWithConfig(&aws.Config{
 		Filters:  *input.Filters,
 		Region:   *input.Region,
 		Profile:  *input.Profile,
@@ -57,12 +63,12 @@ func Start(input *StartInput) error {
 	}
 	switch *input.Type {
 	case TypeListInstances:
-		err := input.listInstances(provider)
+		err := input.listInstances(&provider)
 		if err != nil {
 			return err
 		}
 	case TypeListSessions:
-		err := input.listSessions(provider)
+		err := input.listSessions(&provider)
 		if err != nil {
 			return err
 		}
@@ -172,7 +178,7 @@ func instancesToString(format string, instances []*aws.Instance) (string, error)
 	}
 }
 
-func (input *StartInput) listInstances(provider *aws.Provider) error {
+func (input *StartInput) listInstances(provider aws.CloudInstances) error {
 	instances, err := provider.ListInstances()
 	if err != nil {
 		log.Error("Failed listing instances")
@@ -183,8 +189,10 @@ func (input *StartInput) listInstances(provider *aws.Provider) error {
 		log.Error("Failed stringifying instances")
 		return err
 	}
-	fmt.Print(outString)
+	// TODO Mock stdout
+	fmt.Fprint(os.Stdout, outString)
 	if *input.Interactive && len(instances) > 0 {
+		// TODO Mock stdin and stderr
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Fprintf(os.Stderr, "Choose an instance to connect to [1 - %d]: ", len(instances))
 		textInput, err := reader.ReadString('\n')
@@ -208,7 +216,7 @@ func (input *StartInput) listInstances(provider *aws.Provider) error {
 	return nil
 }
 
-func (input *StartInput) listSessions(provider *aws.Provider) error {
+func (input *StartInput) listSessions(provider aws.CloudSessions) error {
 	sessions, err := provider.ListSessions()
 	if err != nil {
 		log.Error("Failed listing instances")
@@ -219,8 +227,10 @@ func (input *StartInput) listSessions(provider *aws.Provider) error {
 		log.Error("Failed stringifying instances")
 		return err
 	}
-	fmt.Print(outString)
+	// TODO Mock stdout
+	fmt.Fprint(os.Stdout, outString)
 	if *input.Interactive && len(sessions) > 0 {
+		// TODO Mock stdin and stderr
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Fprintf(os.Stderr, "Terminate session [1 - %d]: ", len(sessions))
 		textInput, err := reader.ReadString('\n')
