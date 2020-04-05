@@ -151,6 +151,28 @@ make build-docker
 
 It'll create a docker image tagged `sigil:{version}` where `{version}` corresponds to sigil's current version.
 
+## Contributions
+
+All contributions are welcomed!
+
+### Dev Dependencies
+
+- [pre-commit](https://pre-commit.com/)
+- [golangci-lint](https://github.com/golangci/golangci-lint)
+- [make](https://www.gnu.org/software/make/)
+
+### Commits
+
+I'm trying to follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+### Bootstraping
+
+```sh
+pre-commit install
+pre-commit install --hook-type pre-push
+make bootstrap
+```
+
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdanmx%2Fsigil.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdanmx%2Fsigil?ref=badge_large)
