@@ -148,7 +148,7 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 
 	listCmd.Flags().String("output-format", list.FormatText, fmt.Sprintf("specify output format: %s/%s/%s/%s", list.FormatText, list.FormatWide, list.FormatJSON, list.FormatYAML))
-	listCmd.Flags().BoolP("interactive", "i", false, "pick an instance from a list and start the session")
+	listCmd.Flags().BoolP("interactive", "i", false, "pick an instance or a session from a list and start or terminate the session")
 	listCmd.Flags().StringP("type", "t", list.TypeListInstances, fmt.Sprintf("specify list type: %s/%s", list.TypeListInstances, list.TypeListSessions))
 	listCmd.Flags().StringToStringVar(&sessionFilters, "session-filters", sessionFilters, "specify session filters to limit results")
 	listCmd.Flags().StringSlice("instance-ids", []string{}, "specify instance ids to limit results")

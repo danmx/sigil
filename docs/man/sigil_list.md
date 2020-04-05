@@ -43,7 +43,7 @@ sigil list --output-format wide --instance-tags '[{"key":"Name","values":["Web",
   -h, --help                             help for list
       --instance-ids strings             specify instance ids to limit results
       --instance-tags string             specify instance tags, in JSON format, to limit results
-  -i, --interactive                      pick an instance from a list and start the session
+  -i, --interactive                      pick an instance or a session from a list and start or terminate the session
       --output-format string             specify output format: text/wide/json/yaml (default "text")
       --session-filters stringToString   specify session filters to limit results (default [after=,before=,target=,owner=])
   -t, --type string                      specify list type: instances/sessions (default "instances")

@@ -1,3 +1,5 @@
+// +build ignore
+
 package cmd
 
 import (
@@ -10,7 +12,7 @@ import (
 )
 
 var (
-	outDir = "doc"
+	outDir = path.Join("docs", "man")
 
 	// genDocCmd represents the gendoc command
 	genDocCmd = &cobra.Command{

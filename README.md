@@ -15,23 +15,28 @@
 
 - configuration files support (TOML, YAML, JSON, etc.)
 - support for different configuration profiles
-- lightweight [container image](https://hub.docker.com/r/danmx/sigil) (~22MB)
+- lightweight [container image](https://hub.docker.com/r/danmx/sigil)
 - SSH and SCP support
 
 ## External dependencies
 
+### Local
+
 - AWS [session-manager-plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) (version 1.1.17.0+ for SSH support)
+
+### Remote
+
 - target EC2 instance must have AWS SSM Agent installed ([full guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html)) (version 2.3.672.0+ for SSH support)
 - AWS [ec2-instance-connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html) to use SSH with your own and/or temporary keys
 - to support AWS SSM target EC2 instance profile should have **AmazonSSMManagedInstanceCore** managed IAM policy attached or a specific policy with similar permissions (check [About Policies for a Systems Manager Instance Profile](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-instance-profile.html) and [About Minimum S3 Bucket Permissions for SSM Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent-minimum-s3-permissions.html))
 
-## Manual
+## Documentation
 
-The manual can be found [here](doc/sigil.md).
+The manual can be found [here](docs/README.md).
 
 ## Installation
 
-### MacOS
+### Homebrew
 
 ```shell
 brew tap danmx/sigil
@@ -57,7 +62,7 @@ docker pull danmx/sigil:0.3
 Docker:
 
 ```shell
-docker run --rm -it -v "${HOME}"/.sigil:/home/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.3 list --output-format wide
+docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.3 list --output-format wide
 ```
 
 Binary:
@@ -103,7 +108,7 @@ ssh ip-10-0-0-5.eu-west-1.compute.internal
 
 ### Config file
 
-By default configuration file is located in `$HOME/.sigil/config.toml`.
+By default configuration file is located in `${HOME}/.sigil/config.toml`.
 
 ```toml
 [default]
@@ -127,14 +132,14 @@ make build
 To run specific build use:
 
 ```shell
-make build-[linux|mac|windows]
+make build-[linux|darwin|windows]
 ```
 
 Binaries are located in:
 
 - Linux: `bin/release/linux/amd64/sigil`
-- Mac: `bin/release/darwin/amd64/sigil`
-- Windows: `bin/release/darwin/amd64/sigil.exe`
+- Darwin: `bin/release/darwin/amd64/sigil`
+- Windows: `bin/release/windows/amd64/sigil.exe`
 
 ### Container image
 
@@ -149,6 +154,8 @@ It'll create a docker image tagged `sigil:{version}` where `{version}` correspon
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdanmx%2Fsigil.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdanmx%2Fsigil?ref=badge_large)
+
+[Apache 2.0](LICENSE)
 
 ## Considerations
 

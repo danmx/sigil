@@ -19,7 +19,6 @@ var (
 		Use:   "ssh",
 		Short: "Start ssh session",
 		Long:  `Start a new ssh for chosen EC2 instance.`,
-		//Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
 		//nolint:dupl
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Config bindings
