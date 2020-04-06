@@ -78,6 +78,7 @@ var (
 				GenKeyPair: &genKeyPair,
 				Region:     &region,
 				Profile:    &profile,
+				MFAToken:   &mfaToken,
 			}
 			err := ssh.Start(input)
 			if err != nil {
