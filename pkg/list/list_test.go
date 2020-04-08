@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestInstancesString verifies correctness of preparing a list of instanes
 func TestInstancesString(t *testing.T) {
 	resultText := `Index  Name       Instance ID          IP Address  Private DNS Name
 1      testNode1  i-xxxxxxxxxxxxxxxx1  10.10.10.1  test1.local
@@ -80,6 +81,7 @@ func TestInstancesString(t *testing.T) {
 	a.Equal(resultYAML, outString)
 }
 
+// TestSessionsString verifies correctness of preparing a list of sessions
 func TestSessionsString(t *testing.T) {
 	resultText := `Index  Session ID       Target               Start Date
 1      test-1234567890  i-xxxxxxxxxxxxxxxx1  2019-05-03T10:08:44Z
@@ -124,6 +126,7 @@ func TestSessionsString(t *testing.T) {
 	a.Equal(resultYAML, outString)
 }
 
+// TestListInstances verifies listing instances
 func TestListInstances(t *testing.T) {
 	instances := []*aws.Instance{
 		{
@@ -164,6 +167,7 @@ func TestListInstances(t *testing.T) {
 	// TODO test integractive part
 }
 
+// TestListSessions verifies listing sessions
 func TestListSessions(t *testing.T) {
 	sessions := []*aws.Session{
 		{

@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestStart verifies start session method for different configurations
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

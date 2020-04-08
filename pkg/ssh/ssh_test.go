@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestStart verifies start ssh method
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
