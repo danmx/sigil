@@ -53,7 +53,7 @@ brew install danmx/sigil/sigil
 ### Docker
 
 ```shell
-docker pull danmx/sigil:0.3
+docker pull danmx/sigil:0.4
 ```
 
 ## Examples
@@ -63,7 +63,7 @@ docker pull danmx/sigil:0.3
 Docker:
 
 ```shell
-docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.3 list --output-format wide
+docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.4 list --output-format wide
 ```
 
 Binary:

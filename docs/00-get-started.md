@@ -34,7 +34,7 @@ brew install danmx/sigil/sigil
 ### Docker
 
 ```shell
-docker pull danmx/sigil:0.3
+docker pull danmx/sigil:0.4
 ```
 
 ### Source code
