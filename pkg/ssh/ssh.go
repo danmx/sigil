@@ -1,110 +1,90 @@
 package ssh
 
 import (
-	"fmt"
-	"io/ioutil"
-	"crypto/rsa"
 	"crypto/rand"
-	"strings"
-	"encoding/pem"
+	"crypto/rsa"
 	"crypto/x509"
+	"encoding/pem"
+	"io/ioutil"
 	"os"
+	"strings"
 
-	"github.com/danmx/sigil/pkg/utils"
-	remoteSession "github.com/danmx/sigil/pkg/session"
+	"github.com/danmx/sigil/pkg/aws"
 
-	"golang.org/x/crypto/ssh"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/ssh"
 )
+
+// SSH wraps methods used from the pkg/ssh package
+type SSH interface {
+	Start(input *StartInput) error
+}
 
 // StartInput struct contains all input data
 type StartInput struct {
-	Target       *string
-	TargetType   *string
-	PortNumber   *int
-	PublicKey    *string
-	OSUser       *string
-	GenKeyPair   *bool
-	AWSSession   *session.Session
-	AWSProfile   *string
+	Target     *string
+	TargetType *string
+	PortNumber *uint64
+	PublicKey  *string
+	OSUser     *string
+	GenKeyPair *bool
+	MFAToken   *string
+	Region     *string
+	Profile    *string
 }
 
 // Start will start ssh session
 func Start(input *StartInput) error {
+	return input.start(new(aws.Provider))
+}
+
+func (input *StartInput) start(provider aws.CloudSSH) (err error) {
+	err = provider.NewWithConfig(&aws.Config{
+		Region:   *input.Region,
+		Profile:  *input.Profile,
+		MFAToken: *input.MFAToken,
+	})
+	if err != nil {
+		log.Error(err)
+		return err
+	}
 	pubKey := *input.PublicKey
 	if *input.GenKeyPair {
-		privKeyBlob, err := rsa.GenerateKey(rand.Reader, 4092)
-		if err != nil {
+		privKeyBlob, errKey := rsa.GenerateKey(rand.Reader, 4092)
+		if errKey != nil {
 			return err
 		}
 		pubKeyBlob := privKeyBlob.PublicKey
-		if err = savePublicPEMKey(pubKey, &pubKeyBlob); err != nil {
-			return err
+		if errPubPEM := savePublicPEMKey(pubKey, &pubKeyBlob); errPubPEM != nil {
+			return errPubPEM
 		}
 		privKey := strings.TrimSuffix(pubKey, ".pub")
-		if err = savePrivPEMKey(privKey, privKeyBlob); err != nil {
-			return err
+		if errPrivPEM := savePrivPEMKey(privKey, privKeyBlob); errPrivPEM != nil {
+			return errPrivPEM
 		}
 		// Remove temporary keys
 		defer deleteTempKey(pubKey)
 		defer deleteTempKey(privKey)
 	}
-	instance, err := utils.GetInstance(input.AWSSession, *input.TargetType, *input.Target)
-	if err != nil {
-		return err
-	}
 
-	log.WithFields(log.Fields{
-		"pubKey": pubKey,
-	}).Debug("Checking the path of a public key")
-
+	pubKeyData := []byte{}
 	if pubKey != "" {
-		pubKeyString := ""
-		dat, err := ioutil.ReadFile(pubKey)
+		pubKeyData, err = ioutil.ReadFile(pubKey)
 		if err != nil {
 			return err
-		}
-		pubKeyString = string(dat)
-
-		log.WithFields(log.Fields{
-			"SSHPublicKey": pubKeyString,
-			"InstanceOSUser": *input.OSUser,
-			"InstanceId": *instance.InstanceId,
-			"AvailabilityZone": *instance.Placement.AvailabilityZone,
-		}).Debug("SendSSHPublicKey")
-		
-		svc := ec2instanceconnect.New(input.AWSSession)
-		out, err := svc.SendSSHPublicKey(&ec2instanceconnect.SendSSHPublicKeyInput{
-			AvailabilityZone: instance.Placement.AvailabilityZone,
-			InstanceId: instance.InstanceId,
-			InstanceOSUser: input.OSUser,
-			SSHPublicKey: &pubKeyString,
-		})
-		if err != nil {
-			return err
-		}
-		if !*out.Success {
-			return fmt.Errorf("SendSSHPublicKey has not succeeded. RequestID: %s", *out.RequestId)
 		}
 	}
 
 	log.WithFields(log.Fields{
-		"InstanceID": *instance.InstanceId,
-		"PortNumber": *input.PortNumber,
-		"AWSSession": *input.AWSSession,
-		"AWSProfile": *input.AWSProfile,
-		"RemoveTempKeyPair": *input.GenKeyPair,
+		"targetType":    *input.TargetType,
+		"PortNumber":    *input.PortNumber,
+		"target":        *input.Target,
+		"OSUser":        *input.OSUser,
+		"pubKeyData":    string(pubKeyData),
 		"PublicKeyPath": pubKey,
 	}).Debug("StartSSHInput")
 
-	err = remoteSession.StartSSH(&remoteSession.StartSSHInput{
-		InstanceID:	instance.InstanceId,
-		PortNumber:	input.PortNumber,
-		AWSSession: input.AWSSession,
-		AWSProfile: input.AWSProfile,
-	})
+	err = provider.StartSSH(*input.TargetType, *input.Target, *input.OSUser, *input.PortNumber, pubKeyData)
 	if err != nil {
 		return err
 	}
@@ -116,9 +96,9 @@ func Start(input *StartInput) error {
 
 func savePrivPEMKey(fileName string, key *rsa.PrivateKey) error {
 	var privateKey = &pem.Block{
-		Type:  "RSA PRIVATE KEY",
+		Type:    "RSA PRIVATE KEY",
 		Headers: nil,
-		Bytes: x509.MarshalPKCS1PrivateKey(key),
+		Bytes:   x509.MarshalPKCS1PrivateKey(key),
 	}
 
 	if err := ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600); err != nil {
@@ -129,10 +109,10 @@ func savePrivPEMKey(fileName string, key *rsa.PrivateKey) error {
 
 func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 	pub, err := ssh.NewPublicKey(pubkey)
-    if err != nil {
-        return err
-    }
-    if err := ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0655); err != nil {
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0655); err != nil {
 		return err
 	}
 	return nil
@@ -142,7 +122,7 @@ func deleteTempKey(keyPath string) {
 	stat, err := os.Stat(keyPath)
 	log.WithFields(log.Fields{
 		"stat": stat,
-		"err": err,
+		"err":  err,
 	}).Debug("Checking if key exist")
 	if err == nil {
 		if err = os.Remove(keyPath); err != nil {

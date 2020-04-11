@@ -1,2 +1,6 @@
 bin/
 dist/
+.git/
+.DS_Store
+coverage.txt
+*.deb

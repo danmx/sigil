@@ -21,7 +21,7 @@ sigil session --type instance-id --target i-xxxxxxxxxxxxxxxxx
 ```
   -h, --help            help for session
       --target string   specify the target depending on the type
-      --type string     specify target type: instance-id/private-dns/name-tag (default "instance-id")
+      --type string     specify target type: instance-id/private-dns/name (default "instance-id")
 ```
 
 ### Options inherited from parent commands

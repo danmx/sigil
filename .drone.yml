@@ -8,7 +8,7 @@ platform:
 
 steps:
 - name: test
-  image: golang:1.12
+  image: golang:1.14
   commands:
   - make test
 
@@ -22,7 +22,7 @@ steps:
       from_secret: codecov_token
 
 - name: build-binaries
-  image: golang:1.12
+  image: golang:1.14
   commands:
   - make build build-dev
   environment:
@@ -51,7 +51,7 @@ steps:
     - push
 
 - name: build-release
-  image: golang:1.12
+  image: golang:1.14
   commands:
   - make release
   environment:
@@ -96,6 +96,6 @@ steps:
 
 ---
 kind: signature
-hmac: e77859c9035f532a67320f0b17dace5fc3766e785dd750fedfe31f64b0f8a4a3
+hmac: 6bf71f4f9351d1dd4fa01be2a085ce6178319adc0d892138f60674c871e184fd
 
 ...

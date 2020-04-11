@@ -23,11 +23,12 @@ var (
 	// Debug is turning a debug mode (added at compile time)
 	Debug string
 
-	workDir     string
-	cfgFile     string
-	awsMFAToken string
-	cfg         *viper.Viper
+	workDir  string
+	cfgFile  string
+	mfaToken string
+	cfg      *viper.Viper
 
+	// TODO: test custom named configs
 	cfgFileName = "config"
 	cfgProfile  = "default"
 	cfgType     = "toml"
@@ -38,17 +39,18 @@ var (
 		Use:               AppName,
 		Short:             "AWS SSM Session manager client",
 		Long:              `A tool for establishing a session in EC2 instances with AWS SSM Agent installed`,
-		Version:           fmt.Sprintf("%s version %s (build %s)\n", AppName, Version, Revision),
+		Version:           fmt.Sprintf("%s (build %s)", Version, Revision),
 		DisableAutoGenTag: true,
 	}
 )
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute() error {
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
 func init() {
@@ -74,14 +76,13 @@ func init() {
 	// AWS
 	rootCmd.PersistentFlags().StringP("region", "r", "", "specify AWS region")
 	rootCmd.PersistentFlags().String("profile", "", "specify AWS profile")
-	rootCmd.PersistentFlags().StringVarP(&awsMFAToken, "mfa", "m", awsMFAToken, "specify MFA token")
+	rootCmd.PersistentFlags().StringVarP(&mfaToken, "mfa", "m", mfaToken, "specify MFA token")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	var err error
 	// Set Log level
-	if err = setLogLevel(LogLevel); err != nil {
+	if err := setLogLevel(LogLevel); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		log.WithFields(log.Fields{
 			"LogLevel": LogLevel,
@@ -101,7 +102,7 @@ func initConfig() {
 		workDir = path.Join(home, workDirName)
 		stat, err := os.Stat(workDir)
 		if !(err == nil && stat.IsDir()) {
-			if err = os.MkdirAll(workDir, 0750); err != nil {
+			if err := os.MkdirAll(workDir, 0750); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				log.Fatal(err)
 			}
@@ -113,7 +114,7 @@ func initConfig() {
 	}
 
 	// If a config file is found, read it in.
-	if err = cfg.ReadInConfig(); err == nil {
+	if err := cfg.ReadInConfig(); err == nil {
 		log.WithFields(log.Fields{
 			"config": cfg.ConfigFileUsed(),
 		}).Debug("Using config file")
@@ -139,14 +140,14 @@ func initConfig() {
 func safeSub(v *viper.Viper, profile string) (*viper.Viper, error) {
 	subConfig := v.Sub(profile)
 	if subConfig == nil {
-		return nil, fmt.Errorf("Config profile doesn't exist. Profile: %s", profile)
+		return nil, fmt.Errorf("config profile doesn't exist. Profile: %s", profile)
 	}
 	return subConfig, nil
 }
 
 func setLogLevel(level string) error {
 	// Log level
-	switch LogLevel {
+	switch level {
 	case "error":
 		log.SetLevel(log.ErrorLevel)
 	case "debug":
@@ -162,7 +163,7 @@ func setLogLevel(level string) error {
 	case "trace":
 		log.SetLevel(log.TraceLevel)
 	default:
-		return fmt.Errorf("Unsupported log level: %s", LogLevel)
+		return fmt.Errorf("unsupported log level: %s", LogLevel)
 	}
 	return nil
 }

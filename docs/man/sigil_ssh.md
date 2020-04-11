@@ -16,10 +16,10 @@ sigil ssh [flags]
       --gen-key-pair     generate a temporary key pair that will be send and used. Use ${HOME}/.sigil/temp_key as an identity file
   -h, --help             help for ssh
       --os-user string   specify an instance OS user which will be using sent public key (default "ec2-user")
-      --port int         specify ssh port (default 22)
+      --port uint        specify ssh port (default 22)
       --pub-key string   local public key that will be send to the instance, ignored when gen-key-pair is true
       --target string    specify the target depending on the type
-      --type string      specify target type: instance-id/private-dns/name-tag (default "instance-id")
+      --type string      specify target type: instance-id/private-dns/name (default "instance-id")
 ```
 
 ### Options inherited from parent commands

@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/danmx/sigil/pkg/aws"
 	"github.com/danmx/sigil/pkg/session"
-	"github.com/danmx/sigil/pkg/utils"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -17,32 +17,39 @@ var sessionCmd = &cobra.Command{
 	Long:    `Start a new session in chosen EC2 instance.`,
 	Aliases: []string{"sess", "s"},
 	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Config bindings
 		if err := cfg.BindPFlag("target", cmd.Flags().Lookup("target")); err != nil {
-			log.Fatal(err)
+			log.Error(err)
+			return err
 		}
 		if err := cfg.BindPFlag("type", cmd.Flags().Lookup("type")); err != nil {
-			log.Fatal(err)
+			log.Error(err)
+			return err
 		}
+		if err := aws.VerifyDependencies(); err != nil {
+			return err
+		}
+		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := cfg.GetString("target")
 		targetType := cfg.GetString("type")
-		awsProfile := cfg.GetString("profile")
-		awsRegion := cfg.GetString("region")
+		profile := cfg.GetString("profile")
+		region := cfg.GetString("region")
 		log.WithFields(log.Fields{
 			"target":  target,
 			"type":    targetType,
-			"region":  awsRegion,
-			"profile": awsProfile,
-			"mfa":     awsMFAToken,
+			"region":  region,
+			"profile": profile,
+			"mfa":     mfaToken,
 		}).Debug("Session inputs")
 		input := &session.StartInput{
 			Target:     &target,
 			TargetType: &targetType,
-			AWSSession: utils.StartAWSSession(awsRegion, awsProfile, awsMFAToken),
-			AWSProfile: &awsProfile,
+			Region:     &region,
+			Profile:    &profile,
+			MFAToken:   &mfaToken,
 		}
 		err := session.Start(input)
 		if err != nil {
@@ -57,5 +64,5 @@ func init() {
 	rootCmd.AddCommand(sessionCmd)
 
 	sessionCmd.Flags().String("target", "", "specify the target depending on the type")
-	sessionCmd.Flags().String("type", "instance-id", "specify target type: instance-id/private-dns/name-tag")
+	sessionCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName))
 }
