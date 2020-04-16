@@ -82,7 +82,7 @@ Filter format examples:
 			var filters aws.Filters
 			if err := cfg.UnmarshalKey("filters", &filters); err != nil {
 				log.Error("failed unmarshaling filters")
-				return err
+				return fmt.Errorf("failed unmarshaling filters: %s", err)
 			}
 			outputFormat := cfg.GetString("output-format")
 			profile := cfg.GetString("profile")
@@ -92,7 +92,7 @@ Filter format examples:
 			instanceIDs := cfg.GetStringSlice("filters.instance.ids")
 			// hack to get map[string]string from args
 			// https://github.com/spf13/viper/issues/608
-			if cfg.IsSet("filters.session") {
+			if cmd.Flags().Changed("session-filters") {
 				filters.Session = aws.SessionFilters{
 					After:  sessionFilters["after"],
 					Before: sessionFilters["before"],
@@ -100,15 +100,14 @@ Filter format examples:
 					Owner:  sessionFilters["owner"],
 				}
 			}
-			if cfg.IsSet("filters.instance.ids") {
+			if cmd.Flags().Changed("instance-ids") {
 				filters.Instance.IDs = instanceIDs
 			}
 			var tags []aws.TagValues
-			if cfg.IsSet("filters.instance.tags") {
-
+			if cmd.Flags().Changed("instance-tags") {
 				if err := json.Unmarshal([]byte(cfg.GetString("filters.instance.tags")), &tags); err != nil {
 					log.WithField("tags", cfg.GetString("filters.instance.tags")).Error("failed unmarshaling tags")
-					return err
+					return fmt.Errorf("failed unmarshaling tags: %s", err)
 				}
 				filters.Instance.Tags = tags
 			}

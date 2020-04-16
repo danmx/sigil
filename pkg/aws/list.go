@@ -23,16 +23,6 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 			},
 		},
 	}
-	for _, tag := range p.filters.Instance.Tags {
-		log.WithFields(log.Fields{
-			"key":    tag.Key,
-			"values": tag.Values,
-		}).Debug("Tags Filter")
-		ssmDescribeInstancesInput.Filters = append(ssmDescribeInstancesInput.Filters, &ssm.InstanceInformationStringFilter{
-			Key:    aws.String("tag:" + tag.Key),
-			Values: aws.StringSlice(tag.Values),
-		})
-	}
 	if len(p.filters.Instance.IDs) > 0 {
 		log.WithFields(log.Fields{
 			"IDs": p.filters.Instance.IDs,
@@ -86,11 +76,22 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 			},
 		},
 	}
+
+	for _, tag := range p.filters.Instance.Tags {
+		log.WithFields(log.Fields{
+			"key":    tag.Key,
+			"values": tag.Values,
+		}).Debug("Tags Filter")
+		describeInstancesInput.Filters = append(describeInstancesInput.Filters, &ec2.Filter{
+			Name:   aws.String("tag:" + tag.Key),
+			Values: aws.StringSlice(tag.Values),
+		})
+	}
+
 	outputInstances := make([]*Instance, 0, len(instances))
 	// Discovering instances private DNS names
 	for _, instance := range instances {
 		describeInstancesInput.InstanceIds = append(describeInstancesInput.InstanceIds, &instance.ID)
-		outputInstances = append(outputInstances, instance)
 	}
 	ec2Client := ec2.New(p.session)
 	err = ec2Client.DescribeInstancesPages(describeInstancesInput,
@@ -106,6 +107,7 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 					}
 					instances[*instance.InstanceId].PrivateDNSName = *instance.PrivateDnsName
 					instances[*instance.InstanceId].Name = nameTag
+					outputInstances = append(outputInstances, instances[*instance.InstanceId])
 				}
 			}
 			return !lastPage
@@ -152,7 +154,9 @@ func (p *Provider) ListSessions() ([]*Session, error) {
 			Value: &p.filters.Session.Owner,
 		})
 	}
-	ssmDescribeSessionsInput.Filters = filters
+	if len(filters) > 0 {
+		ssmDescribeSessionsInput.Filters = filters
+	}
 	ssmClient := ssm.New(p.session)
 	sessions := []*Session{}
 	for out, err := ssmClient.DescribeSessions(ssmDescribeSessionsInput); ; {
