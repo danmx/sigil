@@ -29,19 +29,17 @@ Config file settings that affect the command
 
 ```ssh_config
 Host i-* mi-*
-    User ec2-user
     IdentityFile ~/.sigil/temp_key
     IdentitiesOnly yes
-    ProxyCommand sh -c 'sigil ssh --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair'
+    ProxyCommand sigil ssh --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
 Host *.compute.internal
-    User ec2-user
     IdentityFile ~/.sigil/temp_key
     IdentitiesOnly yes
-    ProxyCommand sh -c 'sigil ssh --type private-dns --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair'
+    ProxyCommand sigil ssh --type private-dns --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
 ```
 
 ```console
-$ ssh ip-10-0-0-5.eu-west-1.compute.internal
+$ ssh ec2-user@ip-10-0-0-5.eu-west-1.compute.internal
 Last login: Tue Jun 18 20:50:59 2019 from 10.0.0.5
 ...
 [ec2-user@example ~]$
