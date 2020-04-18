@@ -84,27 +84,25 @@ Add an entry to your `ssh_config`:
 
 ```ssh_config
 Host i-* mi-*
-    User ec2-user
     IdentityFile ~/.sigil/temp_key
     IdentitiesOnly yes
-    ProxyCommand sh -c 'sigil ssh --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair'
+    ProxyCommand sigil ssh --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
 Host *.compute.internal
-    User ec2-user
     IdentityFile ~/.sigil/temp_key
     IdentitiesOnly yes
-    ProxyCommand sh -c 'sigil ssh --type private-dns --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair'
+    ProxyCommand sigil ssh --type private-dns --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
 ```
 
 and run:
 
 ```shell
-ssh i-123456789
+ssh ec2-user@i-123456789
 ```
 
 or
 
 ```shell
-ssh ip-10-0-0-5.eu-west-1.compute.internal
+ssh ec2-user@ip-10-0-0-5.eu-west-1.compute.internal
 ```
 
 ### Config file
