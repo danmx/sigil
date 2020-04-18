@@ -2,6 +2,19 @@
 
 The configuration varies depending on the command. For more defails (like default values) check [usage](usage/README.md) section or [man](man/sigil.md) pages.
 
+## Global flags and corresponding environment variables
+
+ENV variables are case sensitive.
+
+| Flag                    |                                      Environment variable                                      | Description                                                        |
+| ----------------------- | :--------------------------------------------------------------------------------------------: | :----------------------------------------------------------------- |
+| `-c`/`--config`         |                                         `SIGIL_CONFIG`                                         | full config file path, supported formats: json/yaml/toml/hcl/props |
+| `-p`/`--config-profile` |                                     `SIGIL_CONFIG_PROFILE`                                     | pick the config profile                                            |
+| `--log-level`           |                                       `SIGIL_LOG_LEVEL`                                        | specify the log level: trace/debug/info/warn/error/fatal/panic     |
+| `-m`/`--mfa`            |                                          `SIGIL_MFA`                                           | specify MFA token                                                  |
+| `--profile`             | [`AWS_PROFILE`/`AWS_DEFAULT_PROFILE`](https://docs.aws.amazon.com/sdk-for-go/api/aws/session/) | specify AWS profile                                                |
+| `-r`/`--region`         |  [`AWS_REGION`/`AWS_DEFAULT_REGION`](https://docs.aws.amazon.com/sdk-for-go/api/aws/session/)  | specify AWS region                                                 |
+
 ## Config file
 
 Description of different values of the configuration file.

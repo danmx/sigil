@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	log "github.com/sirupsen/logrus"
@@ -23,14 +24,10 @@ var (
 	// Debug is turning a debug mode (added at compile time)
 	Debug string
 
-	workDir  string
-	cfgFile  string
-	mfaToken string
-	cfg      *viper.Viper
+	workDir string
+	cfg     *viper.Viper
 
-	// TODO: test custom named configs
 	cfgFileName = "config"
-	cfgProfile  = "default"
 	cfgType     = "toml"
 	workDirName = "." + AppName
 
@@ -79,30 +76,58 @@ func init() {
 		}
 	}
 
-	cobra.OnInitialize(initConfig)
+	// init config and env vars
+	cobra.OnInitialize(func() {
+		if err := initConfig(rootCmd); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			log.Fatal(err)
+		}
+	})
 
 	// Config file
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", cfgFile, "full config file path")
-	rootCmd.PersistentFlags().StringVar(&cfgType, "config-type", cfgType, "specify the type of a config file: json, yaml, toml, hcl, props")
-	rootCmd.PersistentFlags().StringVarP(&cfgProfile, "config-profile", "p", cfgProfile, "pick the config profile")
+	rootCmd.PersistentFlags().StringP("config", "c", "", "full config file path, supported formats: json/yaml/toml/hcl/props")
+	rootCmd.PersistentFlags().StringP("config-profile", "p", "default", "pick the config profile")
 	// Log level
-	rootCmd.PersistentFlags().StringVar(&LogLevel, "log-level", LogLevel, "specify the log level: trace/debug/info/warn/error/fatal/panic")
+	rootCmd.PersistentFlags().String("log-level", LogLevel, "specify the log level: trace/debug/info/warn/error/fatal/panic")
 	// AWS
 	rootCmd.PersistentFlags().StringP("region", "r", "", "specify AWS region")
 	rootCmd.PersistentFlags().String("profile", "", "specify AWS profile")
-	rootCmd.PersistentFlags().StringVarP(&mfaToken, "mfa", "m", mfaToken, "specify MFA token")
+	rootCmd.PersistentFlags().StringP("mfa", "m", "", "specify MFA token")
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+// initConfig reads in config file and ENV variables if set
+func initConfig(cmd *cobra.Command) error {
+	cfg = viper.New()
+	// Environment variables
+	cfg.SetEnvPrefix(AppName)
+	cfg.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	// Root config bindings
+	for _, key := range []string{"config", "config-profile", "log-level"} {
+		if err := cfg.BindEnv(key); err != nil {
+			log.WithFields(log.Fields{
+				"env": key,
+			}).Error(err)
+			return err
+		}
+		if err := cfg.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+			log.WithFields(log.Fields{
+				"flag": key,
+			}).Error(err)
+			return err
+		}
+	}
+	cfgFile := cfg.GetString("config")
+	cfgProfile := cfg.GetString("config-profile")
+	logLevel := cfg.GetString("log-level")
+
 	// Set Log level
-	if err := setLogLevel(LogLevel); err != nil {
+	if err := setLogLevel(logLevel); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		log.WithFields(log.Fields{
-			"LogLevel": LogLevel,
-		}).Fatal(err)
+			"logLevel": logLevel,
+		}).Error(err)
+		return err
 	}
-	cfg = viper.GetViper()
 	if cfgFile != "" {
 		// Use config file from the flag.
 		cfg.SetConfigFile(cfgFile)
@@ -123,17 +148,28 @@ func initConfig() {
 			fmt.Fprintln(os.Stderr, err)
 			log.WithFields(log.Fields{
 				"config-profile": cfgProfile,
-			}).Fatal(err)
+			}).Error(err)
+			return err
 		}
 	}
 
-	// Config bindings
-	if err := cfg.BindPFlag("region", rootCmd.PersistentFlags().Lookup("region")); err != nil {
-		log.Fatal(err)
+	// Rebinding config bindings that will be propagated to subcommands because of the subconfig (config profile)
+	cfg.SetEnvPrefix(AppName)
+	if err := cfg.BindEnv("mfa"); err != nil {
+		log.WithFields(log.Fields{
+			"env": "mfa",
+		}).Error(err)
+		return err
 	}
-	if err := cfg.BindPFlag("profile", rootCmd.PersistentFlags().Lookup("profile")); err != nil {
-		log.Fatal(err)
+	for _, key := range []string{"region", "config-profile", "region"} {
+		if err := cfg.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+			log.WithFields(log.Fields{
+				"flag": key,
+			}).Error(err)
+			return err
+		}
 	}
+	return nil
 }
 
 // because of https://github.com/spf13/viper/issues/616
@@ -145,6 +181,7 @@ func safeSub(v *viper.Viper, profile string) (*viper.Viper, error) {
 	return subConfig, nil
 }
 
+// setLogLevel sets the log level
 func setLogLevel(level string) error {
 	// Log level
 	switch level {
@@ -163,7 +200,7 @@ func setLogLevel(level string) error {
 	case "trace":
 		log.SetLevel(log.TraceLevel)
 	default:
-		return fmt.Errorf("unsupported log level: %s", LogLevel)
+		return fmt.Errorf("unsupported log level: %s", level)
 	}
 	return nil
 }

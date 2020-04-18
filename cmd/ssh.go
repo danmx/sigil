@@ -23,29 +23,21 @@ var (
 		//nolint:dupl
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Config bindings
-			if err := cfg.BindPFlag("target", cmd.Flags().Lookup("target")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("type", cmd.Flags().Lookup("type")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("pub-key", cmd.Flags().Lookup("pub-key")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("os-user", cmd.Flags().Lookup("os-user")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("gen-key-pair", cmd.Flags().Lookup("gen-key-pair")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("gen-key-dir", cmd.Flags().Lookup("gen-key-dir")); err != nil {
-				log.Error(err)
-				return err
+			for flag, lookup := range map[string]string{
+				"target":       "target",
+				"type":         "type",
+				"pub-key":      "pub-key",
+				"os-user":      "os-user",
+				"gen-key-pair": "gen-key-pair",
+				"gen-key-dir":  "gen-key-dir",
+			} {
+				if err := cfg.BindPFlag(flag, cmd.Flags().Lookup(lookup)); err != nil {
+					log.WithFields(log.Fields{
+						"flag":   flag,
+						"lookup": lookup,
+					}).Error(err)
+					return err
+				}
 			}
 			if err := aws.VerifyDependencies(); err != nil {
 				return err
@@ -61,15 +53,16 @@ var (
 			OSUser := cfg.GetString("os-user")
 			genKeyPair := cfg.GetBool("gen-key-pair")
 			genKeyDir := cfg.GetString("gen-key-dir")
+			mfaToken := cfg.GetString("mfa")
 			if genKeyPair {
 				stat, err := os.Stat(genKeyDir)
 				if !(err == nil && stat.IsDir()) {
-					if err := os.MkdirAll(genKeyDir, 0750); err != nil {
+					if err = os.MkdirAll(genKeyDir, 0750); err != nil {
 						return err
 					}
 				}
 				if err != nil {
-					err := fmt.Errorf("failed creating directory for temporary keys: %e", err)
+					err = fmt.Errorf("failed creating directory for temporary keys: %e", err)
 					log.WithFields(log.Fields{
 						"genKeyDir": genKeyDir,
 					}).Error(err)
