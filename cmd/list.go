@@ -49,29 +49,21 @@ Filter format examples:
 		//nolint:dupl
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Config bindings
-			if err := cfg.BindPFlag("output-format", cmd.Flags().Lookup("output-format")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("interactive", cmd.Flags().Lookup("interactive")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("filters.session", cmd.Flags().Lookup("session-filters")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("filters.instance.ids", cmd.Flags().Lookup("instance-ids")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("filters.instance.tags", cmd.Flags().Lookup("instance-tags")); err != nil {
-				log.Error(err)
-				return err
-			}
-			if err := cfg.BindPFlag("list-type", cmd.Flags().Lookup("type")); err != nil {
-				log.Error(err)
-				return err
+			for flag, lookup := range map[string]string{
+				"output-format":         "output-format",
+				"interactive":           "interactive",
+				"filters.session":       "session-filters",
+				"filters.instance.ids":  "session-filters",
+				"filters.instance.tags": "instance-tags",
+				"list-type":             "type",
+			} {
+				if err := cfg.BindPFlag(flag, cmd.Flags().Lookup(lookup)); err != nil {
+					log.WithFields(log.Fields{
+						"flag":   flag,
+						"lookup": lookup,
+					}).Error(err)
+					return err
+				}
 			}
 			if err := aws.VerifyDependencies(); err != nil {
 				return err
@@ -90,6 +82,7 @@ Filter format examples:
 			interactive := cfg.GetBool("interactive")
 			listType := cfg.GetString("list-type")
 			instanceIDs := cfg.GetStringSlice("filters.instance.ids")
+			mfaToken := cfg.GetString("mfa")
 			// hack to get map[string]string from args
 			// https://github.com/spf13/viper/issues/608
 			if cmd.Flags().Changed("session-filters") {

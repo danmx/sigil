@@ -4,14 +4,21 @@ repos:
     rev: v2.3.0
     hooks:
       - id: check-yaml
+        args:
+        - --allow-multiple-documents
+        always_run: true
       - id: check-toml
+        always_run: true
       - id: end-of-file-fixer
+        always_run: true
       - id: trailing-whitespace
+        always_run: true
   - repo: local
     hooks:
       - id: test
         name: Run tests
         entry: make test
         language: system
+        always_run: true
         stages:
           - push

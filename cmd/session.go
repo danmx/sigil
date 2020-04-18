@@ -19,13 +19,13 @@ var sessionCmd = &cobra.Command{
 	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Config bindings
-		if err := cfg.BindPFlag("target", cmd.Flags().Lookup("target")); err != nil {
-			log.Error(err)
-			return err
-		}
-		if err := cfg.BindPFlag("type", cmd.Flags().Lookup("type")); err != nil {
-			log.Error(err)
-			return err
+		for _, flag := range []string{"target", "type"} {
+			if err := cfg.BindPFlag(flag, cmd.Flags().Lookup(flag)); err != nil {
+				log.WithFields(log.Fields{
+					"flag": flag,
+				}).Error(err)
+				return err
+			}
 		}
 		if err := aws.VerifyDependencies(); err != nil {
 			return err
@@ -37,6 +37,7 @@ var sessionCmd = &cobra.Command{
 		targetType := cfg.GetString("type")
 		profile := cfg.GetString("profile")
 		region := cfg.GetString("region")
+		mfaToken := cfg.GetString("mfa")
 		log.WithFields(log.Fields{
 			"target":  target,
 			"type":    targetType,
