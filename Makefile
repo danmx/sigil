@@ -6,8 +6,6 @@ REPO = danmx/$(NAME)
 MODULE = github.com/$(REPO)
 override REVISION ?= $(shell git rev-parse HEAD;)
 
-GOBIN := $(shell go env GOPATH)/bin
-
 export GO111MODULE = on
 export CGO_ENABLED=0
 export GOARCH=amd64
@@ -169,4 +167,4 @@ format:
 .PHONY: lint
 lint:
 	(which golangci-lint || go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.22.2)
-	$(GOBIN)/golangci-lint run ./...
+	golangci-lint run ./...
