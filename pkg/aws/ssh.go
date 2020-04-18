@@ -58,8 +58,8 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 	}
 
 	defer func() {
-		if err := p.TerminateSession(*output.SessionId); err != nil {
-			err := fmt.Errorf("failed terminating the session (it could be already terminated): %e", err)
+		if err = p.TerminateSession(*output.SessionId); err != nil {
+			err = fmt.Errorf("failed terminating the session (it could be already terminated): %e", err)
 			log.Warn(err)
 		}
 	}()

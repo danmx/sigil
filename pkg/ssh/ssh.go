@@ -59,7 +59,7 @@ func (input *StartInput) start(provider aws.CloudSSH) (err error) {
 			return errPubPEM
 		}
 		defer func() {
-			if err := deleteTempKey(pubKey); err != nil {
+			if err = deleteTempKey(pubKey); err != nil {
 				log.Error(err)
 			}
 		}()
@@ -68,7 +68,7 @@ func (input *StartInput) start(provider aws.CloudSSH) (err error) {
 			return errPrivPEM
 		}
 		defer func() {
-			if err := deleteTempKey(privKey); err != nil {
+			if err = deleteTempKey(privKey); err != nil {
 				log.Error(err)
 			}
 		}()
@@ -132,8 +132,8 @@ func deleteTempKey(keyPath string) error {
 		"err":  err,
 	}).Debug("Checking if key exist")
 	if err == nil {
-		if err = os.Remove(keyPath); err != nil {
-			return err
+		if errRm := os.Remove(keyPath); errRm != nil {
+			return errRm
 		}
 	}
 	return err

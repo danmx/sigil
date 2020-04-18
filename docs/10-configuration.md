@@ -13,6 +13,7 @@ Description of different values of the configuration file.
 | `os-user`                |      `ssh`      | specify an instance OS user which will be using sent public key              |
 | `port`                   |      `ssh`      | specify ssh port                                                             |
 | `gen-key-pair`           |      `ssh`      | generate a temporary key pair that will be send and used                     |
+| `gen-key-dir`            |      `ssh`      | the directory where temporary keys will be generated                         |
 | `pub-key`                |      `ssh`      | local public key that will be send to the instance                           |
 | `output-format`          |     `list`      | specify output format                                                        |
 | `interactive`            |     `list`      | pick an instance or a session from a list and start or terminate the session |
@@ -38,6 +39,7 @@ An example of a fully configured `default` profile.
   interactive = false
   os-user = "ec2-user"
   gen-key-pair = false
+  gen-key-dir = "/tmp/sigil"
   pub-key = "~/.ssh/dev.pub"
   [default.filters.session]
     after="2018-08-29T00:00:00Z"

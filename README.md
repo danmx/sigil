@@ -84,13 +84,13 @@ Add an entry to your `ssh_config`:
 
 ```ssh_config
 Host i-* mi-*
-    IdentityFile ~/.sigil/temp_key
+    IdentityFile /tmp/sigil/%h/temp_key
     IdentitiesOnly yes
-    ProxyCommand sigil ssh --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
+    ProxyCommand sigil ssh --target %h --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r
 Host *.compute.internal
-    IdentityFile ~/.sigil/temp_key
+    IdentityFile /tmp/sigil/%h/temp_key
     IdentitiesOnly yes
-    ProxyCommand sigil ssh --type private-dns --target %h --port %p --pub-key "${HOME}"/.sigil/temp_key.pub --gen-key-pair --os-user %r
+    ProxyCommand sigil ssh --type private-dns --target %h --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r
 ```
 
 and run:

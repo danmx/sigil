@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path"
 
 	"github.com/danmx/sigil/pkg/aws"
@@ -42,6 +43,10 @@ var (
 				log.Error(err)
 				return err
 			}
+			if err := cfg.BindPFlag("gen-key-dir", cmd.Flags().Lookup("gen-key-dir")); err != nil {
+				log.Error(err)
+				return err
+			}
 			if err := aws.VerifyDependencies(); err != nil {
 				return err
 			}
@@ -55,8 +60,22 @@ var (
 			pubKey := cfg.GetString("pub-key")
 			OSUser := cfg.GetString("os-user")
 			genKeyPair := cfg.GetBool("gen-key-pair")
+			genKeyDir := cfg.GetString("gen-key-dir")
 			if genKeyPair {
-				pubKey = path.Join(workDir, tempKeyName+".pub")
+				stat, err := os.Stat(genKeyDir)
+				if !(err == nil && stat.IsDir()) {
+					if err := os.MkdirAll(genKeyDir, 0750); err != nil {
+						return err
+					}
+				}
+				if err != nil {
+					err := fmt.Errorf("failed creating directory for temporary keys: %e", err)
+					log.WithFields(log.Fields{
+						"genKeyDir": genKeyDir,
+					}).Error(err)
+					return err
+				}
+				pubKey = path.Join(genKeyDir, tempKeyName+".pub")
 			}
 			log.WithFields(log.Fields{
 				"target":       target,
@@ -68,6 +87,7 @@ var (
 				"port":         portNum,
 				"os-user":      OSUser,
 				"gen-key-pair": genKeyPair,
+				"gen-key-dir":  genKeyDir,
 			}).Debug("ssh inputs")
 			input := &ssh.StartInput{
 				Target:     &target,
@@ -95,7 +115,8 @@ func init() {
 
 	sshCmd.Flags().String("target", "", "specify the target depending on the type")
 	sshCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName))
-	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. Use %s as an identity file", path.Join("${HOME}", ".sigil", tempKeyName)))
+	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. By default use %s as an identity file", path.Join(workDir, tempKeyName)))
+	sshCmd.Flags().String("gen-key-dir", workDir, "the directory where temporary keys will be generated")
 	sshCmd.Flags().String("os-user", "ec2-user", "specify an instance OS user which will be using sent public key")
 	sshCmd.Flags().String("pub-key", "", "local public key that will be send to the instance, ignored when gen-key-pair is true")
 	sshCmd.Flags().Uint64Var(&portNum, "port", portNum, "specify ssh port")

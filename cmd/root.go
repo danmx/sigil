@@ -64,6 +64,20 @@ func init() {
 			"LogLevel": LogLevel,
 		}).Fatal(err)
 	}
+	// Find home directory.
+	home, err := homedir.Dir()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		log.Fatal(err)
+	}
+	workDir = path.Join(home, workDirName)
+	stat, err := os.Stat(workDir)
+	if !(err == nil && stat.IsDir()) {
+		if err := os.MkdirAll(workDir, 0750); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			log.Fatal(err)
+		}
+	}
 
 	cobra.OnInitialize(initConfig)
 
@@ -93,20 +107,6 @@ func initConfig() {
 		// Use config file from the flag.
 		cfg.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			log.Fatal(err)
-		}
-		workDir = path.Join(home, workDirName)
-		stat, err := os.Stat(workDir)
-		if !(err == nil && stat.IsDir()) {
-			if err := os.MkdirAll(workDir, 0750); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				log.Fatal(err)
-			}
-		}
 		// Search config in home directory with name from cfgFileName (without extension).
 		cfg.AddConfigPath(workDir)
 		cfg.SetConfigName(cfgFileName)
