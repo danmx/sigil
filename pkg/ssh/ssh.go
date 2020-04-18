@@ -58,13 +58,20 @@ func (input *StartInput) start(provider aws.CloudSSH) (err error) {
 		if errPubPEM := savePublicPEMKey(pubKey, &pubKeyBlob); errPubPEM != nil {
 			return errPubPEM
 		}
+		defer func() {
+			if err := deleteTempKey(pubKey); err != nil {
+				log.Error(err)
+			}
+		}()
 		privKey := strings.TrimSuffix(pubKey, ".pub")
 		if errPrivPEM := savePrivPEMKey(privKey, privKeyBlob); errPrivPEM != nil {
 			return errPrivPEM
 		}
-		// Remove temporary keys
-		defer deleteTempKey(pubKey)
-		defer deleteTempKey(privKey)
+		defer func() {
+			if err := deleteTempKey(privKey); err != nil {
+				log.Error(err)
+			}
+		}()
 	}
 
 	pubKeyData := []byte{}
@@ -118,7 +125,7 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 	return nil
 }
 
-func deleteTempKey(keyPath string) {
+func deleteTempKey(keyPath string) error {
 	stat, err := os.Stat(keyPath)
 	log.WithFields(log.Fields{
 		"stat": stat,
@@ -126,7 +133,8 @@ func deleteTempKey(keyPath string) {
 	}).Debug("Checking if key exist")
 	if err == nil {
 		if err = os.Remove(keyPath); err != nil {
-			log.Error(err)
+			return err
 		}
 	}
+	return err
 }
