@@ -64,7 +64,7 @@ func (p *Provider) TerminateSession(sessionID string) error {
 		SessionId: &sessionID,
 	})
 	if err != nil {
-		log.WithFields(log.Fields{"sessionID": sessionID}).Error(err)
+		log.WithFields(log.Fields{"sessionID": sessionID}).Warn(err)
 		return err
 	}
 	return nil
