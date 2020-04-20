@@ -35,6 +35,7 @@ func (m *MockCloud) EXPECT() *MockCloudMockRecorder {
 
 // NewWithConfig mocks base method
 func (m *MockCloud) NewWithConfig(arg0 *aws.Config) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewWithConfig", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -42,6 +43,7 @@ func (m *MockCloud) NewWithConfig(arg0 *aws.Config) error {
 
 // NewWithConfig indicates an expected call of NewWithConfig
 func (mr *MockCloudMockRecorder) NewWithConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewWithConfig", reflect.TypeOf((*MockCloud)(nil).NewWithConfig), arg0)
 }
 
@@ -70,6 +72,7 @@ func (m *MockCloudInstances) EXPECT() *MockCloudInstancesMockRecorder {
 
 // ListInstances mocks base method
 func (m *MockCloudInstances) ListInstances() ([]*aws.Instance, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListInstances")
 	ret0, _ := ret[0].([]*aws.Instance)
 	ret1, _ := ret[1].(error)
@@ -78,11 +81,13 @@ func (m *MockCloudInstances) ListInstances() ([]*aws.Instance, error) {
 
 // ListInstances indicates an expected call of ListInstances
 func (mr *MockCloudInstancesMockRecorder) ListInstances() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockCloudInstances)(nil).ListInstances))
 }
 
 // NewWithConfig mocks base method
 func (m *MockCloudInstances) NewWithConfig(arg0 *aws.Config) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewWithConfig", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -90,11 +95,13 @@ func (m *MockCloudInstances) NewWithConfig(arg0 *aws.Config) error {
 
 // NewWithConfig indicates an expected call of NewWithConfig
 func (mr *MockCloudInstancesMockRecorder) NewWithConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewWithConfig", reflect.TypeOf((*MockCloudInstances)(nil).NewWithConfig), arg0)
 }
 
 // StartSession mocks base method
 func (m *MockCloudInstances) StartSession(arg0, arg1 string) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StartSession", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -102,6 +109,7 @@ func (m *MockCloudInstances) StartSession(arg0, arg1 string) error {
 
 // StartSession indicates an expected call of StartSession
 func (mr *MockCloudInstancesMockRecorder) StartSession(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartSession", reflect.TypeOf((*MockCloudInstances)(nil).StartSession), arg0, arg1)
 }
 
@@ -130,6 +138,7 @@ func (m *MockCloudSessions) EXPECT() *MockCloudSessionsMockRecorder {
 
 // ListSessions mocks base method
 func (m *MockCloudSessions) ListSessions() ([]*aws.Session, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListSessions")
 	ret0, _ := ret[0].([]*aws.Session)
 	ret1, _ := ret[1].(error)
@@ -138,11 +147,13 @@ func (m *MockCloudSessions) ListSessions() ([]*aws.Session, error) {
 
 // ListSessions indicates an expected call of ListSessions
 func (mr *MockCloudSessionsMockRecorder) ListSessions() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSessions", reflect.TypeOf((*MockCloudSessions)(nil).ListSessions))
 }
 
 // NewWithConfig mocks base method
 func (m *MockCloudSessions) NewWithConfig(arg0 *aws.Config) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewWithConfig", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -150,11 +161,13 @@ func (m *MockCloudSessions) NewWithConfig(arg0 *aws.Config) error {
 
 // NewWithConfig indicates an expected call of NewWithConfig
 func (mr *MockCloudSessionsMockRecorder) NewWithConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewWithConfig", reflect.TypeOf((*MockCloudSessions)(nil).NewWithConfig), arg0)
 }
 
 // TerminateSession mocks base method
 func (m *MockCloudSessions) TerminateSession(arg0 string) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TerminateSession", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -162,6 +175,7 @@ func (m *MockCloudSessions) TerminateSession(arg0 string) error {
 
 // TerminateSession indicates an expected call of TerminateSession
 func (mr *MockCloudSessionsMockRecorder) TerminateSession(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TerminateSession", reflect.TypeOf((*MockCloudSessions)(nil).TerminateSession), arg0)
 }
 
@@ -190,6 +204,7 @@ func (m *MockCloudSSH) EXPECT() *MockCloudSSHMockRecorder {
 
 // NewWithConfig mocks base method
 func (m *MockCloudSSH) NewWithConfig(arg0 *aws.Config) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewWithConfig", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -197,11 +212,13 @@ func (m *MockCloudSSH) NewWithConfig(arg0 *aws.Config) error {
 
 // NewWithConfig indicates an expected call of NewWithConfig
 func (mr *MockCloudSSHMockRecorder) NewWithConfig(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewWithConfig", reflect.TypeOf((*MockCloudSSH)(nil).NewWithConfig), arg0)
 }
 
 // StartSSH mocks base method
 func (m *MockCloudSSH) StartSSH(arg0, arg1, arg2 string, arg3 uint64, arg4 []byte) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StartSSH", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -209,5 +226,6 @@ func (m *MockCloudSSH) StartSSH(arg0, arg1, arg2 string, arg3 uint64, arg4 []byt
 
 // StartSSH indicates an expected call of StartSSH
 func (mr *MockCloudSSHMockRecorder) StartSSH(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartSSH", reflect.TypeOf((*MockCloudSSH)(nil).StartSSH), arg0, arg1, arg2, arg3, arg4)
 }
