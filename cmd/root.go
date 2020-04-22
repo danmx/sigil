@@ -6,6 +6,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/danmx/sigil/pkg/aws"
+
 	homedir "github.com/mitchellh/go-homedir"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -38,6 +40,12 @@ var (
 		Long:              `A tool for establishing a session in EC2 instances with AWS SSM Agent installed`,
 		Version:           fmt.Sprintf("%s (build %s)", Version, Revision),
 		DisableAutoGenTag: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := aws.AppendUserAgent(AppName + "/" + Version); err != nil {
+				return err
+			}
+			return nil
+		},
 	}
 )
 
