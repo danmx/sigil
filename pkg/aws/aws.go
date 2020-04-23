@@ -17,6 +17,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const execEnvVar = "AWS_EXECUTION_ENV"
+
 // Provider contains necessary components like the session
 type Provider struct {
 	filters    Filters
@@ -127,6 +129,16 @@ func VerifyDependencies() error {
 		"path":   o,
 	}).Debugf("%s is installed successfully in %s\n", pluginName, o)
 	return nil
+}
+
+// AppendUserAgent will add given suffix to HTTP client's user agent
+func AppendUserAgent(suffix string) error {
+	value, set := os.LookupEnv(execEnvVar)
+	if set {
+		value += "/"
+	}
+	value += suffix
+	return os.Setenv(execEnvVar, value)
 }
 
 func (p *Provider) getInstance(targetType, target string) (*ec2.Instance, error) {
