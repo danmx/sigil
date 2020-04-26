@@ -2,6 +2,7 @@ package aws
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ssm"
 	log "github.com/sirupsen/logrus"
@@ -29,7 +30,8 @@ func (p *Provider) StartSession(targetType, target string) error {
 
 	defer func() {
 		if err = p.TerminateSession(*output.SessionId); err != nil {
-			log.Fatal(err)
+			err = fmt.Errorf("failed terminating the session (it could be already terminated): %e", err)
+			log.Warn(err)
 		}
 	}()
 
