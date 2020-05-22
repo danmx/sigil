@@ -1,5 +1,14 @@
 run:
-  deadline: 5m
+  deadline: 1m
+  tests: true
+  skip-dirs:
+  - .git
+  - bazel-*
+  - tools
+  - docs
+  skip-dirs-use-default: true
+  modules-download-mode: readonly
+  allow-parallel-runners: true
 linters-settings:
   # depguard:
   #   list-type: blacklist
@@ -28,7 +37,7 @@ linters-settings:
       - dupImport # https://github.com/go-critic/go-critic/issues/845
       - ifElseChain
       - octalLiteral
-      - whyNoLint
+      # - whyNoLint
       - wrapperFunc
   gocyclo:
     min-complexity: 15
@@ -76,7 +85,7 @@ linters:
     # - lll
     - misspell
     - nakedret
-    - rowserrcheck
+    # - rowserrcheck
     - scopelint
     - staticcheck
     - structcheck

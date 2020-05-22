@@ -45,8 +45,8 @@ Filter format examples:
   tags=[{key="Name",values=["WebApp1","WebApp2"]}]
 `,
 		Aliases: []string{"ls", "l"},
-		Example: fmt.Sprintf(`%s list --output-format wide --instance-tags '[{"key":"Name","values":["Web","DB"]}]'`, AppName),
-		//nolint:dupl
+		Example: fmt.Sprintf(`%s list --output-format wide --instance-tags '[{"key":"Name","values":["Web","DB"]}]'`, appName),
+		//nolint:dupl // deduplicating it wouldn't provide much value
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Config bindings
 			for flag, lookup := range map[string]string{
@@ -65,10 +65,8 @@ Filter format examples:
 					return err
 				}
 			}
-			if err := aws.VerifyDependencies(); err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return aws.VerifyDependencies()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var filters aws.Filters

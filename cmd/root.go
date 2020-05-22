@@ -15,36 +15,33 @@ import (
 )
 
 var (
-	// AppName is a name of this tool (added at compile time)
-	AppName string
-	// Version is the semantic version (added at compile time)
-	Version string
-	// Revision is the git commit id (added at compile time)
-	Revision string
-	// LogLevel level is setting loging level (added at compile time)
-	LogLevel string
-	// Debug is turning a debug mode (added at compile time)
-	Debug string
+	appName string = "sigil"
+	// appVersion is the semantic appVersion (added at compile time)
+	appVersion string
+	// gitCommit is the git commit id (added at compile time)
+	gitCommit string
+	// logLevel level is setting loging level (added at compile time)
+	logLevel string = "panic"
+	// dev is turning a debug mode (added at compile time)
+	dev string = "false"
 
 	workDir string
 	cfg     *viper.Viper
 
 	cfgFileName = "config"
 	cfgType     = "toml"
-	workDirName = "." + AppName
+	workDirName = "." + appName
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
-		Use:               AppName,
+		Use:               appName,
 		Short:             "AWS SSM Session manager client",
 		Long:              `A tool for establishing a session in EC2 instances with AWS SSM Agent installed`,
-		Version:           fmt.Sprintf("%s (build %s)", Version, Revision),
+		Version:           fmt.Sprintf("%s (build %s)", appVersion, gitCommit),
 		DisableAutoGenTag: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := aws.AppendUserAgent(AppName + "/" + Version); err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return aws.AppendUserAgent(appName + "/" + appVersion)
 		},
 	}
 )
@@ -52,21 +49,19 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() error {
-	if err := rootCmd.Execute(); err != nil {
-		return err
-	}
-	return nil
+	// returns err
+	return rootCmd.Execute()
 }
 
 func init() {
 	// Set debug
-	if Debug == "true" {
+	if dev == "true" {
 		log.SetReportCaller(true)
 	}
 	// Set startup Log level
-	if err := setLogLevel(LogLevel); err != nil {
+	if err := setLogLevel(logLevel); err != nil {
 		log.WithFields(log.Fields{
-			"LogLevel": LogLevel,
+			"logLevel": logLevel,
 		}).Fatal(err)
 	}
 	// Find home directory.
@@ -96,7 +91,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("config", "c", "", "full config file path, supported formats: json/yaml/toml/hcl/props")
 	rootCmd.PersistentFlags().StringP("config-profile", "p", "default", "pick the config profile")
 	// Log level
-	rootCmd.PersistentFlags().String("log-level", LogLevel, "specify the log level: trace/debug/info/warn/error/fatal/panic")
+	rootCmd.PersistentFlags().String("log-level", logLevel, "specify the log level: trace/debug/info/warn/error/fatal/panic")
 	// AWS
 	rootCmd.PersistentFlags().StringP("region", "r", "", "specify AWS region")
 	rootCmd.PersistentFlags().String("profile", "", "specify AWS profile")
@@ -107,7 +102,7 @@ func init() {
 func initConfig(cmd *cobra.Command) error {
 	cfg = viper.New()
 	// Environment variables
-	cfg.SetEnvPrefix(AppName)
+	cfg.SetEnvPrefix(appName)
 	cfg.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	// Root config bindings
 	for _, key := range []string{"config", "config-profile", "log-level"} {
@@ -162,7 +157,7 @@ func initConfig(cmd *cobra.Command) error {
 	}
 
 	// Rebinding config bindings that will be propagated to subcommands because of the subconfig (config profile)
-	cfg.SetEnvPrefix(AppName)
+	cfg.SetEnvPrefix(appName)
 	if err := cfg.BindEnv("mfa"); err != nil {
 		log.WithFields(log.Fields{
 			"env": "mfa",

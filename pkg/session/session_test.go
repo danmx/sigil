@@ -1,10 +1,12 @@
 package session
 
+// AWS Mock generation
+//go:generate go run github.com/golang/mock/mockgen -self_package=github.com/danmx/sigil/pkg/session -package session -destination aws_mock_test.go github.com/danmx/sigil/pkg/aws Cloud,CloudInstances,CloudSessions,CloudSSH
+
 import (
 	"testing"
 
 	"github.com/danmx/sigil/pkg/aws"
-	"github.com/danmx/sigil/pkg/aws/mocks"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +16,7 @@ import (
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := mocks.NewMockCloudInstances(ctrl)
+	m := NewMockCloudInstances(ctrl) // skipcq: SCC-compile
 
 	mfa := "123456"
 	region := "eu-west-1"

@@ -81,9 +81,6 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 
 	endpoint := ssmClient.Client.Endpoint
 
-	if err := runSessionPluginManager(string(payload), *p.session.Config.Region, p.awsProfile, string(startSessionInputJSON), endpoint); err != nil {
-		return err
-	}
-
-	return nil
+	// returns err
+	return runSessionPluginManager(string(payload), *p.session.Config.Region, p.awsProfile, string(startSessionInputJSON), endpoint)
 }
