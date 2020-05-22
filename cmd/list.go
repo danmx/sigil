@@ -65,10 +65,8 @@ Filter format examples:
 					return err
 				}
 			}
-			if err := aws.VerifyDependencies(); err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return aws.VerifyDependencies()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var filters aws.Filters

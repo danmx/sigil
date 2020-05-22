@@ -161,7 +161,7 @@ func TestListInstances(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := NewMockCloudInstances(ctrl)
+	m := NewMockCloudInstances(ctrl) // skipcq: SCC-compile
 
 	m.EXPECT().ListInstances().Return(instances, nil)
 
@@ -189,7 +189,7 @@ func TestListSessions(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := NewMockCloudSessions(ctrl)
+	m := NewMockCloudSessions(ctrl) // skipcq: SCC-compile
 
 	m.EXPECT().ListSessions().Return(sessions, nil)
 

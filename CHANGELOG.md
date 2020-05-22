@@ -23,6 +23,7 @@
 ### Fix
 - app exit on failed session termination
 - version in makefile
+- **lint:** addressing comments from deepsource.io
 
 ### Update
 - dependencies

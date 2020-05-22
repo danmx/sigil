@@ -91,12 +91,8 @@ func (input *StartInput) start(provider aws.CloudSSH) (err error) {
 		"PublicKeyPath": pubKey,
 	}).Debug("StartSSHInput")
 
-	err = provider.StartSSH(*input.TargetType, *input.Target, *input.OSUser, *input.PortNumber, pubKeyData)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	// returns err
+	return provider.StartSSH(*input.TargetType, *input.Target, *input.OSUser, *input.PortNumber, pubKeyData)
 }
 
 // Helper functions
@@ -108,10 +104,8 @@ func savePrivPEMKey(fileName string, key *rsa.PrivateKey) error {
 		Bytes:   x509.MarshalPKCS1PrivateKey(key),
 	}
 
-	if err := ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600); err != nil {
-		return err
-	}
-	return nil
+	// returns err
+	return ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600)
 }
 
 func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
@@ -119,10 +113,8 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600); err != nil {
-		return err
-	}
-	return nil
+	// returns err
+	return ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600)
 }
 
 func deleteTempKey(keyPath string) error {

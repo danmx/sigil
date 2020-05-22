@@ -40,10 +40,8 @@ var (
 		Version:           fmt.Sprintf("%s (build %s)", appVersion, gitCommit),
 		DisableAutoGenTag: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := aws.AppendUserAgent(appName + "/" + appVersion); err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return aws.AppendUserAgent(appName + "/" + appVersion)
 		},
 	}
 )
@@ -51,10 +49,8 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() error {
-	if err := rootCmd.Execute(); err != nil {
-		return err
-	}
-	return nil
+	// returns err
+	return rootCmd.Execute()
 }
 
 func init() {

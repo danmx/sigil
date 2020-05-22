@@ -39,10 +39,8 @@ var (
 					return err
 				}
 			}
-			if err := aws.VerifyDependencies(); err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return aws.VerifyDependencies()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			target := cfg.GetString("target")
@@ -93,11 +91,8 @@ var (
 				Profile:    &profile,
 				MFAToken:   &mfaToken,
 			}
-			err := ssh.Start(input)
-			if err != nil {
-				return err
-			}
-			return nil
+			// returns err
+			return ssh.Start(input)
 		},
 		DisableAutoGenTag: true,
 	}

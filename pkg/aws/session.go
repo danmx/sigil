@@ -52,11 +52,8 @@ func (p *Provider) StartSession(targetType, target string) error {
 
 	endpoint := ssmClient.Client.Endpoint
 
-	if err := runSessionPluginManager(string(payload), *p.session.Config.Region, p.awsProfile, string(startSessionInputJSON), endpoint); err != nil {
-		return err
-	}
-
-	return nil
+	// returns err
+	return runSessionPluginManager(string(payload), *p.session.Config.Region, p.awsProfile, string(startSessionInputJSON), endpoint)
 }
 
 // TerminateSession will close chosed active session

@@ -16,7 +16,7 @@ import (
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := NewMockCloudInstances(ctrl)
+	m := NewMockCloudInstances(ctrl) // skipcq: SCC-compile
 
 	mfa := "123456"
 	region := "eu-west-1"

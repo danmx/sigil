@@ -18,7 +18,7 @@ import (
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := NewMockCloudSSH(ctrl)
+	m := NewMockCloudSSH(ctrl) // skipcq: SCC-compile
 
 	target := "i-xxxxxxxxxxxxxxxx1"
 	targetType := aws.TargetTypeInstanceID

@@ -27,10 +27,8 @@ var sessionCmd = &cobra.Command{
 				return err
 			}
 		}
-		if err := aws.VerifyDependencies(); err != nil {
-			return err
-		}
-		return nil
+		// returns err
+		return aws.VerifyDependencies()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := cfg.GetString("target")
@@ -52,11 +50,8 @@ var sessionCmd = &cobra.Command{
 			Profile:    &profile,
 			MFAToken:   &mfaToken,
 		}
-		err := session.Start(input)
-		if err != nil {
-			return err
-		}
-		return nil
+		// returns err
+		return session.Start(input)
 	},
 	DisableAutoGenTag: true,
 }
