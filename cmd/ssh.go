@@ -20,7 +20,7 @@ var (
 		Use:   "ssh",
 		Short: "Start ssh session",
 		Long:  `Start a new ssh for chosen EC2 instance.`,
-		//nolint:dupl
+		//nolint:dupl // deduplicating it wouldn't provide much value
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Config bindings
 			for flag, lookup := range map[string]string{

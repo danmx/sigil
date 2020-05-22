@@ -8,73 +8,102 @@ platform:
 
 steps:
 - name: test
-  image: golang:1.14
+  image: l.gcr.io/google/bazel:3.1.0
   commands:
-  - make test
+  - bazel test --config cross:linux_amd64 //...
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
 
 - name: coverage
+  image: l.gcr.io/google/bazel:3.1.0
+  commands:
+  - bazel coverage --config cross:linux_amd64 //...
+  - bazel build --config cross:linux_amd64 :concat-cov
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
+
+- name: codecov
   image: plugins/codecov
   settings:
     files:
-    - coverage.txt
+    - bazel-bin/coverage.txt
     required: true
     token:
       from_secret: codecov_token
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
 
-- name: build-binaries
-  image: golang:1.14
+- name: build-dev
+  image: l.gcr.io/google/bazel:3.1.0
   commands:
-  - make build build-dev
+  - bazel build --config cross:linux_amd64 :dev
+  - bazel build --config cross:darwin_amd64 :dev
+  - bazel build --config cross:windows_amd64 :dev
+  - bazel build --config cross:linux_amd64 :dev-image
   environment:
-    REVISION: "${DRONE_COMMIT}"
+    GIT_BRANCH: ${DRONE_BRANCH}
+    GIT_COMMIT: ${DRONE_COMMIT}
     VERSION: DEV
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
   when:
     event:
     - push
 
-- name: build-docker
-  image: plugins/docker
-  settings:
-    build_args:
-    - VER=DEBUG
-    - "REV=\"${DRONE_COMMIT}\""
-    password:
-      from_secret: docker_password
-    repo: danmx/sigil
-    tags:
-    - debug
-    target: debug
-    username:
-      from_secret: docker_username
-  when:
-    event:
-    - push
-
-- name: build-release
-  image: golang:1.14
+- name: docker-dev
+  image: l.gcr.io/google/bazel:3.1.0
   commands:
-  - make release
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - bazel run --config cross:linux_amd64 :push-dev-image
   environment:
-    REVISION: "${DRONE_COMMIT}"
-    VERSION: "${DRONE_TAG}"
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_USERNAME:
+      from_secret: docker_username
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
+  when:
+    event:
+    - push
+
+- name: pkg-release
+  image: l.gcr.io/google/bazel:3.1.0
+  commands:
+  - bazel build --config cross:linux_amd64 :sigil_linux-amd64
+  - bazel build --config cross:darwin_amd64 :sigil_darwin-amd64
+  - bazel build --config cross:windows_amd64 :sigil_windows-amd64
+  environment:
+    GIT_BRANCH: ${DRONE_BRANCH}
+    GIT_COMMIT: ${DRONE_COMMIT}
+    VERSION: ${DRONE_TAG}
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
   when:
     event:
     - push
     - tag
 
 - name: docker-release
-  image: plugins/docker
-  settings:
-    auto_tag: true
-    build_args:
-    - "VER=\"${DRONE_TAG}\""
-    - "REV=\"${DRONE_COMMIT}\""
-    password:
+  image: l.gcr.io/google/bazel:3.1.0
+  commands:
+  - docker login -u $DOCKER_USERNAME -P $DOCKER_PASSWORD
+  - bazel run --config cross:linux_amd64 :push-release-image
+  - bazel run --config cross:linux_amd64 :push-major-release-image
+  - bazel run --config cross:linux_amd64 :push-minor-release-image
+  environment:
+    DOCKER_PASSWORD:
       from_secret: docker_password
-    repo: danmx/sigil
-    target: prod
-    username:
+    DOCKER_USERNAME:
       from_secret: docker_username
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
   when:
     event:
     - tag
@@ -89,13 +118,24 @@ steps:
     - sha256
     - sha512
     files:
-    - "dist/*"
+    - bazel-bin/sigil_linux-amd64.tar.gz
+    - bazel-bin/sigil_darwin-amd64.tar.gz
+    - bazel-bin/sigil_windows-amd64.zip
+    note: CHANGELOG.md
+    title: ${DRONE_TAG}
+  volumes:
+  - name: cache
+    path: /root/.cache/bazel/
   when:
     event:
     - tag
 
+volumes:
+- name: cache
+  temp: {}
+
 ---
 kind: signature
-hmac: 6bf71f4f9351d1dd4fa01be2a085ce6178319adc0d892138f60674c871e184fd
+hmac: 8d1e567f27c745f1f2a02606369d012452c58d00eef920bd90c00cdd2eed2abd
 
 ...

@@ -16,7 +16,7 @@ var sessionCmd = &cobra.Command{
 	Short:   "Start a session",
 	Long:    `Start a new session in chosen EC2 instance.`,
 	Aliases: []string{"sess", "s"},
-	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", AppName),
+	Example: fmt.Sprintf("%s session --type instance-id --target i-xxxxxxxxxxxxxxxxx", appName),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// Config bindings
 		for _, flag := range []string{"target", "type"} {

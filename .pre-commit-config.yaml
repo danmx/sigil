@@ -1,24 +1,56 @@
 default_stages: [commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v3.1.0
     hooks:
       - id: check-yaml
         args:
-        - --allow-multiple-documents
-        always_run: true
+          - --allow-multiple-documents
       - id: check-toml
-        always_run: true
       - id: end-of-file-fixer
-        always_run: true
       - id: trailing-whitespace
-        always_run: true
   - repo: local
     hooks:
+      - id: fmt
+        name: Run formatter
+        entry: scripts/pre-commit.sh fmt
+        language: system
+        require_serial: true
+        files: '.*\.go$'
+      - id: ci
+        name: Run Drone.io formatter and signer
+        entry: scripts/pre-commit.sh ci
+        language: system
+        require_serial: true
+        files: ".drone.yml$"
+      - id: lint
+        name: Run linter
+        entry: scripts/pre-commit.sh lint
+        language: system
+        require_serial: true
+        files: '.*\.go$'
+        stages:
+          - push
+      - id: update_deps
+        name: Update Go dependencies in Bazel
+        entry: scripts/pre-commit.sh update_deps
+        language: system
+        require_serial: true
+        files: 'go\.(mod|sum)$'
+        stages:
+          - push
       - id: test
         name: Run tests
-        entry: make test
+        entry: scripts/pre-commit.sh test
         language: system
-        always_run: true
+        require_serial: true
+        files: '.*\.go$'
+        stages:
+          - push
+      - id: changelog
+        name: Generate the changelog
+        entry: scripts/pre-commit.sh changelog
+        language: system
+        require_serial: true
         stages:
           - push

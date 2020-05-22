@@ -119,7 +119,7 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0655); err != nil {
+	if err := ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600); err != nil {
 		return err
 	}
 	return nil

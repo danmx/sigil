@@ -1,12 +1,14 @@
 package ssh
 
+// AWS Mock generation
+//go:generate go run github.com/golang/mock/mockgen -self_package=github.com/danmx/sigil/pkg/ssh -package ssh -destination aws_mock_test.go github.com/danmx/sigil/pkg/aws Cloud,CloudInstances,CloudSessions,CloudSSH
+
 import (
 	"os"
 	"path"
 	"testing"
 
 	"github.com/danmx/sigil/pkg/aws"
-	"github.com/danmx/sigil/pkg/aws/mocks"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +18,7 @@ import (
 func TestStart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := mocks.NewMockCloudSSH(ctrl)
+	m := NewMockCloudSSH(ctrl)
 
 	target := "i-xxxxxxxxxxxxxxxx1"
 	targetType := aws.TargetTypeInstanceID

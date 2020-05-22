@@ -8,6 +8,6 @@ import (
 
 func main() {
 	if err := cmd.Execute(); err != nil {
-		os.Exit(1) //nolint:gomnd
+		os.Exit(1) //nolint:gomnd // custom error codes wouldn't provide much value
 	}
 }

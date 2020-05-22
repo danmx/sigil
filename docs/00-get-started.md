@@ -34,7 +34,7 @@ brew install danmx/sigil/sigil
 ### Docker
 
 ```shell
-docker pull danmx/sigil:0.4
+docker pull danmx/sigil:0.5
 ```
 
 ### Source code
@@ -44,22 +44,25 @@ Pull the repository and build binaries.
 ```shell
 git clone https://github.com/danmx/sigil.git
 cd sigil
+bazelisk sync
 ```
 
-For all platforms (Linux, Mac, Windows) and Docker image run:
+For all binaries (`development` and `release`) and Docker image run:
 
 ```shell
-make build
+bazelisk build //...
 ```
 
-To run specific build use:
+To build a specific platform (Linux, Mac, Windows) use:
 
 ```shell
-make build-[linux|darwin|windows|docker]
+bazelisk build --config cross:[darwin|linux|windows]_amd64 :[dev|release]
 ```
 
-Binaries are located in:
+for working Docker image:
 
-- Linux: `bin/release/linux/amd64/sigil`
-- Darwin: `bin/release/darwin/amd64/sigil`
-- Windows: `bin/release/darwin/amd64/sigil.exe`
+```shell
+bazelisk build --config cross:linux_amd64 :[dev|release]-image
+```
+
+To debug the image locally use `run` instead of `build`.

@@ -1,10 +1,12 @@
 package list
 
+// AWS Mock generation
+//go:generate go run github.com/golang/mock/mockgen -self_package=github.com/danmx/sigil/pkg/list -package list -destination aws_mock_test.go github.com/danmx/sigil/pkg/aws Cloud,CloudInstances,CloudSessions,CloudSSH
+
 import (
 	"testing"
 
 	"github.com/danmx/sigil/pkg/aws"
-	"github.com/danmx/sigil/pkg/aws/mocks"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -159,7 +161,7 @@ func TestListInstances(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := mocks.NewMockCloudInstances(ctrl)
+	m := NewMockCloudInstances(ctrl)
 
 	m.EXPECT().ListInstances().Return(instances, nil)
 
@@ -187,7 +189,7 @@ func TestListSessions(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	m := mocks.NewMockCloudSessions(ctrl)
+	m := NewMockCloudSessions(ctrl)
 
 	m.EXPECT().ListSessions().Return(sessions, nil)
 

@@ -53,7 +53,7 @@ brew install danmx/sigil/sigil
 ### Docker
 
 ```shell
-docker pull danmx/sigil:0.4
+docker pull danmx/sigil:0.5
 ```
 
 ## Examples
@@ -63,7 +63,7 @@ docker pull danmx/sigil:0.4
 Docker:
 
 ```shell
-docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.4 list --output-format wide
+docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/home/.aws danmx/sigil:0.5 list --output-format wide
 ```
 
 Binary:
@@ -118,37 +118,41 @@ By default configuration file is located in `${HOME}/.sigil/config.toml`.
   interactive = true
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md)
+
 ## Build
 
 ### Binaries
 
-To build binaries for all platforms (Linux, Mac, Windows) and Docker image run:
+To build binaries (`development` and `release`) run:
 
 ```shell
-make build
+bazelisk build //...
 ```
 
 To run specific build use:
 
 ```shell
-make build-[linux|darwin|windows]
+bazelisk build --config cross:[darwin|linux|windows]_amd64 :[dev|release]
 ```
 
-Binaries are located in:
+for working Docker image:
 
-- Linux: `bin/release/linux/amd64/sigil`
-- Darwin: `bin/release/darwin/amd64/sigil`
-- Windows: `bin/release/windows/amd64/sigil.exe`
+```shell
+bazelisk build --config cross:linux_amd64 :[dev|release]-image
+```
 
 ### Container image
 
 To only build docker image run:
 
 ```shell
-make build-docker
+bazelisk run :dev-image
 ```
 
-It'll create a docker image tagged `sigil:{version}` where `{version}` corresponds to sigil's current version.
+It'll create a docker image tagged `bazel:dev-image`.
 
 ## Contributions
 
@@ -157,8 +161,7 @@ All contributions are welcomed!
 ### Dev Dependencies
 
 - [pre-commit](https://pre-commit.com/)
-- [golangci-lint](https://github.com/golangci/golangci-lint)
-- [make](https://www.gnu.org/software/make/)
+- [bazelisk](https://github.com/bazelbuild/bazelisk)
 
 ### Commits
 
@@ -169,7 +172,7 @@ I'm trying to follow [Conventional Commits](https://www.conventionalcommits.org/
 ```sh
 pre-commit install
 pre-commit install --hook-type pre-push
-make bootstrap
+bazelisk sync
 ```
 
 ## License
