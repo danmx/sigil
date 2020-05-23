@@ -32,6 +32,7 @@
 
 ### Rm
 - **changelog:** merge PR commits
+- **drone:** release notes
 
 ### Update
 - dependencies
