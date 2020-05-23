@@ -121,7 +121,6 @@ steps:
     - bazel-bin/sigil_linux-amd64.tar.gz
     - bazel-bin/sigil_darwin-amd64.tar.gz
     - bazel-bin/sigil_windows-amd64.zip
-    note: CHANGELOG.md
     title: ${DRONE_TAG}
   volumes:
   - name: cache
@@ -136,6 +135,6 @@ volumes:
 
 ---
 kind: signature
-hmac: d5d1a9cd8ee30f38745a78fd05c8315f6f146c617d2bc11f9ce048b74866a45b
+hmac: 0d2d3791d4d75820a8a37000ac4e2547d6b6b4c4cdd4bb9546eef6e41610c5a7
 
 ...
