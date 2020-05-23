@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="0.5.1"></a>
+## [0.5.1] - 2020-05-23
 ### Add
 - **aws:** append AWS UA with sigil version
 
@@ -19,6 +22,7 @@
 
 ### Chore
 - using Bazel as a build system
+- **release:** 0.5.1
 
 ### Fix
 - app exit on failed session termination
@@ -27,6 +31,23 @@
 
 ### Update
 - dependencies
+
+### Pull Requests
+- Merge pull request [#87](https://github.com/danmx/sigil/issues/87) from danmx/bazel
+- Merge pull request [#84](https://github.com/danmx/sigil/issues/84) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.31.1
+- Merge pull request [#83](https://github.com/danmx/sigil/issues/83) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.31.0
+- Merge pull request [#82](https://github.com/danmx/sigil/issues/82) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.29
+- Merge pull request [#81](https://github.com/danmx/sigil/issues/81) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.28
+- Merge pull request [#80](https://github.com/danmx/sigil/issues/80) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.27
+- Merge pull request [#79](https://github.com/danmx/sigil/issues/79) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.26
+- Merge pull request [#78](https://github.com/danmx/sigil/issues/78) from danmx/dependabot/go_modules/gopkg.in/yaml.v2-2.3.0
+- Merge pull request [#77](https://github.com/danmx/sigil/issues/77) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.25
+- Merge pull request [#76](https://github.com/danmx/sigil/issues/76) from danmx/dependabot/go_modules/github.com/spf13/viper-1.7.0
+- Merge pull request [#73](https://github.com/danmx/sigil/issues/73) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.30.24
+- Merge pull request [#74](https://github.com/danmx/sigil/issues/74) from danmx/dependabot/go_modules/github.com/sirupsen/logrus-1.6.0
+- Merge pull request [#72](https://github.com/danmx/sigil/issues/72) from danmx/log
+- Merge pull request [#71](https://github.com/danmx/sigil/issues/71) from danmx/append-aws-ua
+- Merge pull request [#70](https://github.com/danmx/sigil/issues/70) from danmx/bump-dependencies
 
 
 <a name="0.5.0"></a>
@@ -186,7 +207,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.5.1...HEAD
+[0.5.1]: https://github.com/danmx/sigil/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/danmx/sigil/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/danmx/sigil/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/danmx/sigil/compare/0.3.3...0.4.0

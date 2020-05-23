@@ -3,7 +3,7 @@
 set -eu
 
 appName="sigil"
-appVersion="${VERSION:-0.5.0}"
+appVersion="${VERSION:-0.5.1}"
 gitCommit="${GIT_COMMIT:-$(git rev-parse HEAD)}"
 gitBranch="${GIT_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
 
