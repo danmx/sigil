@@ -27,12 +27,14 @@
 ### Fix
 - app exit on failed session termination
 - version in makefile
+- **drone:** docker-release step
 - **lint:** addressing comments from deepsource.io
 
 ### Update
 - dependencies
 
 ### Pull Requests
+- Merge pull request [#88](https://github.com/danmx/sigil/issues/88) from danmx/release-0.5.1
 - Merge pull request [#87](https://github.com/danmx/sigil/issues/87) from danmx/bazel
 - Merge pull request [#84](https://github.com/danmx/sigil/issues/84) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.31.1
 - Merge pull request [#83](https://github.com/danmx/sigil/issues/83) from danmx/dependabot/go_modules/github.com/aws/aws-sdk-go-1.31.0
