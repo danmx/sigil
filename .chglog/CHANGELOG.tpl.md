@@ -29,13 +29,6 @@
 {{ end }}
 {{ end -}}
 
-{{- if .MergeCommits -}}
-### Pull Requests
-{{ range .MergeCommits -}}
-- {{ .Header }}
-{{ end }}
-{{ end -}}
-
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
 ### {{ .Title }}

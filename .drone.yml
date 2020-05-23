@@ -92,7 +92,7 @@ steps:
 - name: docker-release
   image: l.gcr.io/google/bazel:3.1.0
   commands:
-  - docker login -u $DOCKER_USERNAME -P $DOCKER_PASSWORD
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - bazel run --config cross:linux_amd64 :push-release-image
   - bazel run --config cross:linux_amd64 :push-major-release-image
   - bazel run --config cross:linux_amd64 :push-minor-release-image
@@ -136,6 +136,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 8d1e567f27c745f1f2a02606369d012452c58d00eef920bd90c00cdd2eed2abd
+hmac: d5d1a9cd8ee30f38745a78fd05c8315f6f146c617d2bc11f9ce048b74866a45b
 
 ...
