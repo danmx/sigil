@@ -3,7 +3,7 @@ module github.com/danmx/sigil
 go 1.14
 
 require (
-	github.com/aws/aws-sdk-go v1.31.7
+	github.com/aws/aws-sdk-go v1.31.8
 	github.com/golang/mock v1.4.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/sirupsen/logrus v1.6.0
