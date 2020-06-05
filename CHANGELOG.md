@@ -4,6 +4,9 @@
 ### Chore
 - **deps:** update module stretchr/testify to v1.6.1
 
+### Fix
+- **ssh:** error handling
+
 ### Update
 - **bazel:** to version 3.2.0
 - **deps:** Go dependecies in bazel

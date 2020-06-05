@@ -38,8 +38,8 @@ func Start(input *StartInput) error {
 	return input.start(new(aws.Provider))
 }
 
-func (input *StartInput) start(provider aws.CloudSSH) (err error) {
-	err = provider.NewWithConfig(&aws.Config{
+func (input *StartInput) start(provider aws.CloudSSH) error {
+	err := provider.NewWithConfig(&aws.Config{
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,
@@ -52,7 +52,7 @@ func (input *StartInput) start(provider aws.CloudSSH) (err error) {
 	if *input.GenKeyPair {
 		privKeyBlob, errKey := rsa.GenerateKey(rand.Reader, 4092)
 		if errKey != nil {
-			return err
+			return errKey
 		}
 		pubKeyBlob := privKeyBlob.PublicKey
 		if errPubPEM := savePublicPEMKey(pubKey, &pubKeyBlob); errPubPEM != nil {
