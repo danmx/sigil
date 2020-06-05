@@ -28,8 +28,8 @@ def go_repositories():
     go_repository(
         name = "com_github_aws_aws_sdk_go",
         importpath = "github.com/aws/aws-sdk-go",
-        sum = "h1:5tv3VtTS/IM1yZ6lxMQQVmH28SkkR3b3w+6u+9rcLx4=",
-        version = "v1.31.1",
+        sum = "h1:Uz7VGg3giOV9Z4SlLdXO6RHafArHbK59vSc6mnzYjGU=",
+        version = "v1.31.11",
     )
     go_repository(
         name = "com_github_beorn7_perks",
@@ -478,8 +478,8 @@ def go_repositories():
     go_repository(
         name = "com_github_stretchr_testify",
         importpath = "github.com/stretchr/testify",
-        sum = "h1:nOGnQDM7FYENwehXlg/kFVnos3rEvtKTjRvOWSzb6H4=",
-        version = "v1.5.1",
+        sum = "h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=",
+        version = "v1.6.1",
     )
     go_repository(
         name = "com_github_subosito_gotenv",
@@ -574,8 +574,8 @@ def go_repositories():
     go_repository(
         name = "org_golang_x_crypto",
         importpath = "golang.org/x/crypto",
-        sum = "h1:IhZPbxNd1UjBCaD5AfpSSbJTRlp+ZSuyuH5uoksNS04=",
-        version = "v0.0.0-20200420104511-884d27f42877",
+        sum = "h1:vEg9joUBmeBcK9iSJftGNf3coIG4HqZElCPehJsfAYM=",
+        version = "v0.0.0-20200604202706-70a84ac30bf9",
     )
     go_repository(
         name = "org_golang_x_lint",
@@ -1015,4 +1015,10 @@ def go_repositories():
         importpath = "golang.org/x/xerrors",
         sum = "h1:9zdDQZ7Thm29KFXgAX/+yaf3eVbP7djjWp/dXAppNCc=",
         version = "v0.0.0-20190717185122-a985d3407aa7",
+    )
+    go_repository(
+        name = "in_gopkg_yaml_v3",
+        importpath = "gopkg.in/yaml.v3",
+        sum = "h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=",
+        version = "v3.0.0-20200313102051-9f266ea9e77c",
     )
