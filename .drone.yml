@@ -8,7 +8,7 @@ platform:
 
 steps:
 - name: test
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - bazel test --config cross:linux_amd64 //...
   volumes:
@@ -16,7 +16,7 @@ steps:
     path: /root/.cache/bazel/
 
 - name: coverage
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - bazel coverage --config cross:linux_amd64 //...
   - bazel build --config cross:linux_amd64 :concat-cov
@@ -37,7 +37,7 @@ steps:
     path: /root/.cache/bazel/
 
 - name: build-dev
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - bazel build --config cross:linux_amd64 :dev
   - bazel build --config cross:darwin_amd64 :dev
@@ -55,7 +55,7 @@ steps:
     - push
 
 - name: docker-dev
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - bazel run --config cross:linux_amd64 :push-dev-image
@@ -72,7 +72,7 @@ steps:
     - push
 
 - name: pkg-release
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - bazel build --config cross:linux_amd64 :sigil_linux-amd64
   - bazel build --config cross:darwin_amd64 :sigil_darwin-amd64
@@ -90,7 +90,7 @@ steps:
     - tag
 
 - name: docker-release
-  image: l.gcr.io/google/bazel:3.1.0
+  image: l.gcr.io/google/bazel:3.2.0
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - bazel run --config cross:linux_amd64 :push-release-image
@@ -135,6 +135,6 @@ volumes:
 
 ---
 kind: signature
-hmac: 0d2d3791d4d75820a8a37000ac4e2547d6b6b4c4cdd4bb9546eef6e41610c5a7
+hmac: 3834f48378948f1a4eda7285a0e55e0522039b1bea2471750bb1bc55044d8fb9
 
 ...

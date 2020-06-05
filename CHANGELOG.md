@@ -1,6 +1,21 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Build
+- **deps:** bump github.com/aws/aws-sdk-go from 1.31.7 to 1.31.11
+- **deps:** bump github.com/aws/aws-sdk-go from 1.31.1 to 1.31.7
+- **deps:** bump github.com/stretchr/testify from 1.5.1 to 1.6.0
+
+### Chore
+- **deps:** update dependency io_bazel_rules_go to v0.23.3
+- **deps:** update dependency io_bazel_rules_docker to v0.14.3
+- **deps:** update dependency bazel_gazelle to v0.21.1
+- **deps:** update golang.org/x/crypto commit hash to 70a84ac
+- **deps:** add renovate.json
+
+### Update
+- **bazel:** to version 3.2.0
+
 
 <a name="0.5.1"></a>
 ## [0.5.1] - 2020-05-23
