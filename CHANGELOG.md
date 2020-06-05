@@ -1,6 +1,16 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Chore
+- **deps:** update module stretchr/testify to v1.6.1
+
+### Update
+- **bazel:** to version 3.2.0
+- **deps:** Go dependecies in bazel
+
+
+<a name="0.5.2"></a>
+## [0.5.2] - 2020-06-06
 ### Build
 - **deps:** bump github.com/aws/aws-sdk-go from 1.31.7 to 1.31.11
 - **deps:** bump github.com/aws/aws-sdk-go from 1.31.1 to 1.31.7
@@ -12,9 +22,14 @@
 - **deps:** update dependency bazel_gazelle to v0.21.1
 - **deps:** update golang.org/x/crypto commit hash to 70a84ac
 - **deps:** add renovate.json
+- **release:** 0.5.2
+
+### Fix
+- **ssh:** error handling
 
 ### Update
 - **bazel:** to version 3.2.0
+- **deps:** Go dependecies in bazel
 
 
 <a name="0.5.1"></a>
@@ -153,7 +168,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.5.1...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.5.2...HEAD
+[0.5.2]: https://github.com/danmx/sigil/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/danmx/sigil/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/danmx/sigil/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/danmx/sigil/compare/0.4.0...0.4.1
