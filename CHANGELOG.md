@@ -1,16 +1,6 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
-### Chore
-- **deps:** update module stretchr/testify to v1.6.1
-
-### Fix
-- **ssh:** error handling
-
-### Update
-- **bazel:** to version 3.2.0
-- **deps:** Go dependecies in bazel
-
 
 <a name="0.5.2"></a>
 ## [0.5.2] - 2020-06-06
@@ -20,11 +10,12 @@
 - **deps:** bump github.com/stretchr/testify from 1.5.1 to 1.6.0
 
 ### Chore
+- **deps:** add renovate.json
+- **deps:** update module stretchr/testify to v1.6.1
 - **deps:** update dependency io_bazel_rules_go to v0.23.3
 - **deps:** update dependency io_bazel_rules_docker to v0.14.3
 - **deps:** update dependency bazel_gazelle to v0.21.1
 - **deps:** update golang.org/x/crypto commit hash to 70a84ac
-- **deps:** add renovate.json
 - **release:** 0.5.2
 
 ### Fix
