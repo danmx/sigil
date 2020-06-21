@@ -102,7 +102,7 @@ func init() {
 	rootCmd.AddCommand(sshCmd)
 
 	sshCmd.Flags().String("target", "", "specify the target depending on the type")
-	sshCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName))
+	sshCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s/%s (deprecated)", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName, aws.DeprecatedTargetTypeName))
 	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. By default use %s as an identity file", path.Join(workDir, tempKeyName)))
 	sshCmd.Flags().String("gen-key-dir", workDir, "the directory where temporary keys will be generated")
 	sshCmd.Flags().String("os-user", "ec2-user", "specify an instance OS user which will be using sent public key")
