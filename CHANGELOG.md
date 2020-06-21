@@ -1,12 +1,16 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="0.5.3"></a>
+## [0.5.3] - 2020-06-21
 ### Chore
 - **bazel:** bump to version 3.3.0
 - **deps:** update go modules in Bazel
 - **deps:** update module aws/aws-sdk-go to v1.32.6
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.3.0
 - **pre-commit:** add go mod tidy to update_deps
+- **release:** version 0.5.3
 
 ### Rollback
 - name-tag target type change
@@ -175,7 +179,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.5.2...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.5.3...HEAD
+[0.5.3]: https://github.com/danmx/sigil/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/danmx/sigil/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/danmx/sigil/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/danmx/sigil/compare/0.4.1...0.5.0
