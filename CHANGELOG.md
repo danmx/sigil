@@ -1,6 +1,10 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Chore
+- **bazel:** bump to version 3.3.0
+- **deps:** update l.gcr.io/google/bazel docker tag to v3.3.0
+
 
 <a name="0.5.2"></a>
 ## [0.5.2] - 2020-06-06
