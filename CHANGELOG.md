@@ -8,6 +8,9 @@
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.3.0
 - **pre-commit:** add go mod tidy to update_deps
 
+### Update
+- **go:** version 1.14.4
+
 
 <a name="0.5.2"></a>
 ## [0.5.2] - 2020-06-06
