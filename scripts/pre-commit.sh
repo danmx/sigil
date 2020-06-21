@@ -15,7 +15,7 @@ lint() {
 }
 
 update_deps() {
-    bazelisk run :gazelle -- update-repos -from_file=go.mod -to_macro=tools/repositories.bzl%go_repositories -prune=true
+    bazelisk run :tidy && bazelisk run :gazelle -- update-repos -from_file=go.mod -to_macro=tools/repositories.bzl%go_repositories -prune=true
 }
 
 ci() {

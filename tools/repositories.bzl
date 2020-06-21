@@ -28,8 +28,8 @@ def go_repositories():
     go_repository(
         name = "com_github_aws_aws_sdk_go",
         importpath = "github.com/aws/aws-sdk-go",
-        sum = "h1:Uz7VGg3giOV9Z4SlLdXO6RHafArHbK59vSc6mnzYjGU=",
-        version = "v1.31.11",
+        sum = "h1:HoswAabUWgnrUF7X/9dr4WRgrr8DyscxXvTDm7Qw/5c=",
+        version = "v1.32.6",
     )
     go_repository(
         name = "com_github_beorn7_perks",

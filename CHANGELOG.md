@@ -3,7 +3,10 @@
 
 ### Chore
 - **bazel:** bump to version 3.3.0
+- **deps:** update go modules in Bazel
+- **deps:** update module aws/aws-sdk-go to v1.32.6
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.3.0
+- **pre-commit:** add go mod tidy to update_deps
 
 
 <a name="0.5.2"></a>
