@@ -64,4 +64,15 @@ func TestStart(t *testing.T) {
 		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
 	)
 	assert.NoError(t, input.start(m))
+	// Deprecated Name
+	targetType = aws.DeprecatedTargetTypeName
+	gomock.InOrder(
+		m.EXPECT().NewWithConfig(gomock.Eq(&aws.Config{
+			Region:   *input.Region,
+			Profile:  *input.Profile,
+			MFAToken: *input.MFAToken,
+		})).Return(nil),
+		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
+	)
+	assert.NoError(t, input.start(m))
 }

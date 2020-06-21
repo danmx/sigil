@@ -16,6 +16,7 @@ import (
 
 // TestStart verifies start ssh method
 func TestStart(t *testing.T) {
+	// Instance
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	m := NewMockCloudSSH(ctrl) // skipcq: SCC-compile
@@ -30,6 +31,101 @@ func TestStart(t *testing.T) {
 	osUser := "ec2-user"
 	genKey := true
 	input := StartInput{
+		MFAToken:   &mfa,
+		Region:     &region,
+		Profile:    &profile,
+		Target:     &target,
+		TargetType: &targetType,
+		PortNumber: &port,
+		PublicKey:  &pubKey,
+		OSUser:     &osUser,
+		GenKeyPair: &genKey,
+	}
+
+	gomock.InOrder(
+		m.EXPECT().NewWithConfig(gomock.Eq(&aws.Config{
+			Region:   *input.Region,
+			Profile:  *input.Profile,
+			MFAToken: *input.MFAToken,
+		})).Return(nil),
+		m.EXPECT().StartSSH(
+			gomock.Eq(*input.TargetType),
+			gomock.Eq(*input.Target),
+			gomock.Eq(*input.OSUser),
+			gomock.Eq(*input.PortNumber),
+			gomock.Any(),
+		).Return(nil),
+	)
+
+	assert.NoError(t, input.start(m))
+
+	// DNS
+	target = "test.local"
+	targetType = aws.TargetTypePrivateDNS
+	input = StartInput{
+		MFAToken:   &mfa,
+		Region:     &region,
+		Profile:    &profile,
+		Target:     &target,
+		TargetType: &targetType,
+		PortNumber: &port,
+		PublicKey:  &pubKey,
+		OSUser:     &osUser,
+		GenKeyPair: &genKey,
+	}
+
+	gomock.InOrder(
+		m.EXPECT().NewWithConfig(gomock.Eq(&aws.Config{
+			Region:   *input.Region,
+			Profile:  *input.Profile,
+			MFAToken: *input.MFAToken,
+		})).Return(nil),
+		m.EXPECT().StartSSH(
+			gomock.Eq(*input.TargetType),
+			gomock.Eq(*input.Target),
+			gomock.Eq(*input.OSUser),
+			gomock.Eq(*input.PortNumber),
+			gomock.Any(),
+		).Return(nil),
+	)
+
+	assert.NoError(t, input.start(m))
+
+	// Name
+	target = "Backend"
+	targetType = aws.TargetTypePrivateDNS
+	input = StartInput{
+		MFAToken:   &mfa,
+		Region:     &region,
+		Profile:    &profile,
+		Target:     &target,
+		TargetType: &targetType,
+		PortNumber: &port,
+		PublicKey:  &pubKey,
+		OSUser:     &osUser,
+		GenKeyPair: &genKey,
+	}
+
+	gomock.InOrder(
+		m.EXPECT().NewWithConfig(gomock.Eq(&aws.Config{
+			Region:   *input.Region,
+			Profile:  *input.Profile,
+			MFAToken: *input.MFAToken,
+		})).Return(nil),
+		m.EXPECT().StartSSH(
+			gomock.Eq(*input.TargetType),
+			gomock.Eq(*input.Target),
+			gomock.Eq(*input.OSUser),
+			gomock.Eq(*input.PortNumber),
+			gomock.Any(),
+		).Return(nil),
+	)
+
+	assert.NoError(t, input.start(m))
+
+	// Deprecated Name
+	targetType = aws.DeprecatedTargetTypeName
+	input = StartInput{
 		MFAToken:   &mfa,
 		Region:     &region,
 		Profile:    &profile,
