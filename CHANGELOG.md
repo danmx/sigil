@@ -1,6 +1,10 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Chore
+- **deps:** x/crypto version bump
+- **deps:** update golang.org/x/crypto commit hash to 75b2880
+
 
 <a name="0.5.3"></a>
 ## [0.5.3] - 2020-06-21
