@@ -53,6 +53,14 @@ load(
 
 container_repositories()
 
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load("@io_bazel_rules_docker//repositories:pip_repositories.bzl", "pip_deps")
+
+pip_deps()
+
 load(
     "@io_bazel_rules_docker//go:image.bzl",
     _go_image_repos = "repositories",

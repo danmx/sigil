@@ -12,6 +12,9 @@
 - **deps:** x/crypto version bump
 - **deps:** update golang.org/x/crypto commit hash to 75b2880
 
+### Fix
+- **bazel:** docker rule
+
 
 <a name="0.5.3"></a>
 ## [0.5.3] - 2020-06-21
