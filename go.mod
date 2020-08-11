@@ -10,6 +10,6 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/crypto 123391ffb6de
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	gopkg.in/yaml.v2 v2.3.0
 )
