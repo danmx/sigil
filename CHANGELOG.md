@@ -2,6 +2,14 @@
 ## [Unreleased]
 
 ### Chore
+- **deps:** bumping Go and tidying dependecies
+- **deps:** update module aws/aws-sdk-go to v1.34.2
+- **deps:** update dependency io_bazel_rules_go to v0.23.7
+- **deps:** update module spf13/viper to v1.7.1
+- **deps:** update module golang/mock to v1.4.4
+- **deps:** update golang.org/x/crypto commit hash to 123391f
+- **deps:** update l.gcr.io/google/bazel docker tag to v3.4.1
+- **deps:** update dependency io_bazel_rules_docker to v0.14.4
 - **deps:** x/crypto version bump
 - **deps:** update golang.org/x/crypto commit hash to 75b2880
 
