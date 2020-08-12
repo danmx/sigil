@@ -15,6 +15,7 @@
 
 ### Fix
 - **bazel:** docker rules
+- **pre-commit:** adding Gazelle run during fmt phase
 
 
 <a name="0.5.3"></a>
