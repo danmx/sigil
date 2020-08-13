@@ -7,17 +7,18 @@ import (
 	"os/exec"
 	"os/signal"
 	"syscall"
+	"time"
 
+	logger "github.com/danmx/sigil/pkg/aws/log"
 	sigilOS "github.com/danmx/sigil/pkg/os"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	log "github.com/sirupsen/logrus"
 )
-
-const execEnvVar = "AWS_EXECUTION_ENV"
 
 // Provider contains necessary components like the session
 type Provider struct {
@@ -32,6 +33,7 @@ type Config struct {
 	Region   string
 	Profile  string
 	MFAToken string
+	Trace    bool
 }
 
 // Filters grouped per type
@@ -82,8 +84,15 @@ type SessionFilters struct {
 }
 
 const (
-	maxResults int64  = 50
-	pluginName string = "session-manager-plugin"
+	execEnvVar       = "AWS_EXECUTION_ENV"
+	maxResults int64 = 50
+	pluginName       = "session-manager-plugin"
+	// API calls retry configuration
+	numMaxRetries    = 10
+	minRetryDelay    = 1 * time.Second
+	minThrottleDelay = 2 * time.Second
+	maxRetryDelay    = client.DefaultRetryerMaxRetryDelay
+	maxThrottleDelay = client.DefaultRetryerMaxThrottleDelay
 	// TargetTypeInstanceID points to an instance ID type
 	TargetTypeInstanceID = "instance-id"
 	// TargetTypePrivateDNS points to a private DNS type
@@ -102,6 +111,17 @@ func (p *Provider) NewWithConfig(c *Config) error {
 		Profile:                 c.Profile,
 	}
 	awsConfig := aws.NewConfig()
+	if c.Trace {
+		awsConfig.LogLevel = aws.LogLevel(aws.LogDebugWithRequestRetries)
+		awsConfig.Logger = logger.NewTraceLogger()
+	}
+	awsConfig.Retryer = client.DefaultRetryer{
+		NumMaxRetries:    numMaxRetries,
+		MinRetryDelay:    minRetryDelay,
+		MinThrottleDelay: minThrottleDelay,
+		MaxRetryDelay:    maxRetryDelay,
+		MaxThrottleDelay: maxThrottleDelay,
+	}
 	awsConfig.Region = aws.String(c.Region)
 	options.Config = *awsConfig
 	sess, err := session.NewSessionWithOptions(options)

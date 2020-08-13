@@ -31,6 +31,7 @@ type StartInput struct {
 	MFAToken   *string
 	Region     *string
 	Profile    *string
+	Trace      *bool
 }
 
 // Start will start ssh session
@@ -43,6 +44,7 @@ func (input *StartInput) start(provider aws.CloudSSH) error {
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,
+		Trace:    *input.Trace,
 	})
 	if err != nil {
 		log.Error(err)

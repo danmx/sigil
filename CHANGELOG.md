@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Aws
+- customizing default retryer for AWS api calls
+
 ### Chore
 - **deps:** bumping Go and tidying dependecies
 - **deps:** update module aws/aws-sdk-go to v1.34.2

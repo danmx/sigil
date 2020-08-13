@@ -21,10 +21,12 @@ func TestStart(t *testing.T) {
 	mfa := "123456"
 	region := "eu-west-1"
 	profile := "west"
+	trace := false
 	input := StartInput{
 		MFAToken: &mfa,
 		Region:   &region,
 		Profile:  &profile,
+		Trace:    &trace,
 	}
 	// Instance ID
 	target := "i-xxxxxxxxxxxxxxxx1"
@@ -36,6 +38,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
 	)
@@ -48,6 +51,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
 	)
@@ -60,6 +64,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
 	)
@@ -71,6 +76,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSession(gomock.Eq(*input.TargetType), gomock.Eq(*input.Target)).Return(nil),
 	)

@@ -18,6 +18,7 @@ type StartInput struct {
 	MFAToken   *string
 	Region     *string
 	Profile    *string
+	Trace      *bool
 }
 
 // Start will start a session in chosen instance
@@ -30,6 +31,7 @@ func (input *StartInput) start(provider aws.CloudInstances) error {
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,
+		Trace:    *input.Trace,
 	})
 	if err != nil {
 		log.Error("Failed to generate new provider")

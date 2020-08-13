@@ -81,6 +81,7 @@ Filter format examples:
 			listType := cfg.GetString("list-type")
 			instanceIDs := cfg.GetStringSlice("filters.instance.ids")
 			mfaToken := cfg.GetString("mfa")
+			trace := log.IsLevelEnabled(log.TraceLevel)
 			// hack to get map[string]string from args
 			// https://github.com/spf13/viper/issues/608
 			if cmd.Flags().Changed("session-filters") {
@@ -113,6 +114,7 @@ Filter format examples:
 				"instanceIDs":    instanceIDs,
 				"sessionFilters": sessionFilters,
 				"tags":           tags,
+				"trace":          trace,
 			}).Debug("List inputs")
 			input := &list.StartInput{
 				OutputFormat: &outputFormat,
@@ -122,6 +124,7 @@ Filter format examples:
 				Filters:      &filters,
 				Interactive:  &interactive,
 				Type:         &listType,
+				Trace:        &trace,
 			}
 			err := list.Start(input)
 			if err != nil {

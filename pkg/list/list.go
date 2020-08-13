@@ -46,6 +46,7 @@ type StartInput struct {
 	Region       *string
 	Profile      *string
 	Filters      *aws.Filters
+	Trace        *bool
 }
 
 // Start will output a ist of all available EC2 instances
@@ -56,6 +57,7 @@ func Start(input *StartInput) error {
 		Region:   *input.Region,
 		Profile:  *input.Profile,
 		MFAToken: *input.MFAToken,
+		Trace:    *input.Trace,
 	})
 	if err != nil {
 		log.Error(err)

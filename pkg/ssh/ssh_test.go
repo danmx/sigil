@@ -30,6 +30,7 @@ func TestStart(t *testing.T) {
 	pubKey := path.Join(os.TempDir(), "sigil_test.pub")
 	osUser := "ec2-user"
 	genKey := true
+	trace := false
 	input := StartInput{
 		MFAToken:   &mfa,
 		Region:     &region,
@@ -40,6 +41,7 @@ func TestStart(t *testing.T) {
 		PublicKey:  &pubKey,
 		OSUser:     &osUser,
 		GenKeyPair: &genKey,
+		Trace:      &trace,
 	}
 
 	gomock.InOrder(
@@ -47,6 +49,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSSH(
 			gomock.Eq(*input.TargetType),
@@ -72,6 +75,7 @@ func TestStart(t *testing.T) {
 		PublicKey:  &pubKey,
 		OSUser:     &osUser,
 		GenKeyPair: &genKey,
+		Trace:      &trace,
 	}
 
 	gomock.InOrder(
@@ -79,6 +83,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSSH(
 			gomock.Eq(*input.TargetType),
@@ -104,6 +109,7 @@ func TestStart(t *testing.T) {
 		PublicKey:  &pubKey,
 		OSUser:     &osUser,
 		GenKeyPair: &genKey,
+		Trace:      &trace,
 	}
 
 	gomock.InOrder(
@@ -111,6 +117,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSSH(
 			gomock.Eq(*input.TargetType),
@@ -135,6 +142,7 @@ func TestStart(t *testing.T) {
 		PublicKey:  &pubKey,
 		OSUser:     &osUser,
 		GenKeyPair: &genKey,
+		Trace:      &trace,
 	}
 
 	gomock.InOrder(
@@ -142,6 +150,7 @@ func TestStart(t *testing.T) {
 			Region:   *input.Region,
 			Profile:  *input.Profile,
 			MFAToken: *input.MFAToken,
+			Trace:    *input.Trace,
 		})).Return(nil),
 		m.EXPECT().StartSSH(
 			gomock.Eq(*input.TargetType),

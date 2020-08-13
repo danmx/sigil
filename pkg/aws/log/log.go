@@ -1,0 +1,19 @@
+package aws
+
+import (
+	"github.com/aws/aws-sdk-go/aws"
+	log "github.com/sirupsen/logrus"
+)
+
+// A traceLogger provides a minimalistic logger satisfying the aws.Logger interface.
+type traceLogger struct{}
+
+// newTraceLogger returns a Logger which will write log messages to current logger
+func NewTraceLogger() aws.Logger {
+	return &traceLogger{}
+}
+
+// Log logs the parameters to the stdlib logger. See log.Println.
+func (l traceLogger) Log(args ...interface{}) {
+	log.Trace(args) //nolint:govet // AWS Logger to Logrus
+}
