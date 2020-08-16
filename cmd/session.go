@@ -36,12 +36,14 @@ var sessionCmd = &cobra.Command{
 		profile := cfg.GetString("profile")
 		region := cfg.GetString("region")
 		mfaToken := cfg.GetString("mfa")
+		trace := log.IsLevelEnabled(log.TraceLevel)
 		log.WithFields(log.Fields{
 			"target":  target,
 			"type":    targetType,
 			"region":  region,
 			"profile": profile,
 			"mfa":     mfaToken,
+			"trace":   trace,
 		}).Debug("Session inputs")
 		input := &session.StartInput{
 			Target:     &target,
@@ -49,6 +51,7 @@ var sessionCmd = &cobra.Command{
 			Region:     &region,
 			Profile:    &profile,
 			MFAToken:   &mfaToken,
+			Trace:      &trace,
 		}
 		// returns err
 		return session.Start(input)

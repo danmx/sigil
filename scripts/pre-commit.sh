@@ -7,7 +7,7 @@ test(){
 }
 
 fmt() {
-    bazelisk run :gofmt
+    bazelisk run :gazelle && bazelisk run :gofmt
 }
 
 lint() {

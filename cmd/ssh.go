@@ -52,6 +52,7 @@ var (
 			genKeyPair := cfg.GetBool("gen-key-pair")
 			genKeyDir := cfg.GetString("gen-key-dir")
 			mfaToken := cfg.GetString("mfa")
+			trace := log.IsLevelEnabled(log.TraceLevel)
 			if genKeyPair {
 				stat, err := os.Stat(genKeyDir)
 				if !(err == nil && stat.IsDir()) {
@@ -79,6 +80,7 @@ var (
 				"os-user":      OSUser,
 				"gen-key-pair": genKeyPair,
 				"gen-key-dir":  genKeyDir,
+				"trace":        trace,
 			}).Debug("ssh inputs")
 			input := &ssh.StartInput{
 				Target:     &target,
@@ -90,6 +92,7 @@ var (
 				Region:     &region,
 				Profile:    &profile,
 				MFAToken:   &mfaToken,
+				Trace:      &trace,
 			}
 			// returns err
 			return ssh.Start(input)

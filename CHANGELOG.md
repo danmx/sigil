@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Aws
+- customizing default retryer for AWS api calls
+
 ### Chore
 - **deps:** bumping Go and tidying dependecies
 - **deps:** update module aws/aws-sdk-go to v1.34.2
@@ -15,6 +18,7 @@
 
 ### Fix
 - **bazel:** docker rules
+- **pre-commit:** adding Gazelle run during fmt phase
 
 
 <a name="0.5.3"></a>
