@@ -1,11 +1,15 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="0.6.0"></a>
+## [0.6.0] - 2020-08-16
 ### Aws
 - customizing default retryer for AWS api calls
 
 ### Chore
 - removing deprecated name tag reference
+- **deps:** update Go to 1.15
 - **deps:** bumping Go and tidying dependecies
 - **deps:** update module aws/aws-sdk-go to v1.34.2
 - **deps:** update dependency io_bazel_rules_go to v0.23.7
@@ -199,7 +203,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.5.3...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/danmx/sigil/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/danmx/sigil/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/danmx/sigil/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/danmx/sigil/compare/0.5.0...0.5.1
