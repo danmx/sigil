@@ -9,6 +9,7 @@
 
 ### Chore
 - removing deprecated name tag reference
+- **deps:** update golang.org/x/crypto commit hash to 75b2880
 - **deps:** update Go to 1.15
 - **deps:** bumping Go and tidying dependecies
 - **deps:** update module aws/aws-sdk-go to v1.34.2
@@ -19,7 +20,7 @@
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.4.1
 - **deps:** update dependency io_bazel_rules_docker to v0.14.4
 - **deps:** x/crypto version bump
-- **deps:** update golang.org/x/crypto commit hash to 75b2880
+- **release:** version 0.6.0
 
 ### Fix
 - **bazel:** docker rules
