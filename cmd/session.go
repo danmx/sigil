@@ -63,5 +63,5 @@ func init() {
 	rootCmd.AddCommand(sessionCmd)
 
 	sessionCmd.Flags().String("target", "", "specify the target depending on the type")
-	sessionCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s/%s (deprecated)", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName, aws.DeprecatedTargetTypeName))
+	sessionCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName))
 }

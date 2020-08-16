@@ -130,21 +130,6 @@ func TestStart(t *testing.T) {
 
 	assert.NoError(t, input.start(m))
 
-	// Deprecated Name
-	targetType = aws.DeprecatedTargetTypeName
-	input = StartInput{
-		MFAToken:   &mfa,
-		Region:     &region,
-		Profile:    &profile,
-		Target:     &target,
-		TargetType: &targetType,
-		PortNumber: &port,
-		PublicKey:  &pubKey,
-		OSUser:     &osUser,
-		GenKeyPair: &genKey,
-		Trace:      &trace,
-	}
-
 	gomock.InOrder(
 		m.EXPECT().NewWithConfig(gomock.Eq(&aws.Config{
 			Region:   *input.Region,

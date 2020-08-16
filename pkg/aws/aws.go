@@ -99,8 +99,6 @@ const (
 	TargetTypePrivateDNS = "private-dns"
 	// TargetTypeName points to a name type
 	TargetTypeName = "name"
-	// DeprecatedTargetTypeName points to a name type
-	DeprecatedTargetTypeName = "name-tag"
 )
 
 // NewWithConfig will generate an AWS Provider with given configuration
@@ -196,17 +194,6 @@ func (p *Provider) getInstance(targetType, target string) (*ec2.Instance, error)
 			},
 		}
 	case TargetTypeName:
-		filters = []*ec2.Filter{
-			{
-				Name:   aws.String("tag:Name"),
-				Values: []*string{&target},
-			},
-			{
-				Name:   aws.String("instance-state-name"),
-				Values: []*string{aws.String("running")},
-			},
-		}
-	case DeprecatedTargetTypeName:
 		filters = []*ec2.Filter{
 			{
 				Name:   aws.String("tag:Name"),
