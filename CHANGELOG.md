@@ -1,6 +1,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="0.6.1"></a>
+## [0.6.1] - 2020-08-19
+### Chore
+- **release:** version 0.6.1
+
 ### Fix
 - **aws:** reducing timeouts to speed up error feedback loop
 
@@ -207,7 +213,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/danmx/sigil/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/danmx/sigil/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/danmx/sigil/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/danmx/sigil/compare/0.5.1...0.5.2
