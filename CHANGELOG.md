@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Fix
+- **aws:** reducing timeouts to speed up error feedback loop
+
 
 <a name="0.6.0"></a>
 ## [0.6.0] - 2020-08-16
