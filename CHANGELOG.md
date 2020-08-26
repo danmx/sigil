@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Fix
+- **aws:** error log on a send ssh pub key failure
 - **docs:** adding profile config entry description
 
 
