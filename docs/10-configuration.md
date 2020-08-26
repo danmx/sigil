@@ -21,6 +21,7 @@ Description of different values of the configuration file.
 
 | Parameter                |   Command(s)    | Description                                                                  |
 | ------------------------ | :-------------: | :--------------------------------------------------------------------------- |
+| `profile`                   | **all** | specify AWS profile                                                          |
 | `type`                   | `session`/`ssh` | specify target type                                                          |
 | `target`                 | `session`/`ssh` | specify the target depending on the type                                     |
 | `os-user`                |      `ssh`      | specify an instance OS user which will be using sent public key              |

@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Fix
+- **docs:** adding profile config entry description
+
 
 <a name="0.6.1"></a>
 ## [0.6.1] - 2020-08-19
