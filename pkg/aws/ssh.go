@@ -36,6 +36,13 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 			SSHPublicKey:     &pubKey,
 		})
 		if errSend != nil {
+			log.WithFields(log.Fields{
+				"AvailabilityZone": *instance.Placement.AvailabilityZone,
+				"InstanceID":       *instance.InstanceId,
+				"InstanceOSUser":   osUser,
+				"SSHPublicKey":     pubKey,
+				"error":            errSend,
+			}).Error("failed SendSSHPublicKey")
 			return errSend
 		}
 		if !*out.Success {
