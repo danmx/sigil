@@ -69,13 +69,13 @@ docker run --rm -it -v "${HOME}"/.sigil:/home/nonroot/.sigil -v "${HOME}"/.aws:/
 Binary:
 
 ```shell
-sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+sigil -r eu-west-1 session --type instance-id i-xxxxxxxxxxxxxxxxx
 ```
 
 Using with [aws-vault](https://github.com/99designs/aws-vault):
 
 ```shell
-aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id --target i-xxxxxxxxxxxxxxxxx
+aws-vault exec AWS_PROFILE -- sigil -r eu-west-1 session --type instance-id i-xxxxxxxxxxxxxxxxx
 ```
 
 ### SSH integration
@@ -86,11 +86,11 @@ Add an entry to your `ssh_config`:
 Host i-* mi-*
     IdentityFile /tmp/sigil/%h/temp_key
     IdentitiesOnly yes
-    ProxyCommand sigil ssh --target %h --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r --gen-key-dir /tmp/sigil/%h/
+    ProxyCommand sigil ssh --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r --gen-key-dir /tmp/sigil/%h/ %h
 Host *.compute.internal
     IdentityFile /tmp/sigil/%h/temp_key
     IdentitiesOnly yes
-    ProxyCommand sigil ssh --type private-dns --target %h --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r --gen-key-dir /tmp/sigil/%h/
+    ProxyCommand sigil ssh --type private-dns --port %p --pub-key /tmp/sigil/%h/temp_key.pub --gen-key-pair --os-user %r --gen-key-dir /tmp/sigil/%h/ %h
 ```
 
 and run:

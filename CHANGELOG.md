@@ -1,6 +1,9 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Feat
+- **cmd:** moving target to arg instead of separate flag
+
 ### Fix
 - **aws:** error log on a send ssh pub key failure
 - **docs:** adding profile config entry description
