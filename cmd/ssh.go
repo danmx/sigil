@@ -17,7 +17,7 @@ const tempKeyName = "temp_key"
 var (
 	portNum uint64 = 22
 	sshCmd         = &cobra.Command{
-		Use:                   "ssh [--type TYPE] ... { [--gen-key-pair] [--gen-key-dir DIR] | [--pub-key PUB_KEY_PATH] } TARGET",
+		Use:                   "ssh [--type TYPE] ... [ { --gen-key-pair [--gen-key-dir DIR] | --pub-key PUB_KEY_PATH } ] TARGET",
 		DisableFlagsInUseLine: true,
 		Short:                 "Start ssh session",
 		Long:                  `Start a new ssh for chosen EC2 instance.`,

@@ -3,7 +3,7 @@
 Start a new ssh for chosen EC2 instance based on its instance ID, name tag, or private DNS name.
 
 ```console
-sigil ssh [--type TYPE] ... { [--gen-key-pair] [--gen-key-dir DIR] | [--pub-key PUB_KEY_PATH] } TARGET
+ssh [--type TYPE] ... [ { --gen-key-pair [--gen-key-dir DIR] | --pub-key PUB_KEY_PATH } ] TARGET
 ```
 
 [Man](../man/sigil_ssh.md) page
