@@ -20,8 +20,9 @@ var (
 	}
 	// listCmd represents the list command
 	listCmd = &cobra.Command{
-		Use:   "list",
-		Short: "List available EC2 instances or SSM sessions",
+		Use:                   "list [--type TYPE] ... { [--instance-ids IDs] [--instance-tags TAGS] | [--session-filters FILTERS] }",
+		DisableFlagsInUseLine: true,
+		Short:                 "List available EC2 instances or SSM sessions",
 		Long: `Show list of all EC2 instances with AWS SSM Agent running or active SSM sessions.
 
 Supported groups of filters:

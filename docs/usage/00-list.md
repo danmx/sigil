@@ -4,7 +4,7 @@ This command list all active instances and sessions that match the filter.
 When interactive mode is enabled you can start a session in a given instance or terminate active session.
 
 ```console
-sigil list [flags]
+sigil list [--type TYPE] ... { [--instance-ids IDs] [--instance-tags TAGS] | [--session-filters FILTERS] }
 ```
 
 [Man](../man/sigil_list.md) page

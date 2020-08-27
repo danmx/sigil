@@ -17,11 +17,16 @@ const tempKeyName = "temp_key"
 var (
 	portNum uint64 = 22
 	sshCmd         = &cobra.Command{
-		Use:   "ssh",
-		Short: "Start ssh session",
-		Long:  `Start a new ssh for chosen EC2 instance.`,
+		Use:                   "ssh [--type TYPE] ... { [--gen-key-pair] [--gen-key-dir DIR] | [--pub-key PUB_KEY_PATH] } TARGET",
+		DisableFlagsInUseLine: true,
+		Short:                 "Start ssh session",
+		Long:                  `Start a new ssh for chosen EC2 instance.`,
+		Args:                  cobra.MaximumNArgs(1),
 		//nolint:dupl // deduplicating it wouldn't provide much value
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) != 0 && cmd.Flags().Lookup("target").Changed {
+				return fmt.Errorf("can't use both target argument (%s) and deprecated flag (%s)", args[0], cmd.Flags().Lookup("target").Value.String())
+			}
 			// Config bindings
 			for flag, lookup := range map[string]string{
 				"target":       "target",
@@ -38,6 +43,9 @@ var (
 					}).Error(err)
 					return err
 				}
+			}
+			if len(args) > 0 {
+				cfg.Set("target", args[0])
 			}
 			// returns err
 			return aws.VerifyDependencies()
@@ -105,6 +113,11 @@ func init() {
 	rootCmd.AddCommand(sshCmd)
 
 	sshCmd.Flags().String("target", "", "specify the target depending on the type")
+	// Deprecating the target flag
+	err := sshCmd.Flags().MarkDeprecated("target", "this flag will be deprecated in future releases, use args instead")
+	if err != nil {
+		log.WithField("flag", sshCmd.Flags().Lookup("target")).Error(err)
+	}
 	sshCmd.Flags().String("type", aws.TargetTypeInstanceID, fmt.Sprintf("specify target type: %s/%s/%s", aws.TargetTypeInstanceID, aws.TargetTypePrivateDNS, aws.TargetTypeName))
 	sshCmd.Flags().Bool("gen-key-pair", false, fmt.Sprintf("generate a temporary key pair that will be send and used. By default use %s as an identity file", path.Join(workDir, tempKeyName)))
 	sshCmd.Flags().String("gen-key-dir", workDir, "the directory where temporary keys will be generated")
