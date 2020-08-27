@@ -1,6 +1,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+
+<a name="0.7.0"></a>
+## [0.7.0] - 2020-08-27
+### Chore
+- **release:** version 0.7.0
+
 ### Feat
 - **cmd:** moving target to arg instead of separate flag
 
@@ -220,7 +226,8 @@
 <a name="0.0.1"></a>
 ## 0.0.1 - 2019-03-18
 
-[Unreleased]: https://github.com/danmx/sigil/compare/0.6.1...HEAD
+[Unreleased]: https://github.com/danmx/sigil/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/danmx/sigil/compare/0.6.1...0.7.0
 [0.6.1]: https://github.com/danmx/sigil/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/danmx/sigil/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/danmx/sigil/compare/0.5.2...0.5.3
