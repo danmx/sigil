@@ -12,6 +12,7 @@
 
 ### Fix
 - **aws:** error log on a send ssh pub key failure
+- **cmd:** clarify ssh usage
 - **docs:** adding profile config entry description
 
 
