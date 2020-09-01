@@ -30,13 +30,13 @@ go_test(
 gomock(
     name = "mock_aws",
     out = "aws_mock_test.go",
-    library = "//pkg/aws:go_default_library",
     interfaces = [
         "Cloud",
         "CloudInstances",
         "CloudSessions",
         "CloudSSH",
     ],
+    library = "//pkg/aws:go_default_library",
     package = "list",
     self_package = "github.com/danmx/sigil/pkg/list",
 )
