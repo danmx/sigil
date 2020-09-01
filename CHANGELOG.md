@@ -1,6 +1,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Chore
+- **deps:** update dependency io_bazel_rules_go to v0.24.1
+
+### Update
+- **go:** version 1.15.1
+
 
 <a name="0.7.0"></a>
 ## [0.7.0] - 2020-08-27
