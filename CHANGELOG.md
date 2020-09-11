@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Chore
+- **deps:** update dependency io_bazel_rules_go to v0.24.2
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.5.0
 - **deps:** update dependency bazel_gazelle to v0.22.0
 - **deps:** update dependency io_bazel_rules_go to v0.24.1
@@ -10,6 +11,7 @@
 - **drone:** updating drone.yml signature
 
 ### Update
+- **go:** version 1.15.2
 - **go:** version 1.15.1
 
 
