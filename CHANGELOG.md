@@ -11,6 +11,7 @@
 - **drone:** updating drone.yml signature
 
 ### Update
+- **go:** version 1.15.2
 - **go:** version 1.15.1
 
 
