@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/danmx/sigil/pkg/aws/helpers"
 	logger "github.com/danmx/sigil/pkg/aws/log"
 	sigilOS "github.com/danmx/sigil/pkg/os"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -138,7 +140,11 @@ func (p *Provider) NewWithConfig(c *Config) error {
 
 // VerifyDependencies will check all necessary dependencies
 func VerifyDependencies() error {
-	o, err := exec.LookPath(pluginName)
+	return verifyDependencies(new(helpers.Helpers))
+}
+
+func verifyDependencies(exechelpers helpers.OSExecIface) error {
+	o, err := exechelpers.LookPath(pluginName)
 	if err != nil {
 		err = fmt.Errorf("required plugin not found: %s", err)
 		log.Error(err)
@@ -153,15 +159,23 @@ func VerifyDependencies() error {
 
 // AppendUserAgent will add given suffix to HTTP client's user agent
 func AppendUserAgent(suffix string) error {
-	value, set := os.LookupEnv(execEnvVar)
+	return appendUserAgent(new(helpers.Helpers), suffix)
+}
+
+func appendUserAgent(oshelpers helpers.OSIface, suffix string) error {
+	value, set := oshelpers.LookupEnv(execEnvVar)
 	if set {
 		value += "/"
 	}
 	value += suffix
-	return os.Setenv(execEnvVar, value)
+	return oshelpers.Setenv(execEnvVar, value)
 }
 
 func (p *Provider) getInstance(targetType, target string) (*ec2.Instance, error) {
+	return getInstance(ec2.New(p.session), targetType, target)
+}
+
+func getInstance(ec2Client ec2iface.EC2API, targetType, target string) (*ec2.Instance, error) {
 	if target == "" {
 		err := errors.New("no target")
 		log.WithFields(log.Fields{
@@ -169,6 +183,29 @@ func (p *Provider) getInstance(targetType, target string) (*ec2.Instance, error)
 		}).Error(err)
 		return nil, err
 	}
+	filters, err := getFilters(targetType, target)
+	if err != nil {
+		return nil, err
+	}
+	instance, err := getFirstInstance(ec2Client, filters)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"filters": filters,
+		}).Error("failed getting the first instance")
+		return nil, err
+	}
+	if instance == nil {
+		err := fmt.Errorf("no instance that matches the target (%s) and the type (%s)", target, targetType)
+		log.WithFields(log.Fields{
+			"targetType": targetType,
+			"taget":      target,
+		}).Info(err)
+		return nil, err
+	}
+	return instance, nil
+}
+
+func getFilters(targetType, target string) ([]*ec2.Filter, error) {
 	var filters []*ec2.Filter
 	switch targetType {
 	case TargetTypeInstanceID:
@@ -211,31 +248,15 @@ func (p *Provider) getInstance(targetType, target string) (*ec2.Instance, error)
 		}).Error("unsupported target type")
 		return nil, fmt.Errorf("unsupported target type: %s", targetType)
 	}
-	instance, err := p.getFirstInstance(filters)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"filters": filters,
-		}).Error("failed getting the first instance")
-		return nil, err
-	}
-	if instance == nil {
-		err := fmt.Errorf("no instance that matches the target (%s) and the type (%s)", target, targetType)
-		log.WithFields(log.Fields{
-			"targetType": targetType,
-			"taget":      target,
-		}).Info(err)
-		return nil, err
-	}
-	return instance, nil
+	return filters, nil
 }
 
-func (p *Provider) getFirstInstance(filters []*ec2.Filter) (*ec2.Instance, error) {
+func getFirstInstance(ec2Client ec2iface.EC2API, filters []*ec2.Filter) (*ec2.Instance, error) {
 	input := &ec2.DescribeInstancesInput{
 		Filters:    filters,
 		MaxResults: aws.Int64(maxResults),
 	}
 	var target *ec2.Instance
-	ec2Client := ec2.New(p.session)
 	err := ec2Client.DescribeInstancesPages(input,
 		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
 			for _, reservation := range page.Reservations {

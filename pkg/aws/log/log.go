@@ -1,8 +1,8 @@
-package aws
+package log
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
-	log "github.com/sirupsen/logrus"
+	logr "github.com/sirupsen/logrus"
 )
 
 // A traceLogger provides a minimalistic logger satisfying the aws.Logger interface.
@@ -15,5 +15,5 @@ func NewTraceLogger() aws.Logger {
 
 // Log logs the parameters to the stdlib logger. See log.Println.
 func (l traceLogger) Log(args ...interface{}) {
-	log.Trace(args) //nolint:govet // AWS Logger to Logrus
+	logr.Trace(args) //nolint:govet // AWS Logger to Logrus
 }

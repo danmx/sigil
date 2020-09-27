@@ -13,6 +13,9 @@
 ### Fix
 - **drone:** updating drone.yml signature
 
+### Test
+- **aws:** adding unittests
+
 ### Update
 - **go:** version 1.15.2
 - **go:** version 1.15.1

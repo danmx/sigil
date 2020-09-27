@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
+	"github.com/aws/aws-sdk-go/service/ec2instanceconnect/ec2instanceconnectiface"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	log "github.com/sirupsen/logrus"
 )
@@ -19,34 +20,10 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 	}
 
 	if len(publicKey) > 0 {
-		pubKey := string(publicKey)
-
-		log.WithFields(log.Fields{
-			"SSHPublicKey":     pubKey,
-			"InstanceOSUser":   osUser,
-			"InstanceId":       *instance.InstanceId,
-			"AvailabilityZone": *instance.Placement.AvailabilityZone,
-		}).Debug("SendSSHPublicKey")
-
 		svc := ec2instanceconnect.New(p.session)
-		out, errSend := svc.SendSSHPublicKey(&ec2instanceconnect.SendSSHPublicKeyInput{
-			AvailabilityZone: instance.Placement.AvailabilityZone,
-			InstanceId:       instance.InstanceId,
-			InstanceOSUser:   &osUser,
-			SSHPublicKey:     &pubKey,
-		})
-		if errSend != nil {
-			log.WithFields(log.Fields{
-				"AvailabilityZone": *instance.Placement.AvailabilityZone,
-				"InstanceID":       *instance.InstanceId,
-				"InstanceOSUser":   osUser,
-				"SSHPublicKey":     pubKey,
-				"error":            errSend,
-			}).Error("failed SendSSHPublicKey")
-			return errSend
-		}
-		if !*out.Success {
-			return fmt.Errorf("failed SendSSHPublicKey. RequestID: %s", *out.RequestId)
+		err = uploadPublicKey(svc, publicKey, osUser, *instance.InstanceId, *instance.Placement.AvailabilityZone)
+		if err != nil {
+			return err
 		}
 	}
 
@@ -65,7 +42,7 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 	}
 
 	defer func() {
-		if err = p.TerminateSession(*output.SessionId); err != nil {
+		if err = terminateSession(ssmClient, *output.SessionId); err != nil {
 			err = fmt.Errorf("failed terminating the session (it could be already terminated): %e", err)
 			log.Warn(err)
 		}
@@ -88,6 +65,36 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 
 	endpoint := ssmClient.Client.Endpoint
 
-	// returns err
 	return runSessionPluginManager(string(payload), *p.session.Config.Region, p.awsProfile, string(startSessionInputJSON), endpoint)
+}
+
+func uploadPublicKey(client ec2instanceconnectiface.EC2InstanceConnectAPI, publicKey []byte, osUser, instanceID, availabilityZone string) error {
+	pubKey := string(publicKey)
+	log.WithFields(log.Fields{
+		"SSHPublicKey":     pubKey,
+		"InstanceOSUser":   osUser,
+		"InstanceId":       instanceID,
+		"AvailabilityZone": availabilityZone,
+	}).Debug("SendSSHPublicKey")
+
+	out, err := client.SendSSHPublicKey(&ec2instanceconnect.SendSSHPublicKeyInput{
+		AvailabilityZone: &availabilityZone,
+		InstanceId:       &instanceID,
+		InstanceOSUser:   &osUser,
+		SSHPublicKey:     &pubKey,
+	})
+	if err != nil {
+		log.WithFields(log.Fields{
+			"AvailabilityZone": availabilityZone,
+			"InstanceID":       instanceID,
+			"InstanceOSUser":   osUser,
+			"SSHPublicKey":     pubKey,
+			"error":            err,
+		}).Error("failed SendSSHPublicKey")
+		return err
+	}
+	if !*out.Success {
+		return fmt.Errorf("failed SendSSHPublicKey. RequestID: %s", *out.RequestId)
+	}
+	return nil
 }

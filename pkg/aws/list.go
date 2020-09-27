@@ -3,7 +3,9 @@ package aws
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/ec2/ec2iface"
 	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -11,8 +13,22 @@ const capMultiplier = 2
 
 // ListInstances provides a list of active instances with SSM agent
 func (p *Provider) ListInstances() ([]*Instance, error) {
-	instances := make(map[string]*Instance)
+	instances, err := fetchInstances(ssm.New(p.session), p.filters.Instance.IDs)
+	if err != nil {
+		return nil, err
+	}
+	if len(instances) == 0 {
+		log.Info("No matching instances")
+		return []*Instance{}, nil
+	}
+	filteredInstances, err := filterInstances(ec2.New(p.session), p.filters.Instance.Tags, instances)
+	if err != nil {
+		return nil, err
+	}
+	return filteredInstances, nil
+}
 
+func fetchInstances(ssmClient ssmiface.SSMAPI, ids []string) (map[string]*Instance, error) {
 	// Show only instances that have active agents
 	ssmDescribeInstancesInput := &ssm.DescribeInstanceInformationInput{
 		MaxResults: aws.Int64(maxResults),
@@ -23,17 +39,18 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 			},
 		},
 	}
-	if len(p.filters.Instance.IDs) > 0 {
+	if len(ids) > 0 {
 		log.WithFields(log.Fields{
-			"IDs": p.filters.Instance.IDs,
+			"ids": ids,
 		}).Debug("Instance IDs Filter")
 		ssmDescribeInstancesInput.Filters = append(ssmDescribeInstancesInput.Filters, &ssm.InstanceInformationStringFilter{
 			Key:    aws.String("InstanceIds"),
-			Values: aws.StringSlice(p.filters.Instance.IDs),
+			Values: aws.StringSlice(ids),
 		})
 	}
 
-	ssmClient := ssm.New(p.session)
+	instances := make(map[string]*Instance)
+
 	err := ssmClient.DescribeInstanceInformationPages(ssmDescribeInstancesInput,
 		func(page *ssm.DescribeInstanceInformationOutput, lastPage bool) bool {
 			for _, instance := range page.InstanceInformationList {
@@ -63,10 +80,10 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 		}).Error("DescribeInstanceInformationPages")
 		return nil, err
 	}
-	if len(instances) == 0 {
-		log.Info("No matching instances")
-		return []*Instance{}, nil
-	}
+	return instances, nil
+}
+
+func filterInstances(ec2Client ec2iface.EC2API, tags []TagValues, instances map[string]*Instance) ([]*Instance, error) {
 	describeInstancesInput := &ec2.DescribeInstancesInput{
 		InstanceIds: make([]*string, 0, len(instances)),
 		Filters: []*ec2.Filter{
@@ -77,7 +94,7 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 		},
 	}
 
-	for _, tag := range p.filters.Instance.Tags {
+	for _, tag := range tags {
 		log.WithFields(log.Fields{
 			"key":    tag.Key,
 			"values": tag.Values,
@@ -93,8 +110,7 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 	for _, instance := range instances {
 		describeInstancesInput.InstanceIds = append(describeInstancesInput.InstanceIds, &instance.ID)
 	}
-	ec2Client := ec2.New(p.session)
-	err = ec2Client.DescribeInstancesPages(describeInstancesInput,
+	err := ec2Client.DescribeInstancesPages(describeInstancesInput,
 		func(page *ec2.DescribeInstancesOutput, lastPage bool) bool {
 			for _, reservation := range page.Reservations {
 				for _, instance := range reservation.Instances {
@@ -124,40 +140,43 @@ func (p *Provider) ListInstances() ([]*Instance, error) {
 
 // ListSessions provides a list of active SSM sessions
 func (p *Provider) ListSessions() ([]*Session, error) {
+	return listSessions(ssm.New(p.session), p.filters.Session)
+}
+
+func listSessions(ssmClient ssmiface.SSMAPI, sessionFilters SessionFilters) ([]*Session, error) {
 	// Show only connected sessions
 	ssmDescribeSessionsInput := &ssm.DescribeSessionsInput{
 		State: aws.String("Active"),
 	}
 	// Parse filters
 	filters := []*ssm.SessionFilter{}
-	if p.filters.Session.After != "" {
+	if sessionFilters.After != "" {
 		filters = append(filters, &ssm.SessionFilter{
 			Key:   aws.String("InvokedAfter"),
-			Value: &p.filters.Session.After,
+			Value: &sessionFilters.After,
 		})
 	}
-	if p.filters.Session.Before != "" {
+	if sessionFilters.Before != "" {
 		filters = append(filters, &ssm.SessionFilter{
 			Key:   aws.String("InvokedBefore"),
-			Value: &p.filters.Session.Before,
+			Value: &sessionFilters.Before,
 		})
 	}
-	if p.filters.Session.Target != "" {
+	if sessionFilters.Target != "" {
 		filters = append(filters, &ssm.SessionFilter{
 			Key:   aws.String("Target"),
-			Value: &p.filters.Session.Target,
+			Value: &sessionFilters.Target,
 		})
 	}
-	if p.filters.Session.Owner != "" {
+	if sessionFilters.Owner != "" {
 		filters = append(filters, &ssm.SessionFilter{
 			Key:   aws.String("Owner"),
-			Value: &p.filters.Session.Owner,
+			Value: &sessionFilters.Owner,
 		})
 	}
 	if len(filters) > 0 {
 		ssmDescribeSessionsInput.Filters = filters
 	}
-	ssmClient := ssm.New(p.session)
 	sessions := []*Session{}
 	for out, err := ssmClient.DescribeSessions(ssmDescribeSessionsInput); ; {
 		if err != nil {
