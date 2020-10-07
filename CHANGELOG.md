@@ -12,6 +12,7 @@
 - **deps:** update dependency io_bazel_rules_go to v0.24.1
 
 ### Fix
+- **bazel:** semi-hermitizing Go SDK
 - **drone:** updating drone.yml signature
 
 ### Test
