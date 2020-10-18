@@ -3,6 +3,8 @@
 
 ### Chore
 - refactoring dev tools
+- **deps:** bumping go version to 1.15.3
+- **deps:** update dependency io_bazel_rules_go to v0.24.4
 - **deps:** update dependency bazel_gazelle to v0.22.2
 - **deps:** update module aws/aws-sdk-go to v1.34.32
 - **deps:** update dependency io_bazel_rules_go to v0.24.3
