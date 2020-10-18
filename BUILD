@@ -7,46 +7,8 @@ load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@io_bazel_rules_docker//container:image.bzl", "container_image")
 load("@io_bazel_rules_docker//container:layer.bzl", "container_layer")
 load("@io_bazel_rules_docker//docker:docker.bzl", "docker_push")
-load("@com_github_danmx_bazel_tools//run_in_workspace:def.bzl", "workspace_binary")
-load("@com_github_danmx_bazel_tools//git-chglog:def.bzl", "git_chglog")
-load("@com_github_danmx_bazel_tools//drone-cli:def.bzl", "drone")
-load("@com_github_danmx_bazel_tools//golangci-lint:def.bzl", "golangci_lint")
 
 package(default_visibility = ["//visibility:public"])
-
-golangci_lint(
-    name = "lint",
-    args = [
-        "run",
-        "./...",
-    ],
-)
-
-drone(
-    name = "drone-fmt",
-    args = [
-        "fmt",
-        "--save",
-        ".drone.yml",
-    ],
-)
-
-drone(
-    name = "drone-sign",
-    args = [
-        "sign",
-        "danmx/sigil",
-        "--save",
-    ],
-)
-
-git_chglog(
-    name = "changelog",
-    args = [
-        "-o",
-        "CHANGELOG.md",
-    ],
-)
 
 genrule(
     name = "concat-cov",
@@ -54,35 +16,6 @@ genrule(
     outs = ["coverage.txt"],
     cmd_bash = "./$(location //tools:fix_codecov.sh) > \"$@\"",
     exec_tools = ["//tools:fix_codecov.sh"],
-)
-
-workspace_binary(
-    name = "gofmt",
-    args = [
-        "-s",
-        "-w",
-        ".",
-    ],
-    cmd = "@go_sdk//:bin/gofmt",
-)
-
-workspace_binary(
-    name = "generate",
-    args = [
-        "generate",
-        "-x",
-        "./...",
-    ],
-    cmd = "@go_sdk//:bin/go",
-)
-
-workspace_binary(
-    name = "tidy",
-    args = [
-        "mod",
-        "tidy",
-    ],
-    cmd = "@go_sdk//:bin/go",
 )
 
 gazelle(
