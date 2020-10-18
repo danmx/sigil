@@ -91,12 +91,12 @@ http_file(
     urls = ["https://s3.amazonaws.com/session-manager-downloads/plugin/1.1.61.0/ubuntu_64bit/session-manager-plugin.deb"],
 )
 
-# golangci-lint, drone-cli, git-chglog & workspace_binary
+# golangci-lint, drone-cli & git-chglog
 http_archive(
     name = "com_github_danmx_bazel_tools",
-    sha256 = "6493f27aba59c1fb91adcc28f267a53b02393a8c7895c9f266c11bd870631c47",
-    strip_prefix = "bazel-tools-d35bbdbaecc70c5c033b3af148ee4c8e9b1d31d4",
-    urls = ["https://github.com/danmx/bazel-tools/archive/d35bbdbaecc70c5c033b3af148ee4c8e9b1d31d4.tar.gz"],
+    sha256 = "08e0311293897958438a838777d1293c69212c1fe4ba042bb72362223b72df8c",
+    strip_prefix = "bazel-tools-cf03e739f3bb7338189a43e7268381483992990b",
+    urls = ["https://github.com/danmx/bazel-tools/archive/cf03e739f3bb7338189a43e7268381483992990b.tar.gz"],
 )
 
 load("@com_github_danmx_bazel_tools//git-chglog:deps.bzl", "git_chglog_dependencies")
