@@ -3,20 +3,21 @@
 
 ### Chore
 - refactoring dev tools
-- **deps:** update dependency io_bazel_rules_go to v0.24.1
+- **deps:** updating AWS session-manager-plugin to version 1.2.7.0
+- **deps:** update dependency io_bazel_rules_go to v0.24.5
 - **deps:** update module spf13/cobra to v1.1.1
 - **deps:** update module spf13/cobra to v1.1.0
 - **deps:** update module sirupsen/logrus to v1.7.0
 - **deps:** bumping go version to 1.15.3
 - **deps:** update dependency io_bazel_rules_go to v0.24.4
-- **deps:** update dependency io_bazel_rules_go to v0.24.5
+- **deps:** update dependency bazel_gazelle to v0.22.0
 - **deps:** update dependency bazel_gazelle to v0.22.2
 - **deps:** update module aws/aws-sdk-go to v1.34.32
 - **deps:** update dependency io_bazel_rules_go to v0.24.3
 - **deps:** update dependency bazel_gazelle to v0.22.1
 - **deps:** update dependency io_bazel_rules_go to v0.24.2
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.5.0
-- **deps:** update dependency bazel_gazelle to v0.22.0
+- **deps:** update dependency io_bazel_rules_go to v0.24.1
 - **tools:** updating dev tools
 
 ### Fix
