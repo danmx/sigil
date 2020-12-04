@@ -13,6 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: zendesk/checkout@v2
+      - name: Set up Go
+        uses: zendesk/setup-go@v2
+        with:
+          go-version: 1.15
+      - name: Setup cache
+        uses: zendesk/cache@v2
+        with:
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          path: ~/go/pkg/mod
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run Generate
+        run: go generate ./...
       - name: golangci-lint
         uses: zendesk/golangci-lint-action@v2
         with:
