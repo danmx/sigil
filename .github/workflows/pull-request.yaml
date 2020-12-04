@@ -9,7 +9,7 @@ on:
 jobs:
   main:
     name: Test
-    # runs-on: [self-hosted,zendesk-stable]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: zendesk/checkout@v2
