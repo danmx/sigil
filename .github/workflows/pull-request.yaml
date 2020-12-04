@@ -1,8 +1,13 @@
 name: CI
 on:
   pull_request:
+    branches:
+      - main
+      - master
   push:
-    branches: [master, main]
+    branches:
+      - main
+      - master
 
 jobs:
   main:
