@@ -90,11 +90,11 @@ const (
 	maxResults int64 = 50
 	pluginName       = "session-manager-plugin"
 	// API calls retry configuration
-	numMaxRetries    = 5
+	numMaxRetries    = 100
 	minRetryDelay    = 10 * time.Millisecond
 	minThrottleDelay = 500 * time.Millisecond
-	maxRetryDelay    = 1 * time.Second
-	maxThrottleDelay = 4 * time.Second
+	maxRetryDelay    = 5 * time.Second
+	maxThrottleDelay = 30 * time.Second
 	// TargetTypeInstanceID points to an instance ID type
 	TargetTypeInstanceID = "instance-id"
 	// TargetTypePrivateDNS points to a private DNS type
