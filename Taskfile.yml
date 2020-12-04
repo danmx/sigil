@@ -1,0 +1,22 @@
+# https://taskfile.dev
+
+version: '3'
+
+
+tasks:
+  build:
+    desc: build binary
+    cmds:
+    - go build -o sigil main.go
+  deps:
+    desc: get dependencies
+    cmds:
+    - cmd: go get .
+  test:
+    desc: test
+    cmds:
+    - go test ./...
+  generate:
+    desc: generate mocks
+    cmds:
+      - go generate ./...
