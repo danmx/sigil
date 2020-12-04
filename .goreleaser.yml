@@ -31,7 +31,6 @@ changelog:
       - '^docs:'
       - '^test:'
 
-# .goreleaser.yml
 brews:
   -
     # GOARM to specify which 32-bit arm version to use if there are multiple versions
@@ -44,11 +43,9 @@ brews:
 
     # GitHub/GitLab repository to push the formula to
     # Gitea is not supported yet, but the support coming
-    # tap:
-    #   owner: repo-owner
-    #   name: homebrew-tap
-    #   # Optionally a token can be provided, if it differs from the token provided to GoReleaser
-    #   token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    tap:
+      owner: zendesk
+      name: sigil
 
     # Folder inside the repository to put the formula.
     # Default is the root folder.
