@@ -2,12 +2,14 @@ name: CI
 on:
   pull_request:
   push:
-    branches: master
+    branches:
+      - main
+      - master
 
 jobs:
   main:
     name: Test
-    # runs-on: [self-hosted,zendesk-stable]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source
         uses: zendesk/checkout@v2
@@ -23,7 +25,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Install Taskfile
-        uses: zendesk/go-task/setup-taskfile@master
+        run: |
+          curl -sL https://taskfile.dev/install.sh | sh
+          sudo mv ./bin/task /usr/local/bin
       - name: Test
         run: |
-          task build
+          task generate test
