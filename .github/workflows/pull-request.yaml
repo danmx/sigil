@@ -25,7 +25,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Install Taskfile
-        uses: zendesk/go-task/setup-taskfile@master
+        run: |
+          curl -sL https://taskfile.dev/install.sh | sh
+          sudo mv ./bin/task /usr/local/bin
       - name: Test
         run: |
           task build
