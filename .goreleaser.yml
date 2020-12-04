@@ -13,6 +13,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/danmx/sigil/cmd.appVersion={{.Version}} -X github.com/danmx/sigil/cmd.gitCommit={{.Commit}} -X github.com/danmx/sigil/cmd.date={{.Date}} -X github.com/danmx/sigil/cmd.builtBy=goreleaser
 archives:
   - replacements:
       darwin: Darwin
