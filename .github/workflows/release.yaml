@@ -9,20 +9,24 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: zendesk/checkout@v2
         with:
           fetch-depth: 0
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: zendesk/setup-go@v2
         with:
           go-version: 1.15
-      - name: run generate
+      - name: Setup cache
+        uses: zendesk/cache@v2
+        with:
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          path: ~/go/pkg/mod
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run Generate
         run: go generate ./...
-      -
-        name: Run GoReleaser
+      - name: Run GoReleaser
         run: |
           curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
           goreleaser release --rm-dist
