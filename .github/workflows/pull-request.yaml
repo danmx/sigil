@@ -30,4 +30,4 @@ jobs:
           sudo mv ./bin/task /usr/local/bin
       - name: Test
         run: |
-          task build
+          task test
