@@ -30,6 +30,8 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
+    - name: install Session Manager Plugin
+      run: ./scripts/install-helper.sh
     - name: Go Generate
       run: go generate ./...
 
