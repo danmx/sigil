@@ -15,5 +15,5 @@ func NewTraceLogger() aws.Logger {
 
 // Log logs the parameters to the stdlib logger. See log.Println.
 func (l traceLogger) Log(args ...interface{}) {
-	logr.Trace(args) //nolint:govet // AWS Logger to Logrus
+	logr.Trace(args...)
 }
