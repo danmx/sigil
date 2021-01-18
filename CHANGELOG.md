@@ -26,6 +26,7 @@
 ### Fix
 - **bazel:** semi-hermitizing Go SDK
 - **drone:** updating drone.yml signature
+- **list:** wrong instance ids config bindings
 
 ### Test
 - **aws:** adding unittests

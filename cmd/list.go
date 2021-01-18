@@ -54,7 +54,7 @@ Filter format examples:
 				"output-format":         "output-format",
 				"interactive":           "interactive",
 				"filters.session":       "session-filters",
-				"filters.instance.ids":  "session-filters",
+				"filters.instance.ids":  "instance-ids",
 				"filters.instance.tags": "instance-tags",
 				"list-type":             "type",
 			} {
