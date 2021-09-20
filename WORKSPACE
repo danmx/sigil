@@ -83,8 +83,8 @@ http_archive(
 http_file(
     name = "session_manager_plugin_deb",
     downloaded_file_path = "session-manager-plugin.deb",
-    sha256 = "119f67723d58625a1dd512df5cea591628e72a32d85985416fe0bac9de36977e",
-    urls = ["https://s3.amazonaws.com/session-manager-downloads/plugin/1.2.7.0/ubuntu_64bit/session-manager-plugin.deb"],
+    sha256 = "f1c03d2aaad9f89f73fc70f1c1cdef0e2877a03b86cca3c8b5c97992c6344449",
+    urls = ["https://s3.amazonaws.com/session-manager-downloads/plugin/1.2.245.0/ubuntu_64bit/session-manager-plugin.deb"],
 )
 
 # golangci-lint, drone-cli & git-chglog
