@@ -74,9 +74,9 @@ go_repositories()
 # GoMock
 http_archive(
     name = "com_github_jmhodges_bazel_gomock",
-    sha256 = "4baf3389ca48c30d8b072a027923c91c45915ab8061e39e7a0c62706332e096e",
-    strip_prefix = "bazel_gomock-1.2",
-    urls = ["https://github.com/jmhodges/bazel_gomock/archive/v1.2.tar.gz"],
+    sha256 = "82a5fb946d2eb0fed80d3d70c2556784ec6cb5c35cd65a1b5e93e46f99681650",
+    strip_prefix = "bazel_gomock-1.3",
+    urls = ["https://github.com/jmhodges/bazel_gomock/archive/v1.3.tar.gz"],
 )
 
 # AWS Session Manager Plugin
