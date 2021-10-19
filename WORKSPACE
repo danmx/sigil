@@ -90,9 +90,9 @@ http_file(
 # golangci-lint, drone-cli & git-chglog
 http_archive(
     name = "com_github_danmx_bazel_tools",
-    sha256 = "2a21bc87e5b8668b401761b835047f03ed617c9a0398e88eaf3883b6596ff6ed",
-    strip_prefix = "bazel-tools-0.1.0",
-    urls = ["https://github.com/danmx/bazel-tools/archive/0.1.0.tar.gz"],
+    sha256 = "822a9c9f04c02418d17efcd58dd37c4890f8eb77e645f15281d43b7bbd2d1637",
+    strip_prefix = "bazel-tools-0.3.1",
+    urls = ["https://github.com/danmx/bazel-tools/archive/0.3.1.tar.gz"],
 )
 
 load("@com_github_danmx_bazel_tools//git-chglog:deps.bzl", "git_chglog_dependencies")
