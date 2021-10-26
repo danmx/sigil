@@ -73,7 +73,7 @@ func init() {
 	workDir = path.Join(home, workDirName)
 	stat, err := os.Stat(workDir)
 	if !(err == nil && stat.IsDir()) {
-		if err := os.MkdirAll(workDir, 0750); err != nil {
+		if err := os.MkdirAll(workDir, 0750); err != nil { //nolint:gomnd // Linux file permissions
 			fmt.Fprintln(os.Stderr, err)
 			log.Fatal(err)
 		}

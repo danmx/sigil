@@ -11,7 +11,7 @@ fmt() {
 }
 
 lint() {
-    bazel run @go_sdk//:bin/go -- generate -x ./... && bazel run @com_github_danmx_bazel_tools//golangci-lint:run -- run ./...
+    bazel run @com_github_danmx_bazel_tools//golangci-lint:run -- run ./...
 }
 
 update_deps() {

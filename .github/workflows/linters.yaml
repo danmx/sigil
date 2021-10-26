@@ -23,5 +23,5 @@ jobs:
         run: bazel run :gazelle && bazel run @go_sdk//:bin/gofmt -- -e -l .
         shell: bash
       - name: golangci-lint
-        run: bazel run @go_sdk//:bin/go -- generate -x ./... && bazel run @com_github_danmx_bazel_tools//golangci-lint:run -- run ./...
+        run: bazel run @com_github_danmx_bazel_tools//golangci-lint:run -- run ./...
         shell: bash

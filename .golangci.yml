@@ -6,23 +6,14 @@ run:
   - bazel-*
   - tools
   - docs
+  skip-files:
+  - ".*_test\\.go$"
   skip-dirs-use-default: true
   modules-download-mode: readonly
   allow-parallel-runners: true
 linters-settings:
-  # depguard:
-  #   list-type: blacklist
-  #   packages:
-  #     # logging is allowed only by logutils.Log, logrus
-  #     # is allowed to use only in logutils package
-  #     - github.com/sirupsen/logrus
-  #   packages-with-error-message:
-  #     - github.com/sirupsen/logrus: "logging is allowed only by logutils.Log"
   dupl:
     threshold: 100
-  # funlen:
-  #   lines: 100
-  #   statements: 50
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -37,7 +28,6 @@ linters-settings:
       - dupImport # https://github.com/go-critic/go-critic/issues/845
       - ifElseChain
       - octalLiteral
-      # - whyNoLint
       - wrapperFunc
   gocyclo:
     min-complexity: 15
@@ -51,8 +41,6 @@ linters-settings:
         checks: argument,case,condition,return,operation,assign
   govet:
     check-shadowing: true
-  # lll:
-  #   line-length: 100
   maligned:
     suggest-new: true
   misspell:
@@ -67,26 +55,19 @@ linters:
     - dogsled
     - dupl
     - errcheck
-    # - funlen
-    # - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
     - gofmt
     - goimports
-    - golint
     - gomnd
     - goprintffuncname
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    # - lll
     - misspell
     - nakedret
-    # - rowserrcheck
-    - scopelint
     - staticcheck
     - structcheck
     - stylecheck

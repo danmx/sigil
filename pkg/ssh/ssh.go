@@ -52,7 +52,8 @@ func (input *StartInput) start(provider aws.CloudSSH) error {
 	}
 	pubKey := *input.PublicKey
 	if *input.GenKeyPair {
-		privKeyBlob, errKey := rsa.GenerateKey(rand.Reader, 4092)
+		const rsaKeySize = 4092
+		privKeyBlob, errKey := rsa.GenerateKey(rand.Reader, rsaKeySize)
 		if errKey != nil {
 			return errKey
 		}
@@ -107,7 +108,7 @@ func savePrivPEMKey(fileName string, key *rsa.PrivateKey) error {
 	}
 
 	// returns err
-	return ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600)
+	return ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600) //nolint:gomnd // Linux file permissions
 }
 
 func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
@@ -116,7 +117,7 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 		return err
 	}
 	// returns err
-	return ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600)
+	return ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600) //nolint:gomnd // Linux file permissions
 }
 
 func deleteTempKey(keyPath string) error {

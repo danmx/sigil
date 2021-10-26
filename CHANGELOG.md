@@ -44,6 +44,7 @@
 ### Fix
 - **bazel:** semi-hermitizing Go SDK
 - **drone:** updating drone.yml signature
+- **linters:** addressing golangci-lint issues
 
 ### Test
 - **aws:** adding unittests
