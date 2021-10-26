@@ -20,7 +20,7 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_download_sdk", "go_register_toolchai
 
 go_download_sdk(
     name = "go_sdk",
-    version = "1.15.3",
+    version = "1.17.2",
 )
 
 go_rules_dependencies()
@@ -87,20 +87,17 @@ http_file(
     urls = ["https://s3.amazonaws.com/session-manager-downloads/plugin/1.2.245.0/ubuntu_64bit/session-manager-plugin.deb"],
 )
 
-# golangci-lint, drone-cli & git-chglog
+# golangci-lint & git-chglog
 http_archive(
     name = "com_github_danmx_bazel_tools",
-    sha256 = "2a21bc87e5b8668b401761b835047f03ed617c9a0398e88eaf3883b6596ff6ed",
-    strip_prefix = "bazel-tools-0.1.0",
-    urls = ["https://github.com/danmx/bazel-tools/archive/0.1.0.tar.gz"],
+    sha256 = "822a9c9f04c02418d17efcd58dd37c4890f8eb77e645f15281d43b7bbd2d1637",
+    strip_prefix = "bazel-tools-0.3.1",
+    urls = ["https://github.com/danmx/bazel-tools/archive/0.3.1.tar.gz"],
 )
 
 load("@com_github_danmx_bazel_tools//git-chglog:deps.bzl", "git_chglog_dependencies")
-load("@com_github_danmx_bazel_tools//drone-cli:deps.bzl", "drone_cli_dependencies")
 load("@com_github_danmx_bazel_tools//golangci-lint:deps.bzl", "golangci_lint_dependencies")
 
 git_chglog_dependencies()
-
-drone_cli_dependencies()
 
 golangci_lint_dependencies()

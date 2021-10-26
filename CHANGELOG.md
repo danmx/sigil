@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Bazel
+- updating Go to 1.17.2
 - update gomock to version 1.3
 - updating rules_docker to 0.19.0
 - update gazelle to 0.23.0
