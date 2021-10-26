@@ -17,12 +17,6 @@ repos:
         language: system
         require_serial: true
         files: '.*\.go$'
-      - id: ci
-        name: Run Drone.io formatter and signer
-        entry: scripts/pre-commit.sh ci
-        language: system
-        require_serial: true
-        files: ".drone.yml$"
       - id: lint
         name: Run linter
         entry: scripts/pre-commit.sh lint
