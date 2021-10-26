@@ -32,6 +32,9 @@
 - **renovate:** scheduled checks
 - **tools:** updating dev tools
 
+### Ci
+- using Github Actions
+
 ### Docker
 - update session manager plugin to 1.2.245.0
 

@@ -1,0 +1,27 @@
+name: Linters
+
+on: [push, pull_request]
+
+jobs:
+  linters:
+    name: Linters
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bazelbuild/setup-bazelisk@v1
+      - name: Mount bazel cache  # Optional
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/bazel"
+          key: bazel
+      - name: gofmt
+        run: bazel run :gazelle && bazel run @go_sdk//:bin/gofmt -- -e -l .
+        shell: bash
+      - name: golangci-lint
+        run: bazel run @go_sdk//:bin/go -- generate -x ./... && bazel run @com_github_danmx_bazel_tools//golangci-lint:run -- run ./...
+        shell: bash
