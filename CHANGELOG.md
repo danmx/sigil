@@ -1,6 +1,13 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bazel
+- update gomock to version 1.3
+- updating rules_docker to 0.19.0
+- update gazelle to 0.23.0
+- update rules_go to version 0.28.0
+- update to version 4.2.1
+
 ### Chore
 - refactoring dev tools
 - **bazel:** removing reduntant rules_docker bits
@@ -22,6 +29,12 @@
 - **deps:** update dependency io_bazel_rules_go to v0.24.1
 - **renovate:** scheduled checks
 - **tools:** updating dev tools
+
+### Docker
+- update session manager plugin to 1.2.245.0
+
+### Fic
+- **ci:** removing Drone integration
 
 ### Fix
 - **bazel:** semi-hermitizing Go SDK
