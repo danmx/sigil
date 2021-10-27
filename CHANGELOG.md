@@ -43,6 +43,7 @@
 
 ### Fix
 - **bazel:** semi-hermitizing Go SDK
+- **ci:** disable steps that use secrets on PRs
 - **drone:** updating drone.yml signature
 - **linters:** addressing golangci-lint issues
 
