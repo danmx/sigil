@@ -24,6 +24,7 @@ jobs:
           key: bazel
       - name: Login to Docker Hub
         uses: docker/login-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -39,7 +40,6 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
       - uses: codecov/codecov-action@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           files: ./coverage.txt
           directory: ./bazel-bin/
           verbose: true
