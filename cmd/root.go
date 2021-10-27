@@ -164,7 +164,7 @@ func initConfig(cmd *cobra.Command) error {
 		}).Error(err)
 		return err
 	}
-	for _, key := range []string{"region", "config-profile", "region"} {
+	for _, key := range []string{"region", "config-profile", "profile"} {
 		if err := cfg.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 			log.WithFields(log.Fields{
 				"flag": key,
