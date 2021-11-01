@@ -36,8 +36,8 @@ def go_repositories():
     go_repository(
         name = "com_github_aws_aws_sdk_go",
         importpath = "github.com/aws/aws-sdk-go",
-        sum = "h1:deglLZ1jjHdhkd6Rbad1MZM4gL+1pfnTfjuFk6CGJFM=",
-        version = "v1.41.3",
+        sum = "h1:zJnJ8Y964DjyRE55UVoMKgOG4w5i88LpN6xSpBX7z84=",
+        version = "v1.41.14",
     )
 
     go_repository(
@@ -984,8 +984,8 @@ def go_repositories():
     go_repository(
         name = "org_golang_x_sys",
         importpath = "golang.org/x/sys",
-        sum = "h1:taxlMj0D/1sOAuv/CbSD+MMDof2vbyPTqz5FNYKpXt8=",
-        version = "v0.0.0-20211013075003-97ac67df715c",
+        sum = "h1:iaNpwpnrgL5jzWS0vCNnfa8HqzxveCFpFx3uC/X4Tps=",
+        version = "v0.0.0-20211031064116-611d5d643895",
     )
     go_repository(
         name = "org_golang_x_term",
