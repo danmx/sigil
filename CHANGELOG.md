@@ -45,6 +45,7 @@
 
 ### Fix
 - profile to command line parser
+- **aws:** code style of log interface
 - **aws:** log interface
 - **bazel:** semi-hermitizing Go SDK
 - **ci:** disable steps that use secrets on PRs ([#187](https://github.com/danmx/sigil/issues/187))
