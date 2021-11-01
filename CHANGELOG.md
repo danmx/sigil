@@ -42,8 +42,10 @@
 - **ci:** removing Drone integration
 
 ### Fix
+- profile to command line parser
+- **aws:** log interface
 - **bazel:** semi-hermitizing Go SDK
-- **ci:** disable steps that use secrets on PRs
+- **ci:** disable steps that use secrets on PRs ([#187](https://github.com/danmx/sigil/issues/187))
 - **drone:** updating drone.yml signature
 - **linters:** addressing golangci-lint issues
 
