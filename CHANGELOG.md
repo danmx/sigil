@@ -10,17 +10,18 @@
 - update to version 4.2.1
 
 ### Chore
-- adding VSCode dev container
 - refactoring dev tools
+- adding VSCode dev container
 - **bazel:** removing reduntant rules_docker bits
-- **deps:** bumping go version to 1.15.3
+- **deps:** updating Bazel rules
+- **deps:** update dependency io_bazel_rules_docker to v0.15.0
 - **deps:** updating AWS session-manager-plugin to version 1.2.7.0
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.5.0
 - **deps:** update dependency io_bazel_rules_go to v0.24.5
 - **deps:** update module spf13/cobra to v1.1.1
 - **deps:** update module spf13/cobra to v1.1.0
 - **deps:** update module sirupsen/logrus to v1.7.0
-- **deps:** update dependency io_bazel_rules_docker to v0.15.0
+- **deps:** bumping go version to 1.15.3
 - **deps:** update dependency io_bazel_rules_go to v0.24.4
 - **deps:** update dependency bazel_gazelle to v0.22.0
 - **deps:** update dependency bazel_gazelle to v0.22.2
