@@ -1,10 +1,21 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Bazel
+- updating Go to 1.17.2
+- update gomock to version 1.3
+- updating rules_docker to 0.19.0
+- update gazelle to 0.23.0
+- update rules_go to version 0.28.0
+- update to version 4.2.1
+
 ### Chore
 - refactoring dev tools
+- adding VSCode dev container
 - **bazel:** removing reduntant rules_docker bits
-- **deps:** update dependency io_bazel_rules_go to v0.24.4
+- **deps:** updating Go dependencies
+- **deps:** update dependency bazel_gazelle to v0.22.0
+- **deps:** update dependency io_bazel_rules_docker to v0.15.0
 - **deps:** updating AWS session-manager-plugin to version 1.2.7.0
 - **deps:** update l.gcr.io/google/bazel docker tag to v3.5.0
 - **deps:** update dependency io_bazel_rules_go to v0.24.5
@@ -12,8 +23,8 @@
 - **deps:** update module spf13/cobra to v1.1.0
 - **deps:** update module sirupsen/logrus to v1.7.0
 - **deps:** bumping go version to 1.15.3
-- **deps:** update dependency io_bazel_rules_docker to v0.15.0
-- **deps:** update dependency bazel_gazelle to v0.22.0
+- **deps:** update dependency io_bazel_rules_go to v0.24.4
+- **deps:** updating Bazel rules
 - **deps:** update dependency bazel_gazelle to v0.22.2
 - **deps:** update module aws/aws-sdk-go to v1.34.32
 - **deps:** update dependency io_bazel_rules_go to v0.24.3
@@ -23,9 +34,23 @@
 - **renovate:** scheduled checks
 - **tools:** updating dev tools
 
+### Ci
+- using Github Actions
+
+### Docker
+- update session manager plugin to 1.2.245.0
+
+### Fic
+- **ci:** removing Drone integration
+
 ### Fix
+- profile to command line parser
+- **aws:** code style of log interface
+- **aws:** log interface
 - **bazel:** semi-hermitizing Go SDK
+- **ci:** disable steps that use secrets on PRs ([#187](https://github.com/danmx/sigil/issues/187))
 - **drone:** updating drone.yml signature
+- **linters:** addressing golangci-lint issues
 
 ### Test
 - **aws:** adding unittests

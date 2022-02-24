@@ -73,7 +73,7 @@ func init() {
 	workDir = path.Join(home, workDirName)
 	stat, err := os.Stat(workDir)
 	if !(err == nil && stat.IsDir()) {
-		if err := os.MkdirAll(workDir, 0750); err != nil {
+		if err := os.MkdirAll(workDir, 0750); err != nil { //nolint:gomnd // Linux file permissions
 			fmt.Fprintln(os.Stderr, err)
 			log.Fatal(err)
 		}
@@ -164,7 +164,7 @@ func initConfig(cmd *cobra.Command) error {
 		}).Error(err)
 		return err
 	}
-	for _, key := range []string{"region", "config-profile", "region"} {
+	for _, key := range []string{"region", "config-profile", "profile"} {
 		if err := cfg.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 			log.WithFields(log.Fields{
 				"flag": key,

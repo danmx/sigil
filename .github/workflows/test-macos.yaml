@@ -1,0 +1,31 @@
+name: Bazel MacOS Tests
+
+defaults:
+  run:
+    shell: bash
+
+on: [pull_request]
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - macos-10.15
+          - macos-11.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Mount bazel cache  # Optional
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/bazel"
+          key: bazel
+      - uses: bazelbuild/setup-bazelisk@v1
+      - name: Run tests
+        run: bazel test --config cross:darwin_amd64 //...
+      - name: Build
+        run: bazel build --config cross:darwin_amd64 :dev
