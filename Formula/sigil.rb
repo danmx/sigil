@@ -5,20 +5,20 @@
 class Sigil < Formula
   desc ""
   homepage ""
-  version "0.7.5"
+  version "0.8.1"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/zendesk/sigil/releases/download/v0.7.5/sigil_0.7.5_Darwin_x86_64.tar.gz"
-      sha256 "0876b0321027fccfe9f062b0e76cf3ec82a427a2e52a1a7013e79a58d2868192"
+      url "https://github.com/zendesk/sigil/releases/download/v0.8.1/sigil_0.8.1_Darwin_x86_64.tar.gz"
+      sha256 "abcf854e1d6f26f2786fd871df20cbacdbabe94f5d5662aa8b7cd37c2f987eed"
 
       def install
         bin.install "sigil"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/zendesk/sigil/releases/download/v0.7.5/sigil_0.7.5_Darwin_arm64.tar.gz"
-      sha256 "2ae67e003364a97b7c044a15a1d66f880229b912890960c5e93948ef67f9ca49"
+      url "https://github.com/zendesk/sigil/releases/download/v0.8.1/sigil_0.8.1_Darwin_arm64.tar.gz"
+      sha256 "e0d9808f993013b065b3d92260a00e042dd7fdd929058bcf8876cc09bc8ccaf8"
 
       def install
         bin.install "sigil"
@@ -27,17 +27,17 @@ class Sigil < Formula
   end
 
   on_linux do
-    if Hardware::CPU.intel?
-      url "https://github.com/zendesk/sigil/releases/download/v0.7.5/sigil_0.7.5_Linux_x86_64.tar.gz"
-      sha256 "5c759d225fb5a3a1fb2e195aa2ae41fb33225d4b79e9e0ffde6d29f638bc0f59"
+    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
+      url "https://github.com/zendesk/sigil/releases/download/v0.8.1/sigil_0.8.1_Linux_arm64.tar.gz"
+      sha256 "c062e29c92f64707cb9f511a6333d28ecaaace77d6ea1bba0083d264bd57a6c7"
 
       def install
         bin.install "sigil"
       end
     end
-    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/zendesk/sigil/releases/download/v0.7.5/sigil_0.7.5_Linux_arm64.tar.gz"
-      sha256 "7f5459bc817f04a78f76e8cedb171e7e8479666acc9071c6b075d2f2f350477a"
+    if Hardware::CPU.intel?
+      url "https://github.com/zendesk/sigil/releases/download/v0.8.1/sigil_0.8.1_Linux_x86_64.tar.gz"
+      sha256 "d9318b4ee1ed0faeb10ec2bbbc41f1e08afd2bcbcd5fa11272f532550c8b0cf9"
 
       def install
         bin.install "sigil"
