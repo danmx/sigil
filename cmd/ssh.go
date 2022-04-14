@@ -64,7 +64,7 @@ var (
 			if genKeyPair {
 				stat, err := os.Stat(genKeyDir)
 				if !(err == nil && stat.IsDir()) {
-					if err = os.MkdirAll(genKeyDir, 0750); err != nil {
+					if err = os.MkdirAll(genKeyDir, 0750); err != nil { //nolint:gomnd // Linux file permissions
 						return err
 					}
 				}

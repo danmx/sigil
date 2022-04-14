@@ -29,7 +29,7 @@ func (p *Provider) StartSSH(targetType, target, osUser string, portNumber uint64
 
 	ssmClient := ssm.New(p.session)
 	parameters := map[string][]*string{
-		"portNumber": {aws.String(strconv.FormatUint(portNumber, 10))},
+		"portNumber": {aws.String(strconv.FormatUint(portNumber, 10))}, //nolint:gomnd // decimal base
 	}
 	startSessionInput := &ssm.StartSessionInput{
 		Parameters:   parameters,

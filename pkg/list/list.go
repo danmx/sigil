@@ -34,6 +34,7 @@ const (
 	TypeListInstances = "instances"
 	// TypeListSessions points to the sessions list type
 	TypeListSessions = "sessions"
+	tabPadding       = 2
 )
 
 // StartInput struct contains all input data
@@ -87,7 +88,7 @@ func sessionsToString(format string, sessions []*aws.Session) (string, error) {
 	case FormatText:
 		buf := bytes.NewBufferString("")
 		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
+		w.Init(buf, 0, 0, tabPadding, ' ', 0)
 		fmt.Fprintln(w, "Index\tSession ID\tTarget\tStart Date")
 		for i, session := range sessions {
 			fmt.Fprintf(w, "%d\t%s\t%s\t%s\n",
@@ -114,7 +115,7 @@ func sessionsToString(format string, sessions []*aws.Session) (string, error) {
 	case FormatWide:
 		buf := new(bytes.Buffer)
 		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
+		w.Init(buf, 0, 0, tabPadding, ' ', 0)
 		fmt.Fprintln(w, "Index\tSession ID\tTarget\tStart Date\tOwner\tStatus")
 		for i, session := range sessions {
 			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\n",
@@ -136,7 +137,7 @@ func instancesToString(format string, instances []*aws.Instance) (string, error)
 	case FormatText:
 		buf := bytes.NewBufferString("")
 		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
+		w.Init(buf, 0, 0, tabPadding, ' ', 0)
 		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name")
 		for i, instance := range instances {
 			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n",
@@ -163,7 +164,7 @@ func instancesToString(format string, instances []*aws.Instance) (string, error)
 	case FormatWide:
 		buf := new(bytes.Buffer)
 		w := new(tabwriter.Writer)
-		w.Init(buf, 0, 0, 2, ' ', 0)
+		w.Init(buf, 0, 0, tabPadding, ' ', 0)
 		fmt.Fprintln(w, "Index\tName\tInstance ID\tIP Address\tPrivate DNS Name\tHostname\tOS Name\tOS Version\tOS Type")
 		for i, instance := range instances {
 			fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
