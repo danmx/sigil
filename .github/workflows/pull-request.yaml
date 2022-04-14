@@ -16,9 +16,9 @@ jobs:
       - name: Setup Golang
         uses: zendesk/setup-go@v2
         with:
-          go-version: 1.15.x
+          go-version: 1.18.x
       - name: Setup cache
-        uses: zendesk/cache@v2
+        uses: zendesk/cache@v3
         with:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           path: ~/go/pkg/mod

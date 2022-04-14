@@ -5,7 +5,6 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -78,7 +77,7 @@ func (input *StartInput) start(provider aws.CloudSSH) error {
 
 	pubKeyData := []byte{}
 	if pubKey != "" {
-		pubKeyData, err = ioutil.ReadFile(pubKey)
+		pubKeyData, err = os.ReadFile(pubKey)
 		if err != nil {
 			return err
 		}
@@ -100,14 +99,14 @@ func (input *StartInput) start(provider aws.CloudSSH) error {
 // Helper functions
 
 func savePrivPEMKey(fileName string, key *rsa.PrivateKey) error {
-	var privateKey = &pem.Block{
+	privateKey := &pem.Block{
 		Type:    "RSA PRIVATE KEY",
 		Headers: nil,
 		Bytes:   x509.MarshalPKCS1PrivateKey(key),
 	}
 
 	// returns err
-	return ioutil.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0600)
+	return os.WriteFile(fileName, pem.EncodeToMemory(privateKey), 0o600)
 }
 
 func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
@@ -116,7 +115,7 @@ func savePublicPEMKey(fileName string, pubkey *rsa.PublicKey) error {
 		return err
 	}
 	// returns err
-	return ioutil.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0600)
+	return os.WriteFile(fileName, ssh.MarshalAuthorizedKey(pub), 0o600)
 }
 
 func deleteTempKey(keyPath string) error {

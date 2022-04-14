@@ -12,6 +12,7 @@ tasks:
     desc: get dependencies
     cmds:
     - cmd: go get .
+    - cmd: brew install golangci-lint
   test:
     desc: test
     cmds:
@@ -20,3 +21,7 @@ tasks:
     desc: generate mocks
     cmds:
       - go generate ./...
+  lint:
+    desc: run golangci-lint
+    cmds:
+      - golangci-lint run
